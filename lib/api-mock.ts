@@ -1,7 +1,7 @@
 import { GymLog, MonthlyStat, PREBUILT_PLANS, Stats, User, WeeklyPlan, WorkoutType } from './types';
 
 const SESSION_KEY = 'gym_git_session';
-const LOGS_KEY = 'gym_git_logs';
+const LOGS_KEY = 'gym_git_logs_v2'; // Bumped key to refresh localStorage seed data automatically
 
 const delay = (ms = 200): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -13,7 +13,7 @@ export function formatDateKey(date: Date): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// Generate realistic mock logs for the past 365 days
+// Generate realistic mock logs for the past 365 days with realistic variation (including Aqua/Mumen Rider slumps!)
 function generateSeedLogs(): GymLog[] {
   const logs: GymLog[] = [];
   const today = new Date();
@@ -24,13 +24,41 @@ function generateSeedLogs(): GymLog[] {
     d.setDate(today.getDate() - i);
     const dateStr = formatDateKey(d);
 
+    const month = d.getMonth(); // 0 = Jan, 1 = Feb, etc.
     const dayOfWeek = d.getDay();
-    const gymChance = dayOfWeek === 0 || dayOfWeek === 6 ? 0.4 : 0.72;
+
+    let gymChance = 0.5;
+    let preferredHours = [1.0, 1.25, 1.5];
+
+    // Create distinct realistic monthly phases:
+    if (month === 0) {
+      // Jan: New Year Resolution (High attendance: Gojo/Naruto tier)
+      gymChance = dayOfWeek === 0 ? 0.2 : 0.75;
+    } else if (month === 1) {
+      // Feb: Slump / Dropped off (Very low attendance: Aqua tier - ~1-2 sessions in entire month)
+      gymChance = 0.04;
+      preferredHours = [0.5];
+    } else if (month === 2) {
+      // Mar: Rebuilding habit (Low-medium: Mumen Rider / Tanjiro tier)
+      gymChance = dayOfWeek === 1 || dayOfWeek === 4 ? 0.4 : 0.05;
+    } else if (month === 3) {
+      // Apr: Steady routine (Deku tier: ~3 days/week)
+      gymChance = dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5 ? 0.6 : 0.1;
+    } else if (month === 4) {
+      // May: Peak Beast Mode (Goku / Luffy tier: 5 days/week optimal length)
+      gymChance = dayOfWeek === 0 || dayOfWeek === 6 ? 0.3 : 0.85;
+      preferredHours = [1.0, 1.25, 1.5];
+    } else if (month === 5) {
+      // Jun: Vacation / Work Overload (Aqua tier: 1 session in entire month)
+      gymChance = 0.03;
+      preferredHours = [0.5];
+    } else {
+      // Jul - Dec: Balanced variety
+      gymChance = dayOfWeek === 0 || dayOfWeek === 6 ? 0.25 : 0.55;
+    }
 
     if (Math.random() < gymChance) {
-      // Support realistic range from 0.5 to 3.5 hours
-      const hoursOptions = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0, 3.5];
-      const hours = hoursOptions[Math.floor(Math.random() * hoursOptions.length)];
+      const hours = preferredHours[Math.floor(Math.random() * preferredHours.length)];
       const workoutType = workoutTypes[Math.floor(Math.random() * workoutTypes.length)];
 
       logs.push({
