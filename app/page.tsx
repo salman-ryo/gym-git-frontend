@@ -171,7 +171,7 @@ export default function DashboardPage() {
 
               {/* Monthly Attendance Bar Chart */}
               {stats?.monthlyData && (
-                <MonthlyBarChart monthlyData={stats.monthlyData} />
+                <MonthlyBarChart monthlyData={stats.monthlyData} logs={logs} />
               )}
             </>
           )}
