@@ -1,3 +1,5 @@
+import { StreakAnalysis } from './scientific-streak';
+
 export type WorkoutType = string;
 
 export interface WeeklyPlan {
@@ -39,6 +41,7 @@ export interface Stats {
   totalHours: number;
   averageHoursPerSession: number;
   monthlyData: MonthlyStat[];
+  scientificStreak?: StreakAnalysis;
 }
 
 export interface FilterOptions {
@@ -51,7 +54,7 @@ export const PREBUILT_PLANS: WeeklyPlan[] = [
   {
     id: 'ppl-standard',
     name: 'Push / Pull / Legs (PPL)',
-    description: 'Classic 3-day split focusing on movement patterns.',
+    description: 'Classic 4-day active split focusing on movement patterns.',
     categories: ['Push', 'Pull', 'Legs', 'Cardio', 'Custom'],
   },
   {

@@ -1,4 +1,5 @@
 import { GymLog, MonthlyStat, PREBUILT_PLANS, Stats, User, WeeklyPlan, WorkoutType } from './types';
+import { calculateScientificStreak } from './scientific-streak';
 
 const SESSION_KEY = 'gym_git_session';
 const LOGS_KEY = 'gym_git_logs_v2'; // Bumped key to refresh localStorage seed data automatically
@@ -248,7 +249,7 @@ export async function mockDeleteLog(date: string): Promise<void> {
 
 // --- STATS MOCK ---
 
-export async function mockGetStats(): Promise<Stats> {
+export async function mockGetStats(userPlan?: WeeklyPlan): Promise<Stats> {
   await delay(200);
   const logs = getStoredLogs();
   
@@ -259,49 +260,8 @@ export async function mockGetStats(): Promise<Stats> {
     }
   });
 
-  const todayStr = formatDateKey(new Date());
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = formatDateKey(yesterday);
-
-  let currentStreak = 0;
-  let checkDate = new Date();
-  
-  if (!activeLogMap.has(todayStr) && activeLogMap.has(yesterdayStr)) {
-    checkDate = yesterday;
-  } else if (!activeLogMap.has(todayStr) && !activeLogMap.has(yesterdayStr)) {
-    checkDate = new Date();
-  }
-
-  while (activeLogMap.has(formatDateKey(checkDate))) {
-    currentStreak++;
-    checkDate.setDate(checkDate.getDate() - 1);
-  }
-
-  const sortedActiveDates = Array.from(activeLogMap.keys()).sort();
-  let longestStreak = 0;
-  let tempStreak = 0;
-  let prevDate: Date | null = null;
-
-  for (const dateStr of sortedActiveDates) {
-    const currentDate = new Date(dateStr + 'T00:00:00');
-    if (!prevDate) {
-      tempStreak = 1;
-    } else {
-      const diffDays = Math.round(
-        (currentDate.getTime() - prevDate.getTime()) / (1000 * 3600 * 24)
-      );
-      if (diffDays === 1) {
-        tempStreak++;
-      } else {
-        tempStreak = 1;
-      }
-    }
-    if (tempStreak > longestStreak) {
-      longestStreak = tempStreak;
-    }
-    prevDate = currentDate;
-  }
+  // Calculate Scientific Plan-Conforming Streak
+  const scientificStreak = calculateScientificStreak(logs, userPlan);
 
   const totalDays = activeLogMap.size;
   let totalHours = 0;
@@ -336,12 +296,13 @@ export async function mockGetStats(): Promise<Stats> {
   });
 
   return {
-    currentStreak,
-    longestStreak,
+    currentStreak: scientificStreak.currentStreakDays,
+    longestStreak: scientificStreak.longestStreakDays,
     totalDays,
     totalHours: Number(totalHours.toFixed(1)),
     averageHoursPerSession,
     monthlyData,
+    scientificStreak,
   };
 }
 

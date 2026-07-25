@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const refreshData = useCallback(async () => {
     try {
       const fetchedLogs = await mockGetLogs();
-      const fetchedStats = await mockGetStats();
+      const fetchedStats = await mockGetStats(user?.weeklyPlan);
       setLogs(fetchedLogs);
       setStats(fetchedStats);
       return fetchedLogs;
@@ -63,7 +63,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.weeklyPlan]);
 
   useEffect(() => {
     async function initDashboard() {
