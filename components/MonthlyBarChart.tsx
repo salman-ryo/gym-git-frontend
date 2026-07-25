@@ -2,8 +2,9 @@
 
 import { GymLog, MonthlyStat } from '@/lib/types';
 import { formatDateKey } from '@/lib/api-mock';
+import { animePowerLevels, AnimePower } from '@/assets/anime';
 import React, { useMemo, useState } from 'react';
-import { BarChart3, CalendarDays, Calendar } from 'lucide-react';
+import { Swords, CalendarDays, Calendar } from 'lucide-react';
 
 interface MonthlyBarChartProps {
   monthlyData: MonthlyStat[];
@@ -11,8 +12,8 @@ interface MonthlyBarChartProps {
 }
 
 interface WeeklyStat {
-  weekLabel: string; // e.g. "Jul 20"
-  count: number; // 0..7
+  weekLabel: string;
+  count: number;
   totalHours: number;
   isCurrentWeek: boolean;
 }
@@ -59,7 +60,6 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
         }
       });
 
-      // Format date label (e.g. "Jul 20")
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const weekLabel = `${monthNames[mon.getMonth()]} ${mon.getDate()}`;
 
@@ -74,9 +74,28 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
     return result;
   }, [logs]);
 
-  if (!monthlyData || monthlyData.length === 0) return null;
+  // Find max hours to calculate percentage power level relative to user's highest session duration
+  const maxHours = useMemo(() => {
+    if (viewType === 'monthly') {
+      const max = Math.max(...monthlyData.map((d) => d.totalHours), 1);
+      return max;
+    } else {
+      const max = Math.max(...weeklyData.map((d) => d.totalHours), 1);
+      return max;
+    }
+  }, [viewType, monthlyData, weeklyData]);
 
-  // Values based on active view type
+  // Helper to determine the corresponding anime power level character
+  const getAnimeCharacter = (totalHours: number): AnimePower | null => {
+    if (totalHours <= 0) return null;
+    const percentage = (totalHours / maxHours) * 100;
+    
+    // Sort by power descending to find the highest matching tier
+    const sorted = [...animePowerLevels].sort((a, b) => b.power - a.power);
+    const matched = sorted.find((char) => percentage >= char.power);
+    return matched || animePowerLevels[0]; // Fallback to Aqua
+  };
+
   const maxCount = viewType === 'monthly'
     ? Math.max(...monthlyData.map((d) => d.count), 1)
     : Math.max(...weeklyData.map((d) => d.count), 1);
@@ -89,13 +108,13 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-zinc-800/80">
         <div>
           <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-emerald-400" />
-            <span>Gym Attendance Chart ({new Date().getFullYear()})</span>
+            <Swords className="w-5 h-5 text-emerald-400" />
+            <span>Anime Gym Power Levels ({new Date().getFullYear()})</span>
           </h3>
           <p className="text-xs text-zinc-400 mt-0.5">
             {viewType === 'monthly'
-              ? 'Workouts completed per calendar month'
-              : 'Workouts completed per week (last 12 weeks)'}
+              ? 'Ascend the power tiers based on monthly workout hours'
+              : 'Ascend the power tiers based on weekly workout hours'}
           </p>
         </div>
 
@@ -130,30 +149,48 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
       </div>
 
       {/* Bar Chart Container */}
-      <div className="h-44 flex items-end justify-between gap-2 sm:gap-4 pt-6 px-2">
+      <div className="h-60 flex items-end justify-between gap-2 sm:gap-4 pt-12 px-2">
         {viewType === 'monthly'
           ? monthlyData.map((m) => {
               const heightPercent = Math.round((m.count / maxCount) * 100);
               const isCurrentMonth = m.monthIndex === currentMonthIndex;
+              const animeChar = getAnimeCharacter(m.totalHours);
 
               return (
                 <div
                   key={m.month}
                   className="flex-1 flex flex-col items-center h-full justify-end group relative"
                 >
-                  {/* Floating Tooltip Callout on Hover */}
-                  <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none absolute -top-10 bg-zinc-950 text-zinc-100 border border-zinc-700/80 rounded-lg px-2.5 py-1 text-xs text-center z-20 shadow-xl whitespace-nowrap">
-                    <p className="font-bold text-emerald-400">{m.count} Gym Days</p>
-                    <p className="text-[10px] text-zinc-400">{m.totalHours} hrs total</p>
+                  {/* Tooltip on Hover */}
+                  <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none absolute -top-8 bg-zinc-950 text-zinc-100 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-center z-20 shadow-2xl whitespace-nowrap space-y-1">
+                    <p className="font-bold text-emerald-400">{m.count} Gym Days ({m.totalHours}h)</p>
+                    {animeChar ? (
+                      <div className="flex items-center gap-1.5 justify-center border-t border-zinc-800 pt-1 mt-1 text-[10px]">
+                        <span className="text-zinc-400 font-semibold">Tier:</span>
+                        <span className="text-amber-400 font-bold">{animeChar.name} (Pwr {animeChar.power})</span>
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-zinc-500">Rest Tier</p>
+                    )}
                   </div>
 
-                  {/* Bar Value label on top */}
-                  <span className="text-[10px] font-bold text-zinc-400 mb-1 group-hover:text-emerald-400 transition-colors">
-                    {m.count > 0 ? m.count : ''}
-                  </span>
+                  {/* Anime Character Bubble sitting on top of the bar */}
+                  {animeChar && (
+                    <div
+                      style={{ bottom: `calc(${heightPercent}% * 0.72 + 28px)` }}
+                      className="absolute w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-lg shadow-emerald-500/10 flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 z-10 group-hover:scale-110 group-hover:border-amber-400 animate-in fade-in"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={animeChar.image}
+                        alt={animeChar.name}
+                        className="w-full h-full object-contain rounded-full"
+                      />
+                    </div>
+                  )}
 
                   {/* Vertical Bar */}
-                  <div className="w-full max-w-[36px] bg-zinc-800/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 p-0.5 border border-zinc-800/60 group-hover:border-emerald-500/50 transition-colors">
+                  <div className="w-full max-w-[36px] bg-zinc-800/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 p-0.5 border border-zinc-800/60 group-hover:border-emerald-500/50 transition-colors relative">
                     <div
                       style={{ height: `${heightPercent}%` }}
                       className={`w-full rounded-t transition-all duration-500 ${
@@ -166,7 +203,7 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
                     />
                   </div>
 
-                  {/* Label */}
+                  {/* Month Label */}
                   <span
                     className={`text-[11px] font-semibold mt-2.5 ${
                       isCurrentMonth
@@ -181,25 +218,43 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
             })
           : weeklyData.map((w, idx) => {
               const heightPercent = Math.round((w.count / maxCount) * 100);
+              const animeChar = getAnimeCharacter(w.totalHours);
 
               return (
                 <div
                   key={`${w.weekLabel}-${idx}`}
                   className="flex-1 flex flex-col items-center h-full justify-end group relative"
                 >
-                  {/* Floating Tooltip Callout on Hover */}
-                  <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none absolute -top-10 bg-zinc-950 text-zinc-100 border border-zinc-700/80 rounded-lg px-2.5 py-1 text-xs text-center z-20 shadow-xl whitespace-nowrap">
-                    <p className="font-bold text-emerald-400">{w.count} Gym Days</p>
-                    <p className="text-[10px] text-zinc-400">{w.totalHours} hrs total</p>
+                  {/* Tooltip on Hover */}
+                  <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none absolute -top-8 bg-zinc-950 text-zinc-100 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-center z-20 shadow-2xl whitespace-nowrap space-y-1">
+                    <p className="font-bold text-emerald-400">{w.count} Gym Days ({w.totalHours}h)</p>
+                    {animeChar ? (
+                      <div className="flex items-center gap-1.5 justify-center border-t border-zinc-800 pt-1 mt-1 text-[10px]">
+                        <span className="text-zinc-400 font-semibold">Tier:</span>
+                        <span className="text-amber-400 font-bold">{animeChar.name} (Pwr {animeChar.power})</span>
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-zinc-500">Rest Tier</p>
+                    )}
                   </div>
 
-                  {/* Bar Value label on top */}
-                  <span className="text-[10px] font-bold text-zinc-400 mb-1 group-hover:text-emerald-400 transition-colors">
-                    {w.count > 0 ? w.count : ''}
-                  </span>
+                  {/* Anime Character Bubble sitting on top of the bar */}
+                  {animeChar && (
+                    <div
+                      style={{ bottom: `calc(${heightPercent}% * 0.72 + 28px)` }}
+                      className="absolute w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-lg shadow-emerald-500/10 flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 z-10 group-hover:scale-110 group-hover:border-amber-400 animate-in fade-in"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={animeChar.image}
+                        alt={animeChar.name}
+                        className="w-full h-full object-contain rounded-full"
+                      />
+                    </div>
+                  )}
 
                   {/* Vertical Bar */}
-                  <div className="w-full max-w-[36px] bg-zinc-800/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 p-0.5 border border-zinc-800/60 group-hover:border-emerald-500/50 transition-colors">
+                  <div className="w-full max-w-[36px] bg-zinc-800/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 p-0.5 border border-zinc-800/60 group-hover:border-emerald-500/50 transition-colors relative">
                     <div
                       style={{ height: `${heightPercent}%` }}
                       className={`w-full rounded-t transition-all duration-500 ${
@@ -212,7 +267,7 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
                     />
                   </div>
 
-                  {/* Label */}
+                  {/* Week Label */}
                   <span
                     className={`text-[10px] font-semibold mt-2.5 truncate max-w-full ${
                       w.isCurrentWeek
