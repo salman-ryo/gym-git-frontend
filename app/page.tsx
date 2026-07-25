@@ -8,6 +8,8 @@ import FilterBar from '@/components/FilterBar';
 import Header from '@/components/Header';
 import MonthlyBarChart from '@/components/MonthlyBarChart';
 import StatsOverview from '@/components/StatsOverview';
+import WeeklyPlanModal from '@/components/WeeklyPlanModal';
+import { useAuth } from '@/lib/auth-context';
 import {
   formatDateKey,
   mockDeleteLog,
@@ -16,10 +18,12 @@ import {
   mockResetData,
   mockSaveLog,
 } from '@/lib/api-mock';
-import { GymLog, Stats, WorkoutType } from '@/lib/types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function DashboardPage() {
+  const { user, updateUserPlan } = useAuth();
+
   const [logs, setLogs] = useState<GymLog[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -27,13 +31,23 @@ export default function DashboardPage() {
   // Filter state
   const [activeFilter, setActiveFilter] = useState<WorkoutType | 'All'>('All');
 
-  // Daily Check-in Modal state
+  // Modals state
   const [showDailyCheckIn, setShowDailyCheckIn] = useState<boolean>(false);
+  const [showPlanModal, setShowPlanModal] = useState<boolean>(false);
   const [todayDateStr, setTodayDateStr] = useState<string>('');
 
   // Historical Tile Edit Modal state
   const [editTileDate, setEditTileDate] = useState<string | null>(null);
   const [editTileLog, setEditTileLog] = useState<GymLog | undefined>(undefined);
+
+  // Extract all workout types present across historical logs to preserve data queryability
+  const availableHistoricalTypes = useMemo(() => {
+    const types = new Set<string>();
+    logs.forEach((l) => {
+      if (l.workoutType) types.add(l.workoutType);
+    });
+    return Array.from(types);
+  }, [logs]);
 
   // Fetch all logs & stats
   const refreshData = useCallback(async () => {
@@ -57,10 +71,7 @@ export default function DashboardPage() {
       const todayStr = formatDateKey(new Date());
       setTodayDateStr(todayStr);
 
-      // Check if today already has a log entry
       const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
-
-      // Check if user already dismissed or completed today's checkin in session
       const dismissedToday = sessionStorage.getItem(`gym_git_dismissed_${todayStr}`);
 
       if (!hasTodayLog && !dismissedToday) {
@@ -117,6 +128,11 @@ export default function DashboardPage() {
     await refreshData();
   };
 
+  // Save Weekly Plan
+  const handleSavePlan = async (plan: WeeklyPlan) => {
+    await updateUserPlan(plan);
+  };
+
   return (
     <AuthGuard>
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
@@ -137,13 +153,16 @@ export default function DashboardPage() {
               {/* Analytics & Streaks Overview */}
               <StatsOverview stats={stats} />
 
-              {/* Workout Filter Controls */}
+              {/* Dynamic Workout Filter Controls */}
               <FilterBar
                 activeFilter={activeFilter}
                 onFilterChange={setActiveFilter}
+                weeklyPlan={user?.weeklyPlan}
+                onOpenPlanModal={() => setShowPlanModal(true)}
+                availableTypes={availableHistoricalTypes}
               />
 
-              {/* 52-Week Contribution Graph */}
+              {/* Flexible Contribution Graph (Year / Month / Week views) */}
               <ContributionGraph
                 logs={logs}
                 activeFilter={activeFilter}
@@ -161,7 +180,7 @@ export default function DashboardPage() {
         {/* Footer */}
         <footer className="border-t border-zinc-900 py-6 text-center text-xs text-zinc-600">
           <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>Gym-Git &copy; {new Date().getFullYear()} — Mocked Frontend Environment</span>
+            <span>Gym-Git &copy; {new Date().getFullYear()} — Dynamic Workout Planning</span>
             <span className="text-zinc-500">Built with Next.js, Tailwind CSS &amp; TypeScript</span>
           </div>
         </footer>
@@ -172,6 +191,7 @@ export default function DashboardPage() {
           isOpen={showDailyCheckIn}
           onCheckInYes={handleDailyCheckInYes}
           onCheckInNo={handleDailyCheckInNo}
+          availableWorkoutTypes={user?.weeklyPlan?.categories}
         />
 
         <EditLogModal
@@ -181,6 +201,14 @@ export default function DashboardPage() {
           onClose={() => setEditTileDate(null)}
           onSave={handleSaveEdit}
           onDelete={handleDeleteEdit}
+          availableWorkoutTypes={user?.weeklyPlan?.categories}
+        />
+
+        <WeeklyPlanModal
+          currentPlan={user?.weeklyPlan}
+          isOpen={showPlanModal}
+          onClose={() => setShowPlanModal(false)}
+          onSavePlan={handleSavePlan}
         />
       </div>
     </AuthGuard>

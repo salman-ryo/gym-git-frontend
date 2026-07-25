@@ -1,4 +1,4 @@
-import { GymLog, MonthlyStat, Stats, User, WorkoutType } from './types';
+import { GymLog, MonthlyStat, PREBUILT_PLANS, Stats, User, WeeklyPlan, WorkoutType } from './types';
 
 const SESSION_KEY = 'gym_git_session';
 const LOGS_KEY = 'gym_git_logs';
@@ -6,7 +6,6 @@ const LOGS_KEY = 'gym_git_logs';
 const delay = (ms = 200): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-// Format Date object to YYYY-MM-DD
 export function formatDateKey(date: Date): string {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -18,21 +17,19 @@ export function formatDateKey(date: Date): string {
 function generateSeedLogs(): GymLog[] {
   const logs: GymLog[] = [];
   const today = new Date();
-  const workoutTypes: WorkoutType[] = ['Push', 'Pull', 'Legs', 'Cardio', 'Custom'];
+  const workoutTypes: WorkoutType[] = ['Push', 'Pull', 'Legs', 'Cardio', 'Core', 'Custom'];
 
-  // Seed last 365 days
   for (let i = 365; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const dateStr = formatDateKey(d);
 
-    const dayOfWeek = d.getDay(); // 0 = Sun, 6 = Sat
-    // 70% chance of gym on weekdays, 40% on weekends
+    const dayOfWeek = d.getDay();
     const gymChance = dayOfWeek === 0 || dayOfWeek === 6 ? 0.4 : 0.72;
 
     if (Math.random() < gymChance) {
-      // Hours range: 0.5 to 2.5
-      const hoursOptions = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5];
+      // Support realistic range from 0.5 to 3.5 hours
+      const hoursOptions = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0, 3.5];
       const hours = hoursOptions[Math.floor(Math.random() * hoursOptions.length)];
       const workoutType = workoutTypes[Math.floor(Math.random() * workoutTypes.length)];
 
@@ -50,7 +47,6 @@ function generateSeedLogs(): GymLog[] {
   return logs;
 }
 
-// Get stored logs or initialize with seed data
 function getStoredLogs(): GymLog[] {
   if (typeof window === 'undefined') return [];
   const raw = localStorage.getItem(LOGS_KEY);
@@ -74,9 +70,9 @@ function saveStoredLogs(logs: GymLog[]): void {
   localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
 }
 
-// --- AUTHENTICATION API MOCKS ---
+// --- AUTHENTICATION & USER PLAN MOCKS ---
 
-export async function mockLogin(email: string, password: string): Promise<User> {
+export async function mockLogin(email: string, password: string, selectedPlan?: WeeklyPlan): Promise<User> {
   await delay(300);
   if (!email || !password) {
     throw new Error('Email and password are required.');
@@ -87,6 +83,7 @@ export async function mockLogin(email: string, password: string): Promise<User> 
     name: email.split('@')[0].replace('.', ' ').toUpperCase(),
     avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
     provider: 'email',
+    weeklyPlan: selectedPlan || PREBUILT_PLANS[0],
   };
 
   if (typeof window !== 'undefined') {
@@ -95,18 +92,39 @@ export async function mockLogin(email: string, password: string): Promise<User> 
   return user;
 }
 
-export async function mockGoogleLogin(): Promise<User> {
+export async function mockGoogleLogin(selectedPlan?: WeeklyPlan): Promise<User> {
   await delay(400);
   const user: User = {
     email: 'alex.developer@gmail.com',
     name: 'Alex Developer',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
     provider: 'google',
+    weeklyPlan: selectedPlan || PREBUILT_PLANS[0],
   };
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(SESSION_KEY, JSON.stringify(user));
   }
+  return user;
+}
+
+export async function mockUpdateUserPlan(plan: WeeklyPlan): Promise<User> {
+  await delay(200);
+  if (typeof window === 'undefined') throw new Error('No browser context');
+  const raw = localStorage.getItem(SESSION_KEY);
+  let user: User;
+  if (raw) {
+    user = JSON.parse(raw);
+    user.weeklyPlan = plan;
+  } else {
+    user = {
+      email: 'demo@example.com',
+      name: 'Demo Gymmer',
+      provider: 'email',
+      weeklyPlan: plan,
+    };
+  }
+  localStorage.setItem(SESSION_KEY, JSON.stringify(user));
   return user;
 }
 
@@ -123,7 +141,11 @@ export async function mockGetSession(): Promise<User | null> {
   const raw = localStorage.getItem(SESSION_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as User;
+    const u = JSON.parse(raw) as User;
+    if (!u.weeklyPlan) {
+      u.weeklyPlan = PREBUILT_PLANS[0];
+    }
+    return u;
   } catch {
     return null;
   }
@@ -156,7 +178,6 @@ export async function mockSaveLog(
   const existingIndex = logs.findIndex((l) => l.date === date);
 
   if (hours <= 0) {
-    // If hours is 0 or negative, remove entry if present
     if (existingIndex !== -1) {
       logs.splice(existingIndex, 1);
       saveStoredLogs(logs);
@@ -197,13 +218,12 @@ export async function mockDeleteLog(date: string): Promise<void> {
   saveStoredLogs(filtered);
 }
 
-// --- STATS CALCULATION MOCK ---
+// --- STATS MOCK ---
 
 export async function mockGetStats(): Promise<Stats> {
   await delay(200);
   const logs = getStoredLogs();
   
-  // Map date string -> GymLog with hours > 0
   const activeLogMap = new Map<string, GymLog>();
   logs.forEach((log) => {
     if (log.hours > 0) {
@@ -216,15 +236,13 @@ export async function mockGetStats(): Promise<Stats> {
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = formatDateKey(yesterday);
 
-  // 1. Current Streak calculation
   let currentStreak = 0;
   let checkDate = new Date();
   
-  // If today has a log, start check from today. Otherwise, check if streak continued through yesterday.
   if (!activeLogMap.has(todayStr) && activeLogMap.has(yesterdayStr)) {
     checkDate = yesterday;
   } else if (!activeLogMap.has(todayStr) && !activeLogMap.has(yesterdayStr)) {
-    checkDate = new Date(); // zero streak
+    checkDate = new Date();
   }
 
   while (activeLogMap.has(formatDateKey(checkDate))) {
@@ -232,7 +250,6 @@ export async function mockGetStats(): Promise<Stats> {
     checkDate.setDate(checkDate.getDate() - 1);
   }
 
-  // 2. Longest Streak calculation
   const sortedActiveDates = Array.from(activeLogMap.keys()).sort();
   let longestStreak = 0;
   let tempStreak = 0;
@@ -258,7 +275,6 @@ export async function mockGetStats(): Promise<Stats> {
     prevDate = currentDate;
   }
 
-  // Aggregate Total Days and Hours
   const totalDays = activeLogMap.size;
   let totalHours = 0;
   activeLogMap.forEach((log) => {
@@ -267,7 +283,6 @@ export async function mockGetStats(): Promise<Stats> {
 
   const averageHoursPerSession = totalDays > 0 ? Number((totalHours / totalDays).toFixed(1)) : 0;
 
-  // 3. Monthly Aggregates for current calendar year (12 months)
   const currentYear = new Date().getFullYear();
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   
