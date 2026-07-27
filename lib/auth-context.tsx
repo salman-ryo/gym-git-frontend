@@ -56,7 +56,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    */
   const bootstrapBackend = async (
     selectedPlan?: WeeklyPlan,
-    accessToken?: string
+    accessToken?: string,
+    shouldThrow = false
   ): Promise<User | null> => {
     const planId = selectedPlan?.id || 'ppl-standard';
 
@@ -88,6 +89,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       console.error('Backend bootstrap/me call failed:', err);
       setUser(null);
+      if (shouldThrow) {
+        throw err;
+      }
       return null;
     }
   };
@@ -143,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.session?.access_token) {
-        await bootstrapBackend(plan, data.session.access_token);
+        await bootstrapBackend(plan, data.session.access_token, true);
       }
     } finally {
       setLoading(false);
@@ -174,7 +178,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.session?.access_token) {
-        await bootstrapBackend(plan, data.session.access_token);
+        await bootstrapBackend(plan, data.session.access_token, true);
+      } else if (data.user) {
+        throw new Error("Verification email sent! Please check your inbox and verify your email to log in.");
       }
     } finally {
       setLoading(false);

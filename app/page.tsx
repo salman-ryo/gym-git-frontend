@@ -78,9 +78,8 @@ export default function DashboardPage() {
         setShowDailyCheckIn(false);
       } else {
         const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
-        const dismissedToday = sessionStorage.getItem(`gym_git_dismissed_${todayStr}`);
 
-        if (!hasTodayLog && !dismissedToday) {
+        if (!hasTodayLog) {
           setShowDailyCheckIn(true);
         }
       }
@@ -98,14 +97,14 @@ export default function DashboardPage() {
   ) => {
     await saveGymLog(todayDateStr, hours, workoutType, notes);
     setShowDailyCheckIn(false);
-    sessionStorage.setItem(`gym_git_dismissed_${todayDateStr}`, 'true');
     await refreshData();
   };
 
   // Handle Daily Check-in No (Rest day)
-  const handleDailyCheckInNo = () => {
+  const handleDailyCheckInNo = async () => {
+    await saveGymLog(todayDateStr, 0, 'Rest');
     setShowDailyCheckIn(false);
-    sessionStorage.setItem(`gym_git_dismissed_${todayDateStr}`, 'true');
+    await refreshData();
   };
 
   // Tile Click from Contribution Graph
