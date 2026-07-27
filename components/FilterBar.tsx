@@ -27,11 +27,28 @@ export default function FilterBar({
     (t) => !planCategories.includes(t) && t !== 'All'
   );
 
-  const displayFilterItems: { label: WorkoutType | 'All'; isExtra?: boolean }[] = [
-    { label: 'All' },
-    ...planCategories.map((cat) => ({ label: cat })),
-    ...extraHistoricalTypes.map((cat) => ({ label: cat, isExtra: true })),
-  ];
+  const uniqueLabels = new Set<string>();
+  const displayFilterItems: { label: WorkoutType | 'All'; isExtra?: boolean }[] = [];
+
+  // Add 'All'
+  displayFilterItems.push({ label: 'All' });
+  uniqueLabels.add('All');
+
+  // Add plan categories
+  planCategories.forEach((cat) => {
+    if (!uniqueLabels.has(cat)) {
+      displayFilterItems.push({ label: cat });
+      uniqueLabels.add(cat);
+    }
+  });
+
+  // Add extra historical types
+  extraHistoricalTypes.forEach((cat) => {
+    if (!uniqueLabels.has(cat)) {
+      displayFilterItems.push({ label: cat, isExtra: true });
+      uniqueLabels.add(cat);
+    }
+  });
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800/80 p-3 rounded-2xl">
