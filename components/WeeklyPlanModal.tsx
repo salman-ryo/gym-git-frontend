@@ -2,13 +2,14 @@
 
 import { PREBUILT_PLANS, WeeklyPlan } from '@/lib/types';
 import React, { useState } from 'react';
-import { Settings2, Check, Plus, Trash2, X, Sparkles, Dumbbell } from 'lucide-react';
+import { Settings2, Check, Plus, X, Sparkles, Dumbbell } from 'lucide-react';
 
 interface WeeklyPlanModalProps {
   currentPlan?: WeeklyPlan;
   isOpen: boolean;
   onClose: () => void;
   onSavePlan: (plan: WeeklyPlan) => Promise<void>;
+  preventClose?: boolean;
 }
 
 export default function WeeklyPlanModal({
@@ -16,12 +17,20 @@ export default function WeeklyPlanModal({
   isOpen,
   onClose,
   onSavePlan,
+  preventClose = false,
 }: WeeklyPlanModalProps) {
+  const isCustomActive = currentPlan?.id ? !PREBUILT_PLANS.some((p) => p.id === currentPlan.id) : false;
   const [selectedPlanId, setSelectedPlanId] = useState<string>(
-    currentPlan?.id || PREBUILT_PLANS[0].id
+    currentPlan?.id ? (isCustomActive ? 'custom-plan' : currentPlan.id) : PREBUILT_PLANS[0].id
   );
   const [customCategories, setCustomCategories] = useState<string[]>(
     currentPlan?.categories || ['Push', 'Pull', 'Legs', 'Cardio', 'Core']
+  );
+  const [customName, setCustomName] = useState<string>(
+    isCustomActive ? (currentPlan?.name || 'My Custom Plan') : 'My Custom Plan'
+  );
+  const [customDesc, setCustomDesc] = useState<string>(
+    isCustomActive ? (currentPlan?.description || '') : 'Personalized workout categories.'
   );
   const [newCatInput, setNewCatInput] = useState<string>('');
   const [saving, setSaving] = useState<boolean>(false);
@@ -57,8 +66,8 @@ export default function WeeklyPlanModal({
       if (selectedPlanId === 'custom-plan') {
         finalPlan = {
           id: 'custom-plan',
-          name: 'My Custom Weekly Plan',
-          description: 'Personalized workout categories.',
+          name: customName.trim() || 'My Custom Weekly Plan',
+          description: customDesc.trim() || 'Personalized workout categories.',
           categories: customCategories.length > 0 ? customCategories : ['Push', 'Pull', 'Legs', 'Custom'],
         };
       } else {
@@ -73,15 +82,25 @@ export default function WeeklyPlanModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-150">
-      <div className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-400 hover:text-zinc-100 p-1.5 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 transition-colors"
-        >
-          <X className="w-4 h-4" />
-        </button>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-150"
+      onClick={() => {
+        if (!preventClose) onClose();
+      }}
+    >
+      <div
+        className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto animate-in scale-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!preventClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-5 right-5 text-zinc-400 hover:text-zinc-100 p-1.5 rounded-xl bg-zinc-800/50 hover:bg-zinc-800 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-800">
@@ -90,15 +109,17 @@ export default function WeeklyPlanModal({
           </div>
           <div>
             <h3 className="text-base font-bold text-zinc-100">
-              Weekly Workout Plan &amp; Filters
+              {preventClose ? 'Setup Your Workout Plan' : 'Weekly Workout Plan & Filters'}
             </h3>
             <p className="text-xs text-zinc-400">
-              Customize your split. Past workout data remains safe &amp; intact!
+              {preventClose
+                ? 'To get started, choose an existing split or create your own custom workout categories.'
+                : 'Customize your split. Past workout data remains safe & intact!'}
             </p>
           </div>
         </div>
 
-        {/* Prebuilt Plans Options */}
+        {/* Workout Plan Split Options */}
         <div className="space-y-4 mb-6">
           <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
             Choose a Workout Split:
@@ -141,14 +162,83 @@ export default function WeeklyPlanModal({
                 </button>
               );
             })}
+
+            {/* Custom/Create Your Own Option Card */}
+            {(() => {
+              const isSelected = selectedPlanId === 'custom-plan';
+              return (
+                <button
+                  type="button"
+                  onClick={() => setSelectedPlanId('custom-plan')}
+                  className={`p-3.5 rounded-2xl text-left border transition-all relative ${
+                    isSelected
+                      ? 'bg-emerald-500/10 border-emerald-500 text-zinc-100 ring-2 ring-emerald-500/30'
+                      : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-bold text-zinc-200">Create Your Own Plan</p>
+                    {isSelected && <Check className="w-4 h-4 text-emerald-400" />}
+                  </div>
+                  <p className="text-[10px] text-zinc-400 leading-snug mb-2">
+                    Build a custom split with your own categories, name, and description.
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {customCategories.slice(0, 4).map((cat) => (
+                      <span
+                        key={cat}
+                        className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300"
+                      >
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                </button>
+              );
+            })()}
           </div>
         </div>
+
+        {/* Custom Plan Fields (only shown when custom-plan is active) */}
+        {selectedPlanId === 'custom-plan' && (
+          <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 space-y-3">
+            <span className="text-xs font-bold text-zinc-200 flex items-center gap-1.5 border-b border-zinc-800 pb-2">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Plan Profile Details:
+            </span>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                  Plan Name:
+                </label>
+                <input
+                  type="text"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="e.g. My Hypertrophy Split"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-emerald-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                  Plan Description:
+                </label>
+                <input
+                  type="text"
+                  value={customDesc}
+                  onChange={(e) => setCustomDesc(e.target.value)}
+                  placeholder="e.g. 5-day training program targeting weaknesses"
+                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-emerald-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Customize Categories Section */}
         <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 space-y-3 mb-6">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Active Plan Categories:
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Workout Categories:
             </span>
             <span className="text-[10px] text-zinc-400">Add or remove tags</span>
           </div>
@@ -202,7 +292,7 @@ export default function WeeklyPlanModal({
         <button
           type="button"
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || (selectedPlanId === 'custom-plan' && !customName.trim())}
           className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-extrabold py-3 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
         >
           {saving ? (

@@ -217,7 +217,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleUpdatePlan = async (plan: WeeklyPlan) => {
-    await api.put('/auth/plan', { plan_id: plan.id });
+    const payload: any = { plan_id: plan.id };
+    if (plan.id === 'custom-plan') {
+      payload.name = plan.name;
+      payload.description = plan.description;
+      payload.categories = plan.categories;
+    }
+    await api.put('/auth/plan', payload);
     if (user) {
       setUser({ ...user, weeklyPlan: plan });
     }

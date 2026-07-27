@@ -29,6 +29,15 @@ export default function DailyCheckInModal({
   const [notes, setNotes] = useState<string>('');
   const [saving, setSaving] = useState(false);
 
+  const rawCategories = availableWorkoutTypes.length > 0 ? availableWorkoutTypes : DEFAULT_WORKOUT_TYPES;
+  const categories = Array.from(new Set(rawCategories));
+
+  React.useEffect(() => {
+    if (categories.length > 0 && !categories.includes(workoutType)) {
+      setWorkoutType(categories[0]);
+    }
+  }, [categories, workoutType]);
+
   if (!isOpen) return null;
 
   const handleSaveDetails = async () => {
@@ -47,9 +56,6 @@ export default function DailyCheckInModal({
     day: 'numeric',
     year: 'numeric',
   });
-
-  const rawCategories = availableWorkoutTypes.length > 0 ? availableWorkoutTypes : DEFAULT_WORKOUT_TYPES;
-  const categories = Array.from(new Set(rawCategories));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-200">

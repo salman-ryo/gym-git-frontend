@@ -64,21 +64,31 @@ export default function DashboardPage() {
     }
   }, [user?.weeklyPlan]);
 
+  // Check if we need to force plan selection (onboarding)
+  const needsPlanSelection = !!(user && !user.weeklyPlan);
+
   useEffect(() => {
     async function initDashboard() {
       const currentLogs = await refreshData();
       const todayStr = formatDateKey(new Date());
       setTodayDateStr(todayStr);
 
-      const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
-      const dismissedToday = sessionStorage.getItem(`gym_git_dismissed_${todayStr}`);
+      if (needsPlanSelection) {
+        setShowPlanModal(true);
+        setShowDailyCheckIn(false);
+      } else {
+        const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
+        const dismissedToday = sessionStorage.getItem(`gym_git_dismissed_${todayStr}`);
 
-      if (!hasTodayLog && !dismissedToday) {
-        setShowDailyCheckIn(true);
+        if (!hasTodayLog && !dismissedToday) {
+          setShowDailyCheckIn(true);
+        }
       }
     }
-    initDashboard();
-  }, [refreshData]);
+    if (user) {
+      initDashboard();
+    }
+  }, [refreshData, user, needsPlanSelection]);
 
   // Handle Daily Check-in Yes
   const handleDailyCheckInYes = async (
@@ -124,6 +134,7 @@ export default function DashboardPage() {
   // Save Weekly Plan
   const handleSavePlan = async (plan: WeeklyPlan) => {
     await updateUserPlan(plan);
+    setShowPlanModal(false);
   };
 
   return (
@@ -198,9 +209,10 @@ export default function DashboardPage() {
 
         <WeeklyPlanModal
           currentPlan={user?.weeklyPlan}
-          isOpen={showPlanModal}
+          isOpen={showPlanModal || needsPlanSelection}
           onClose={() => setShowPlanModal(false)}
           onSavePlan={handleSavePlan}
+          preventClose={needsPlanSelection}
         />
       </div>
     </AuthGuard>
