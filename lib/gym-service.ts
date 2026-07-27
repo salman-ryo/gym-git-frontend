@@ -72,33 +72,69 @@ export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats
     fetchGymLogs().catch(() => []),
   ]);
 
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const currentYear = new Date().getFullYear();
-
-  const monthlyMap = new Map<number, { count: number; totalHours: number }>();
-  for (let i = 0; i < 12; i++) {
-    monthlyMap.set(i, { count: 0, totalHours: 0 });
+  // Find oldest log date to start generating dynamic graphs
+  let oldestDate = new Date();
+  if (logs.length > 0) {
+    logs.forEach((log) => {
+      const logDate = new Date(log.date);
+      if (logDate < oldestDate) {
+        oldestDate = logDate;
+      }
+    });
   }
 
-  logs.forEach((log) => {
-    if (!log.date) return;
-    const [yStr, mStr] = log.date.split('-');
-    const year = parseInt(yStr, 10);
-    const monthIdx = parseInt(mStr, 10) - 1;
-    if (year === currentYear && monthIdx >= 0 && monthIdx < 12) {
-      const existing = monthlyMap.get(monthIdx)!;
-      existing.count += 1;
-      existing.totalHours += log.hours || 0;
-    }
-  });
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonthIdx = today.getMonth();
 
-  const monthlyData: MonthlyStat[] = Array.from(monthlyMap.entries()).map(([monthIndex, data]) => ({
-    month: monthNames[monthIndex],
-    monthIndex,
-    year: currentYear,
-    count: data.count,
-    totalHours: Math.round(data.totalHours * 10) / 10,
-  }));
+  const startYear = oldestDate.getFullYear();
+  const startMonthIdx = oldestDate.getMonth();
+
+  const monthlyData: MonthlyStat[] = [];
+  let tempYear = startYear;
+  let tempMonthIdx = startMonthIdx;
+
+  while (tempYear < currentYear || (tempYear === currentYear && tempMonthIdx <= 11)) {
+    let count = 0;
+    let totalHours = 0;
+
+    logs.forEach((log) => {
+      if (!log.date) return;
+      const [yStr, mStr] = log.date.split('-');
+      const year = parseInt(yStr, 10);
+      const monthIdx = parseInt(mStr, 10) - 1;
+      if (year === tempYear && monthIdx === tempMonthIdx) {
+        count += 1;
+        totalHours += log.hours || 0;
+      }
+    });
+
+    monthlyData.push({
+      month: monthNames[tempMonthIdx],
+      monthIndex: tempMonthIdx,
+      year: tempYear,
+      count,
+      totalHours: Math.round(totalHours * 10) / 10,
+    });
+
+    tempMonthIdx++;
+    if (tempMonthIdx > 11) {
+      tempMonthIdx = 0;
+      tempYear++;
+    }
+  }
+
+  // Fallback to current month if no monthly data was generated
+  if (monthlyData.length === 0) {
+    monthlyData.push({
+      month: monthNames[currentMonthIdx],
+      monthIndex: currentMonthIdx,
+      year: currentYear,
+      count: 0,
+      totalHours: 0,
+    });
+  }
 
   const streakObj = rawStats?.streak || {};
   const currentStreak = streakObj.current_streak ?? streakObj.currentStreak ?? 0;

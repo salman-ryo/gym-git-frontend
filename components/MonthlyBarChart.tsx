@@ -72,20 +72,36 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
     });
   }, [monthlyData, logsMap]);
 
-  // Compute Scientific Power Scores for Weekly data (Last 12 weeks)
+  // Compute Scientific Power Scores for Weekly data (Dynamic from user's oldest data + upcoming weeks)
   const weeklyPowerStats = useMemo(() => {
-    if (!logs) return [];
+    if (!logs || logs.length === 0) return [];
+
+    // Find oldest log date
+    let oldestDate = new Date();
+    logs.forEach((log) => {
+      const logDate = new Date(log.date);
+      if (logDate < oldestDate) {
+        oldestDate = logDate;
+      }
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate difference in weeks between oldest log and current week
+    const diffTime = Math.max(0, today.getTime() - oldestDate.getTime());
+    const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+    
+    // We show at least 1 past week, max 8 past weeks, and 4 upcoming weeks
+    const numPastWeeks = Math.max(1, Math.min(8, diffWeeks));
+    const numUpcomingWeeks = 4;
 
     const result: WeeklyPowerStat[] = [];
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Sun
-    const distanceToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const currentMonday = new Date(today);
-    currentMonday.setDate(today.getDate() + distanceToMon);
-
-    for (let i = 11; i >= 0; i--) {
-      const mon = new Date(currentMonday);
-      mon.setDate(currentMonday.getDate() - i * 7);
+    
+    for (let i = -numPastWeeks; i <= numUpcomingWeeks; i++) {
+      // Current week is index i = 0 (representing the last 7 days data)
+      const mon = new Date(today);
+      mon.setDate(today.getDate() - 6 + i * 7);
 
       const sun = new Date(mon);
       sun.setDate(mon.getDate() + 6);
@@ -130,7 +146,7 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
           <div>
             <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
               <Swords className="w-5 h-5 text-emerald-400" />
-              <span>Power Levels ({new Date().getFullYear()})</span>
+              <span>Power Levels</span>
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">
               Power scores (0-100) computed scientifically from consistency, duration quality &amp; split balance
@@ -335,8 +351,8 @@ export default function MonthlyBarChart({ monthlyData, logs }: MonthlyBarChartPr
                         {/* Character Avatar */}
                         {char && (
                           <div
-                            style={{ bottom: `calc(${heightPercent}% * 0.76 + 28px)` }}
-                            className="absolute w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-emerald-400 bg-zinc-950 shadow-lg shadow-emerald-500/20 flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 z-10 group-hover:scale-125 group-hover:border-amber-400"
+                            style={{ bottom: `calc(${heightPercent}% * 0.76 + 16px)` }}
+                            className="absolute w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 z-10 group-hover:scale-125 group-hover:border-amber-400"
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
