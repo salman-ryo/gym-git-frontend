@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { Dumbbell, Flame, Lock, Mail, User as UserIcon, ArrowRight, UserPlus, LogIn } from 'lucide-react';
+import { Dumbbell, Lock, Mail, User as UserIcon, ArrowRight, UserPlus, LogIn } from 'lucide-react';
 
 export default function LoginPage() {
   const { user, login, signup, loginWithGoogle } = useAuth();
@@ -61,11 +61,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoFill = () => {
-    setEmail('demo.gymmer@example.com');
-    setPassword('password123');
-    setName('Demo Gymmer');
-  };
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center p-4 relative overflow-hidden">
@@ -237,19 +232,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Quick Demo Fill Helper */}
-        <div className="mt-6 pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs">
-          <span className="text-zinc-400 flex items-center gap-1.5">
-            <Flame className="w-4 h-4 text-emerald-400" /> Demo Account Ready
-          </span>
-          <button
-            type="button"
-            onClick={handleDemoFill}
-            className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-4 transition-colors"
-          >
-            Auto-fill credentials
-          </button>
-        </div>
+
       </div>
     </div>
   );

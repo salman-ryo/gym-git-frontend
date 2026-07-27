@@ -48,7 +48,7 @@ export default function DashboardPage() {
     return Array.from(types);
   }, [logs]);
 
-  // Fetch all logs & stats from Go backend (or Mock API when enabled)
+  // Fetch all logs & stats from Go backend API
   const refreshData = useCallback(async () => {
     try {
       const fetchedLogs = await fetchGymLogs();
