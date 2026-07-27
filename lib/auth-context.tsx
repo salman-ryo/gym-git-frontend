@@ -16,6 +16,34 @@ interface AuthContextType {
   bootstrapBackend: (selectedPlan?: WeeklyPlan, accessToken?: string) => Promise<User | null>;
 }
 
+function mapBackendUser(data: any): User {
+  if (!data) {
+    return {
+      email: '',
+      name: '',
+      provider: 'email',
+    };
+  }
+
+  const u = data.user || data;
+  const p = data.plan || u.weeklyPlan;
+
+  return {
+    email: u.email || '',
+    name: u.name || (u.email ? u.email.split('@')[0] : 'Gymbro'),
+    avatarUrl: u.avatar_url || u.avatarUrl,
+    provider: u.provider || 'email',
+    weeklyPlan: p
+      ? {
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          categories: p.categories || [],
+        }
+      : undefined,
+  };
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -53,9 +81,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await api.post('/auth/bootstrap', { selectedPlanId: planId }, { token });
 
       // 2. Fetch complete user profile & active weekly plan from Go backend
-      const fullProfile = await api.get<User>('/auth/me', { token });
-      setUser(fullProfile);
-      return fullProfile;
+      const rawProfileData = await api.get<any>('/auth/me', { token });
+      const mappedUser = mapBackendUser(rawProfileData);
+      setUser(mappedUser);
+      return mappedUser;
     } catch (err) {
       console.error('Backend bootstrap/me call failed:', err);
       setUser(null);
@@ -65,7 +94,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function loadUser() {
-      // Real Supabase Session initialization
       try {
         const supabase = createBrowserClient();
         const {
@@ -78,7 +106,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
         }
 
-        // Listen to auth state changes (e.g. sign in, sign out, token refresh)
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (event: string, currentSession: any) => {
@@ -116,7 +143,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.session?.access_token) {
-        // Pass fresh access token directly to bootstrapBackend
         await bootstrapBackend(plan, data.session.access_token);
       }
     } finally {
@@ -191,8 +217,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleUpdatePlan = async (plan: WeeklyPlan) => {
-    const updatedUser = await api.put<User>('/auth/plan', { plan });
-    setUser(updatedUser);
+    await api.put('/auth/plan', { plan_id: plan.id });
+    if (user) {
+      setUser({ ...user, weeklyPlan: plan });
+    }
   };
 
   return (

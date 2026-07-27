@@ -1,11 +1,32 @@
 import { api } from '@/utils/api';
-import { PowerScoreBreakdown } from './scientific-power';
-import { GymLog, Stats, WeeklyPlan } from './types';
+import { animePowerLevels } from '@/assets/anime';
+import { calculateScientificPowerScore, PowerScoreBreakdown } from './scientific-power';
+import { GymLog, MonthlyStat, Stats, WeeklyPlan } from './types';
 
 /**
  * Service wrapper for Gym Logs & Analytics.
  * Routes requests strictly to the Go backend via utils/api.ts.
  */
+
+export function mapGymLog(raw: any): GymLog {
+  if (!raw) {
+    return {
+      id: '',
+      date: '',
+      hours: 0,
+      workoutType: 'Custom',
+    };
+  }
+
+  return {
+    id: raw.id || '',
+    date: raw.date || '',
+    hours: typeof raw.hours === 'number' ? raw.hours : parseFloat(raw.hours || '0'),
+    workoutType: raw.workout_type || raw.workoutType || 'Custom',
+    notes: raw.notes || undefined,
+    updatedAt: raw.updated_at || raw.updatedAt,
+  };
+}
 
 export async function fetchGymLogs(
   startDate?: string,
@@ -20,7 +41,8 @@ export async function fetchGymLogs(
   const queryString = queryParams.toString();
   const endpoint = `/logs${queryString ? `?${queryString}` : ''}`;
 
-  return await api.get<GymLog[]>(endpoint);
+  const rawLogs = await api.get<any[]>(endpoint);
+  return (Array.isArray(rawLogs) ? rawLogs : []).map(mapGymLog);
 }
 
 export async function saveGymLog(
@@ -29,7 +51,15 @@ export async function saveGymLog(
   workoutType: string,
   notes?: string
 ): Promise<GymLog> {
-  return await api.post<GymLog>('/logs', { date, hours, workoutType, notes });
+  const payload = {
+    date,
+    hours,
+    workout_type: workoutType,
+    notes: notes || undefined,
+  };
+
+  const rawLog = await api.post<any>('/logs', payload);
+  return mapGymLog(rawLog);
 }
 
 export async function deleteGymLog(date: string): Promise<void> {
@@ -37,17 +67,89 @@ export async function deleteGymLog(date: string): Promise<void> {
 }
 
 export async function resetGymData(): Promise<GymLog[]> {
-  return await api.post<GymLog[]>('/logs/reset');
+  const rawLogs = await api.post<any[]>('/logs/reset');
+  return (Array.isArray(rawLogs) ? rawLogs : []).map(mapGymLog);
 }
 
 export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats> {
-  return await api.get<Stats>('/stats');
+  const [rawStats, logs] = await Promise.all([
+    api.get<any>('/stats').catch(() => null),
+    fetchGymLogs().catch(() => []),
+  ]);
+
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const currentYear = new Date().getFullYear();
+
+  const monthlyMap = new Map<number, { count: number; totalHours: number }>();
+  for (let i = 0; i < 12; i++) {
+    monthlyMap.set(i, { count: 0, totalHours: 0 });
+  }
+
+  logs.forEach((log) => {
+    if (!log.date) return;
+    const [yStr, mStr] = log.date.split('-');
+    const year = parseInt(yStr, 10);
+    const monthIdx = parseInt(mStr, 10) - 1;
+    if (year === currentYear && monthIdx >= 0 && monthIdx < 12) {
+      const existing = monthlyMap.get(monthIdx)!;
+      existing.count += 1;
+      existing.totalHours += log.hours || 0;
+    }
+  });
+
+  const monthlyData: MonthlyStat[] = Array.from(monthlyMap.entries()).map(([monthIndex, data]) => ({
+    month: monthNames[monthIndex],
+    monthIndex,
+    year: currentYear,
+    count: data.count,
+    totalHours: Math.round(data.totalHours * 10) / 10,
+  }));
+
+  const streakObj = rawStats?.streak || {};
+  const currentStreak = streakObj.current_streak ?? streakObj.currentStreak ?? 0;
+  const totalDays = rawStats?.total_sessions ?? rawStats?.totalDays ?? logs.length;
+  const totalHours = rawStats?.total_hours ?? rawStats?.totalHours ?? 0;
+  const averageHoursPerSession = rawStats?.avg_session_duration ?? rawStats?.averageHoursPerSession ?? 0;
+
+  return {
+    currentStreak,
+    longestStreak: currentStreak,
+    totalDays,
+    totalHours: Math.round(totalHours * 10) / 10,
+    averageHoursPerSession: Math.round(averageHoursPerSession * 10) / 10,
+    monthlyData,
+  };
 }
 
 export async function fetchPowerScore(
-  _logs: GymLog[],
+  logs: GymLog[],
   days: number = 30,
-  _targetWeeklyDays: number = 4
+  targetWeeklyDays: number = 4
 ): Promise<PowerScoreBreakdown> {
-  return await api.get<PowerScoreBreakdown>(`/stats/power?days=${days}`);
+  try {
+    const rawPower = await api.get<any>(`/stats/power?days=${days}`);
+    if (rawPower?.power_score) {
+      const ps = rawPower.power_score;
+      const score = ps.total_score || 0;
+      const sortedChars = [...animePowerLevels].sort((a, b) => b.power - a.power);
+      const matchedChar = sortedChars.find((c) => score >= c.power) || animePowerLevels[0];
+
+      return {
+        consistencyScore: ps.consistency || 0,
+        durationQualityScore: ps.duration_quality || 0,
+        varietyScore: ps.variety || 0,
+        momentumScore: ps.momentum || 0,
+        totalScore: score,
+        character: matchedChar,
+        activeDays: rawPower.active_days || 0,
+        totalDays: days,
+        avgSessionHours: 0,
+        uniqueTypesCount: rawPower.unique_workout_types || 0,
+        evaluationText: `Gym Power Score: ${score}/100`,
+      };
+    }
+  } catch {
+    // Fall back to client calculation if backend call fails
+  }
+  return calculateScientificPowerScore(logs, days, targetWeeklyDays);
 }
