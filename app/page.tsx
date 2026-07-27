@@ -15,7 +15,6 @@ import {
   deleteGymLog,
   fetchDashboardStats,
   fetchGymLogs,
-  resetGymData,
   saveGymLog,
 } from '@/lib/gym-service';
 import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
@@ -122,12 +121,6 @@ export default function DashboardPage() {
     await refreshData();
   };
 
-  // Reset Demo Data
-  const handleResetData = async () => {
-    await resetGymData();
-    await refreshData();
-  };
-
   // Save Weekly Plan
   const handleSavePlan = async (plan: WeeklyPlan) => {
     await updateUserPlan(plan);
@@ -139,7 +132,6 @@ export default function DashboardPage() {
         {/* Navigation Header */}
         <Header
           currentStreak={stats?.currentStreak || 0}
-          onResetData={handleResetData}
         />
 
         {/* Dashboard Main Content */}

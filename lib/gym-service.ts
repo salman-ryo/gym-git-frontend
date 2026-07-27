@@ -66,11 +66,6 @@ export async function deleteGymLog(date: string): Promise<void> {
   await api.delete(`/logs/${date}`);
 }
 
-export async function resetGymData(): Promise<GymLog[]> {
-  const rawLogs = await api.post<any[]>('/logs/reset');
-  return (Array.isArray(rawLogs) ? rawLogs : []).map(mapGymLog);
-}
-
 export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats> {
   const [rawStats, logs] = await Promise.all([
     api.get<any>('/stats').catch(() => null),

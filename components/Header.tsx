@@ -1,29 +1,15 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { Dumbbell, Flame, LogOut, RefreshCw, User as UserIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { Dumbbell, Flame, LogOut, User as UserIcon } from 'lucide-react';
+import React from 'react';
 
 interface HeaderProps {
   currentStreak?: number;
-  onResetData?: () => void;
 }
 
-export default function Header({ currentStreak = 0, onResetData }: HeaderProps) {
+export default function Header({ currentStreak = 0 }: HeaderProps) {
   const { user, logout } = useAuth();
-  const [resetting, setResetting] = useState(false);
-
-  const handleReset = async () => {
-    if (!onResetData) return;
-    if (confirm('Are you sure you want to reset demo data back to default?')) {
-      setResetting(true);
-      try {
-        await onResetData();
-      } finally {
-        setResetting(false);
-      }
-    }
-  };
 
   return (
     <header className="sticky top-0 z-30 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 px-4 lg:px-8 py-3 transition-all">
@@ -56,19 +42,6 @@ export default function Header({ currentStreak = 0, onResetData }: HeaderProps) 
 
         {/* User Navigation & Actions */}
         <div className="flex items-center gap-3">
-          {/* Reset Demo Data Button */}
-          {onResetData && (
-            <button
-              type="button"
-              onClick={handleReset}
-              disabled={resetting}
-              title="Reset Demo Data"
-              className="p-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all"
-            >
-              <RefreshCw className={`w-4 h-4 ${resetting ? 'animate-spin text-emerald-400' : ''}`} />
-              <span className="hidden sm:inline">Reset Data</span>
-            </button>
-          )}
 
           {/* User Profile Info */}
           {user && (
