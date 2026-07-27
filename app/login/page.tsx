@@ -3,12 +3,14 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { Dumbbell, Flame, Lock, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Dumbbell, Flame, Lock, Mail, User as UserIcon, ArrowRight, UserPlus, LogIn } from 'lucide-react';
 
 export default function LoginPage() {
-  const { user, login, loginWithGoogle } = useAuth();
+  const { user, login, signup, loginWithGoogle } = useAuth();
   const router = useRouter();
 
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -27,13 +29,22 @@ export default function LoginPage() {
       setError('Please fill in both email and password.');
       return;
     }
+    if (mode === 'signup' && !name) {
+      setError('Please enter your full name.');
+      return;
+    }
+
     setError('');
     setSubmitting(true);
     try {
-      await login(email, password);
+      if (mode === 'signup') {
+        await signup(email, password, name);
+      } else {
+        await login(email, password);
+      }
       router.push('/');
     } catch (err: any) {
-      setError(err?.message || 'Login failed. Please try again.');
+      setError(err?.message || `${mode === 'signup' ? 'Sign up' : 'Login'} failed. Please try again.`);
     } finally {
       setSubmitting(false);
     }
@@ -44,10 +55,8 @@ export default function LoginPage() {
     setGoogleSubmitting(true);
     try {
       await loginWithGoogle();
-      router.push('/');
     } catch (err: any) {
-      setError('Google Sign-In failed.');
-    } finally {
+      setError(err?.message || 'Google Sign-In failed.');
       setGoogleSubmitting(false);
     }
   };
@@ -55,6 +64,7 @@ export default function LoginPage() {
   const handleDemoFill = () => {
     setEmail('demo.gymmer@example.com');
     setPassword('password123');
+    setName('Demo Gymmer');
   };
 
   return (
@@ -66,7 +76,7 @@ export default function LoginPage() {
       {/* Main Glassmorphic Container */}
       <div className="w-full max-w-md bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10">
         {/* Header Branding */}
-        <div className="flex flex-col items-center text-center mb-8">
+        <div className="flex flex-col items-center text-center mb-6">
           <div className="p-3 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl shadow-lg shadow-emerald-500/20 text-zinc-950 mb-3">
             <Dumbbell className="w-8 h-8 stroke-[2.5]" />
           </div>
@@ -78,10 +88,44 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* Sign In / Sign Up Mode Switcher */}
+        <div className="flex rounded-xl bg-zinc-950 p-1 mb-6 border border-zinc-800">
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signin');
+              setError('');
+            }}
+            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
+              mode === 'signin'
+                ? 'bg-emerald-500 text-zinc-950 shadow-md'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signup');
+              setError('');
+            }}
+            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
+              mode === 'signup'
+                ? 'bg-emerald-500 text-zinc-950 shadow-md'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            Create Account
+          </button>
+        </div>
+
         {error && (
           <div className="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-xs font-medium flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-            {error}
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -121,12 +165,30 @@ export default function LoginPage() {
         <div className="relative flex items-center justify-center my-6">
           <div className="border-t border-zinc-800 w-full" />
           <span className="bg-zinc-900 px-3 text-xs text-zinc-500 uppercase font-medium">
-            Or sign in with email
+            Or {mode === 'signup' ? 'register' : 'sign in'} with email
           </span>
         </div>
 
         {/* Email Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === 'signup' && (
+            <div>
+              <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+                Full Name
+              </label>
+              <div className="relative">
+                <UserIcon className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Alex Developer"
+                  className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
+                />
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
               Email Address
@@ -168,7 +230,7 @@ export default function LoginPage() {
               <div className="w-5 h-5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <span>Sign In to Dashboard</span>
+                <span>{mode === 'signup' ? 'Create Account & Start' : 'Sign In to Dashboard'}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

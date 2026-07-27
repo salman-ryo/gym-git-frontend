@@ -1,7 +1,7 @@
 'use client';
 
 import { GymLog, TimeframeView, WorkoutType } from '@/lib/types';
-import { formatDateKey } from '@/lib/api-mock';
+import { formatDateKey } from '@/lib/scientific-streak';
 import React, { useMemo, useState } from 'react';
 import { CalendarRange, Calendar, CalendarDays } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';

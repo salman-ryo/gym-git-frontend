@@ -1,7 +1,7 @@
 'use client';
 
 import { GymLog, MonthlyStat } from '@/lib/types';
-import { formatDateKey } from '@/lib/api-mock';
+import { formatDateKey } from '@/lib/scientific-streak';
 import { animePowerLevels } from '@/assets/anime';
 import { calculateScientificPowerScore, PowerScoreBreakdown } from '@/lib/scientific-power';
 import React, { useMemo, useState } from 'react';

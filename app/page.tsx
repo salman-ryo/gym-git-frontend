@@ -10,14 +10,14 @@ import MonthlyBarChart from '@/components/MonthlyBarChart';
 import StatsOverview from '@/components/StatsOverview';
 import WeeklyPlanModal from '@/components/WeeklyPlanModal';
 import { useAuth } from '@/lib/auth-context';
+import { formatDateKey } from '@/lib/scientific-streak';
 import {
-  formatDateKey,
-  mockDeleteLog,
-  mockGetLogs,
-  mockGetStats,
-  mockResetData,
-  mockSaveLog,
-} from '@/lib/api-mock';
+  deleteGymLog,
+  fetchDashboardStats,
+  fetchGymLogs,
+  resetGymData,
+  saveGymLog,
+} from '@/lib/gym-service';
 import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -49,11 +49,11 @@ export default function DashboardPage() {
     return Array.from(types);
   }, [logs]);
 
-  // Fetch all logs & stats
+  // Fetch all logs & stats from Go backend (or Mock API when enabled)
   const refreshData = useCallback(async () => {
     try {
-      const fetchedLogs = await mockGetLogs();
-      const fetchedStats = await mockGetStats(user?.weeklyPlan);
+      const fetchedLogs = await fetchGymLogs();
+      const fetchedStats = await fetchDashboardStats(user?.weeklyPlan);
       setLogs(fetchedLogs);
       setStats(fetchedStats);
       return fetchedLogs;
@@ -87,7 +87,7 @@ export default function DashboardPage() {
     workoutType: WorkoutType,
     notes?: string
   ) => {
-    await mockSaveLog(todayDateStr, hours, workoutType, notes);
+    await saveGymLog(todayDateStr, hours, workoutType, notes);
     setShowDailyCheckIn(false);
     sessionStorage.setItem(`gym_git_dismissed_${todayDateStr}`, 'true');
     await refreshData();
@@ -112,19 +112,19 @@ export default function DashboardPage() {
     workoutType: WorkoutType,
     notes?: string
   ) => {
-    await mockSaveLog(dateStr, hours, workoutType, notes);
+    await saveGymLog(dateStr, hours, workoutType, notes);
     await refreshData();
   };
 
   // Delete Tile Entry
   const handleDeleteEdit = async (dateStr: string) => {
-    await mockDeleteLog(dateStr);
+    await deleteGymLog(dateStr);
     await refreshData();
   };
 
   // Reset Demo Data
   const handleResetData = async () => {
-    await mockResetData();
+    await resetGymData();
     await refreshData();
   };
 
@@ -146,7 +146,7 @@ export default function DashboardPage() {
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
           {loading ? (
             <div className="flex items-center justify-center py-20 text-zinc-500 animate-pulse text-sm">
-              Syncing gym logs from localStorage...
+              Syncing gym logs from API...
             </div>
           ) : (
             <>
