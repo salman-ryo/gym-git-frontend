@@ -25,3 +25,15 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
+
+/* Ensure all interactive/clickable elements display the pointer cursor */
+button,
+a,
+select,
+input[type="button"],
+input[type="submit"],
+input[type="checkbox"],
+input[type="radio"],
+[role="button"] {
+  cursor: pointer;
+}

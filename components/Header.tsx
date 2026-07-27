@@ -10,6 +10,7 @@ interface HeaderProps {
 
 export default function Header({ currentStreak = 0 }: HeaderProps) {
   const { user, logout } = useAuth();
+  console.log("User====== ", user)
 
   return (
     <header className="sticky top-0 z-30 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 px-4 lg:px-8 py-3 transition-all">
@@ -51,10 +52,10 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
                 <img
                   src={user.avatarUrl}
                   alt={user.name}
-                  className="w-7 h-7 rounded-lg object-cover bg-zinc-800"
+                  className="w-7 h-7 rounded-full object-cover bg-zinc-800"
                 />
               ) : (
-                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
                   {user.name ? user.name[0] : <UserIcon className="w-4 h-4" />}
                 </div>
               )}
