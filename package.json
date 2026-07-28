@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "favicon": "realfavicon check 3000"
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.2.16",
@@ -26,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
+    "realfavicon": "^0.8.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

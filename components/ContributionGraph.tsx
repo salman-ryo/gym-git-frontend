@@ -33,7 +33,6 @@ export default function ContributionGraph({
 }: ContributionGraphProps) {
   const [timeframe, setTimeframe] = useState<TimeframeView>('year');
 
-  // Map dates to log objects
   const logMap = useMemo(() => {
     const map = new Map<string, GymLog>();
     logs.forEach((log) => {
@@ -42,11 +41,6 @@ export default function ContributionGraph({
     return map;
   }, [logs]);
 
-  // Color Intensity Logic based on exact user specification:
-  // 0 hours = bg-zinc-800
-  // >0 to 0.9 hours = bg-green-300
-  // 1.0 to 1.9 hours = bg-green-500
-  // 2.0+ hours = bg-green-700
   const getTileBgColor = (hours: number) => {
     if (hours <= 0) return 'bg-zinc-800/70 border-zinc-800/40 hover:border-zinc-500';
     if (hours < 1.0) return 'bg-green-300 border-green-400 text-zinc-950';
@@ -86,7 +80,25 @@ export default function ContributionGraph({
       const monthIndex = currentDate.getMonth();
       if (monthIndex !== lastMonth) {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        months.push({ name: monthNames[monthIndex], weekIndex: currentWeekIndex });
+
+        // OVERLAP PREVENTION LOGIC:
+        // Ensure at least 3 weeks of space between month labels.
+        if (months.length > 0) {
+          const lastAdded = months[months.length - 1];
+          if (currentWeekIndex - lastAdded.weekIndex < 3) {
+            // If the previous label was placed right at the beginning, 
+            // remove it to favor the first full month (fixes Jul/Aug overlap at start).
+            if (lastAdded.weekIndex === 0) {
+              months.pop();
+            }
+          }
+        }
+
+        // Only push if there's enough space from the last label or if it's the first one
+        if (months.length === 0 || currentWeekIndex - months[months.length - 1].weekIndex >= 3) {
+          months.push({ name: monthNames[monthIndex], weekIndex: currentWeekIndex });
+        }
+
         lastMonth = monthIndex;
       }
 
@@ -137,7 +149,7 @@ export default function ContributionGraph({
     let monthWorkouts = 0;
     let monthHours = 0;
 
-    const startPadding = firstDay.getDay(); // 0 = Sun
+    const startPadding = firstDay.getDay();
 
     let d = new Date(firstDay);
     while (d <= lastDay) {
@@ -219,7 +231,6 @@ export default function ContributionGraph({
   return (
     <TooltipProvider delayDuration={50}>
       <div className="bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl p-6 rounded-2xl shadow-xl relative">
-        {/* Timeframe & View Selector Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-zinc-800/80">
           <div>
             <h2 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
@@ -247,16 +258,14 @@ export default function ContributionGraph({
             </p>
           </div>
 
-          {/* View Switcher Controls */}
           <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-800 p-1 rounded-xl">
             <button
               type="button"
               onClick={() => setTimeframe('year')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                timeframe === 'year'
-                  ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${timeframe === 'year'
+                ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
+                : 'text-zinc-400 hover:text-zinc-200'
+                }`}
             >
               <CalendarRange className="w-3.5 h-3.5" />
               <span>365 Days</span>
@@ -265,11 +274,10 @@ export default function ContributionGraph({
             <button
               type="button"
               onClick={() => setTimeframe('month')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                timeframe === 'month'
-                  ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${timeframe === 'month'
+                ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
+                : 'text-zinc-400 hover:text-zinc-200'
+                }`}
             >
               <Calendar className="w-3.5 h-3.5" />
               <span>This Month</span>
@@ -278,11 +286,10 @@ export default function ContributionGraph({
             <button
               type="button"
               onClick={() => setTimeframe('week')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                timeframe === 'week'
-                  ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${timeframe === 'week'
+                ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
+                : 'text-zinc-400 hover:text-zinc-200'
+                }`}
             >
               <CalendarDays className="w-3.5 h-3.5" />
               <span>This Week</span>
@@ -290,30 +297,24 @@ export default function ContributionGraph({
           </div>
         </div>
 
-        {/* --- 1. FULL YEAR VIEW --- */}
         {timeframe === 'year' && (
           <>
             <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-              <div className="min-w-[760px]">
-                {/* Month Labels Header */}
-                <div className="flex text-[11px] font-medium text-zinc-400 mb-2 pl-8">
+              <div className="min-w-[760px] w-full">
+                <div className="relative h-4 text-[11px] font-medium text-zinc-400 mb-2 ml-8">
                   {yearData.monthLabels.map((m, idx) => (
                     <span
                       key={`${m.name}-${idx}`}
                       style={{
-                        marginLeft:
-                          idx === 0
-                            ? `${m.weekIndex * 14}px`
-                            : `${(m.weekIndex - (yearData.monthLabels[idx - 1]?.weekIndex || 0)) * 14 - 18}px`,
+                        left: `${m.weekIndex * 16}px`,
                       }}
-                      className="inline-block"
+                      className="absolute"
                     >
                       {m.name}
                     </span>
                   ))}
                 </div>
 
-                {/* Grid Layout */}
                 <div className="flex gap-1.5">
                   <div className="flex flex-col justify-between text-[10px] font-medium text-zinc-500 pr-2 py-0.5 select-none">
                     <span>Mon</span>
@@ -350,9 +351,8 @@ export default function ContributionGraph({
                                   onClick={() => onTileClick(day.dateStr, day.log)}
                                   className={`w-3 h-3 rounded-sm transition-all duration-150 border transform hover:scale-125 hover:z-20 cursor-pointer ${getTileBgColor(
                                     day.hours
-                                  )} ${isFilteredOut ? 'opacity-20 hover:opacity-100' : 'opacity-100'} ${
-                                    isMatchFilter ? 'ring-2 ring-emerald-400 ring-offset-1 ring-offset-zinc-950 scale-110' : ''
-                                  }`}
+                                  )} ${isFilteredOut ? 'opacity-20 hover:opacity-100' : 'opacity-100'} ${isMatchFilter ? 'ring-2 ring-emerald-400 ring-offset-1 ring-offset-zinc-950 scale-110' : ''
+                                    }`}
                                 />
                               </TooltipTrigger>
                               <TooltipContent side="top">
@@ -382,7 +382,6 @@ export default function ContributionGraph({
               </div>
             </div>
 
-            {/* Legend */}
             <div className="flex items-center justify-end gap-2 text-xs text-zinc-400 mt-4 pt-3 border-t border-zinc-800/60">
               <span>Less</span>
               <div className="flex items-center gap-1">
@@ -396,7 +395,6 @@ export default function ContributionGraph({
           </>
         )}
 
-        {/* --- 2. CURRENT MONTH CALENDAR VIEW --- */}
         {timeframe === 'month' && (
           <div className="space-y-4 animate-in fade-in duration-200">
             <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-zinc-400 mb-2">
@@ -429,13 +427,11 @@ export default function ContributionGraph({
                       <button
                         type="button"
                         onClick={() => onTileClick(day.dateStr, day.log)}
-                        className={`h-16 rounded-2xl p-2 flex flex-col justify-between text-left transition-all border relative overflow-hidden group cursor-pointer ${
-                          day.hours > 0
-                            ? 'bg-zinc-800/90 border-emerald-500/40 hover:border-emerald-400 shadow-md'
-                            : 'bg-zinc-950 border-zinc-800/80 hover:border-zinc-700'
-                        } ${isFilteredOut ? 'opacity-20' : 'opacity-100'} ${
-                          isToday ? 'ring-2 ring-emerald-400' : ''
-                        }`}
+                        className={`h-16 rounded-2xl p-2 flex flex-col justify-between text-left transition-all border relative overflow-hidden group cursor-pointer ${day.hours > 0
+                          ? 'bg-zinc-800/90 border-emerald-500/40 hover:border-emerald-400 shadow-md'
+                          : 'bg-zinc-950 border-zinc-800/80 hover:border-zinc-700'
+                          } ${isFilteredOut ? 'opacity-20' : 'opacity-100'} ${isToday ? 'ring-2 ring-emerald-400' : ''
+                          }`}
                       >
                         <div className="flex items-center justify-between w-full">
                           <span className={`text-xs font-bold ${isToday ? 'text-emerald-400' : 'text-zinc-300'}`}>
@@ -479,7 +475,6 @@ export default function ContributionGraph({
           </div>
         )}
 
-        {/* --- 3. CURRENT WEEK DETAILED BREAKDOWN VIEW --- */}
         {timeframe === 'week' && (
           <div className="grid grid-cols-1 sm:grid-cols-7 gap-3 animate-in fade-in duration-200">
             {weekData.days.map((day) => {
@@ -503,13 +498,11 @@ export default function ContributionGraph({
                     <button
                       type="button"
                       onClick={() => onTileClick(day.dateStr, day.log)}
-                      className={`p-4 rounded-2xl border text-left flex flex-col justify-between h-36 transition-all relative overflow-hidden cursor-pointer ${
-                        day.hours > 0
-                          ? 'bg-zinc-900 border-emerald-500/50 hover:border-emerald-400 shadow-lg'
-                          : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
-                      } ${isFilteredOut ? 'opacity-20' : 'opacity-100'} ${
-                        isToday ? 'ring-2 ring-emerald-400' : ''
-                      }`}
+                      className={`p-4 rounded-2xl border text-left flex flex-col justify-between h-36 transition-all relative overflow-hidden cursor-pointer ${day.hours > 0
+                        ? 'bg-zinc-900 border-emerald-500/50 hover:border-emerald-400 shadow-lg'
+                        : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
+                        } ${isFilteredOut ? 'opacity-20' : 'opacity-100'} ${isToday ? 'ring-2 ring-emerald-400' : ''
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -532,7 +525,6 @@ export default function ContributionGraph({
                         <span className="text-[10px] text-zinc-600">No workout</span>
                       )}
 
-                      {/* Bottom Progress Accent */}
                       {day.hours > 0 && (
                         <div
                           style={{ width: `${Math.min(100, (day.hours / 2.5) * 100)}%` }}

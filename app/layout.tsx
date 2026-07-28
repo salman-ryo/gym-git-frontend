@@ -11,6 +11,20 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Gym-Git — GitHub-Style Gym Attendance Tracker',
   description: 'Commit to your fitness goals with GitHub-style contribution graphs and streak analytics.',
+  icons: {
+    icon: [
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180' },
+    ],
+  },
+  manifest: '/site.webmanifest',
+  appleWebApp: {
+    title: 'Gym Git',
+  },
 };
 
 export default function RootLayout({
