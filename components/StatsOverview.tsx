@@ -4,6 +4,7 @@ import { Stats } from '@/lib/types';
 import React from 'react';
 import { Flame, Trophy, CalendarCheck, Clock, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import Image from 'next/image';
 
 interface StatsOverviewProps {
   stats: Stats | null;
@@ -20,12 +21,13 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
         {/* 1. Scientific Current Streak */}
         <div className="bg-zinc-900/80 border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group hover:border-amber-500/50 transition-all">
           <div className="absolute top-0 right-0 p-4 text-amber-500/10 group-hover:text-amber-500/20 transition-colors">
-            <Flame className="w-16 h-16 stroke-1" />
+            <Image src={"/images/icons/fire.svg"} alt='Streak' width={100} height={100} unoptimized className="w-16 " />
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400">
-              <Flame className="w-5 h-5 animate-pulse" />
-            </div>
+            {/* <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400">
+              <Image src={"/images/icons/fire.svg"} alt='Streak' width={100} height={100} unoptimized className="w-5 h-5 animate-pulse" />
+
+            </div> */}
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               Current Streak
             </span>
@@ -46,12 +48,14 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
         {/* 2. Scientific Longest Streak */}
         <div className="bg-zinc-900/80 border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group hover:border-emerald-500/50 transition-all">
           <div className="absolute top-0 right-0 p-4 text-emerald-500/10 group-hover:text-emerald-500/20 transition-colors">
-            <Trophy className="w-16 h-16 stroke-1" />
+            <Image src={"/images/icons/trophy.svg"} alt='Longest Streak' width={100} height={100} unoptimized className="w-16 " />
+
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
-              <Trophy className="w-5 h-5" />
-            </div>
+            {/* <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
+              <Image src={"/images/icons/trophy.svg"} alt='Streak' width={100} height={100} unoptimized className="w-5 h-5" />
+
+            </div> */}
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               Longest Streak
             </span>
@@ -67,13 +71,15 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
 
         {/* 3. Plan Compliance Rate & Weekly Progress */}
         <div className="bg-zinc-900/80 border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group hover:border-teal-500/50 transition-all">
-          <div className="absolute top-0 right-0 p-4 text-teal-500/10 group-hover:text-teal-500/20 transition-colors">
-            <CalendarCheck className="w-16 h-16 stroke-1" />
+          <div className="absolute -top-4 -right-4 p-4 text-teal-500/10 group-hover:text-teal-500/20 transition-colors">
+            <Image src={"/images/icons/check.svg"} alt='Plan Adherence' width={100} height={100} unoptimized className="w-24 h-auto" />
+
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-teal-500/10 border border-teal-500/30 rounded-xl text-teal-400">
-              <CalendarCheck className="w-5 h-5" />
-            </div>
+            {/* <div className="p-2.5 bg-teal-500/10 border border-teal-500/30 rounded-xl text-teal-400">
+              <Image src={"/images/icons/check.svg"} alt='Plan Adherence' width={100} height={100} unoptimized className="w-5 h-5 animate-pulse" />
+
+            </div> */}
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               Plan Adherence
             </span>
@@ -95,12 +101,14 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
         {/* 4. Total & Avg Hours */}
         <div className="bg-zinc-900/80 border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group hover:border-sky-500/50 transition-all">
           <div className="absolute top-0 right-0 p-4 text-sky-500/10 group-hover:text-sky-500/20 transition-colors">
-            <Clock className="w-16 h-16 stroke-1" />
+            <Image src={"/images/icons/clock.svg"} alt='Hours Invested' width={100} height={100} unoptimized className="w-16" />
+
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 bg-sky-500/10 border border-sky-500/30 rounded-xl text-sky-400">
-              <Clock className="w-5 h-5" />
-            </div>
+            {/* <div className="p-2.5 bg-sky-500/10 border border-sky-500/30 rounded-xl text-sky-400">
+              <Image src={"/images/icons/clock.svg"} alt='Hours Invested' width={100} height={100} unoptimized className="w-5 h-5 " />
+
+            </div> */}
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
               Hours Invested
             </span>
