@@ -43,9 +43,13 @@ export default function ContributionGraph({
 
   const getTileBgColor = (hours: number) => {
     if (hours <= 0) return 'bg-zinc-800/70 border-zinc-800/40 hover:border-zinc-500';
-    if (hours < 1.0) return 'bg-green-300 border-green-400 text-zinc-950';
-    if (hours < 2.0) return 'bg-green-500 border-green-400 text-zinc-950';
-    return 'bg-green-700 border-green-600 text-zinc-100';
+    if (hours < 0.5) return 'bg-green-950 border-green-800 text-zinc-100';
+    if (hours < 1.0) return 'bg-green-800 border-green-700 text-zinc-100';
+    if (hours < 1.5) return 'bg-green-600 border-green-600 text-zinc-100';
+    if (hours < 2.0) return 'bg-green-400 border-green-400 text-zinc-100';
+    if (hours < 2.6) return 'bg-purple-500 border-purple-400 text-zinc-100 animate-pulse';
+    if (hours >= 3.0) return 'bg-amber-400 border-orange-400 text-zinc-100 animate-pulse';
+    return 'bg-green-400 border-green-500 text-zinc-950';
   };
 
   // 1. YEAR VIEW DATA (365 days, 52 weeks)
@@ -386,9 +390,9 @@ export default function ContributionGraph({
               <span>Less</span>
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-sm bg-zinc-800/70 border border-zinc-700/50" title="0 hrs" />
-                <div className="w-3 h-3 rounded-sm bg-green-300 border border-green-400" title="< 1.0 hr" />
+                <div className="w-3 h-3 rounded-sm bg-green-700 border border-green-600" title="< 1.0 hr" />
                 <div className="w-3 h-3 rounded-sm bg-green-500 border border-green-400" title="1.0 - 1.9 hrs" />
-                <div className="w-3 h-3 rounded-sm bg-green-700 border border-green-600" title="2.0+ hrs" />
+                <div className="w-3 h-3 rounded-sm bg-green-300 border border-green-400" title="2.0+ hrs" />
               </div>
               <span>More</span>
             </div>
