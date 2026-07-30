@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/lib/auth-context';
 import { Dumbbell, Flame, LogOut, User as UserIcon } from 'lucide-react';
+import Image from 'next/image';
 import React from 'react';
 
 interface HeaderProps {
@@ -17,16 +18,20 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Brand & Logo */}
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-xl text-zinc-950 shadow-md shadow-emerald-500/20">
-            <Dumbbell className="w-5 h-5 stroke-[2.5]" />
+          <div className="rounded-xl ">
+            {/* <Dumbbell className="w-5 h-5 stroke-[2.5]" /> */}
+            <Image
+              src="/web-app-manifest-512x512.png"
+              alt="Gym-Git Logo"
+              width={300}
+              height={300}
+              className='size-16'
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl font-black tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent">
                 Gym-Git
-              </span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                v1.0
               </span>
             </div>
             <p className="text-xs text-zinc-400 hidden sm:block">GitHub-style Fitness Tracker</p>

@@ -151,7 +151,7 @@ export default function AnimeTierCard({
             </div>
 
             {/* Footer Text */}
-            <div className="bg-zinc-900/80 px-5 py-2.5 border-t border-zinc-800/80 relative z-10 flex items-center justify-between text-zinc-400">
+            <div className="bg-zinc-950 px-5 py-2.5 border-t border-zinc-800/80 relative z-10 flex items-center justify-between text-zinc-400">
                 <p className="text-[11px] italic">
                     {scoreData.evaluationText || "No gym attendance recorded yet."}
                 </p>
