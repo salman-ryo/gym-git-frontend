@@ -162,8 +162,8 @@ export async function fetchPowerScore(
     if (rawPower?.power_score) {
       const ps = rawPower.power_score;
       const score = ps.total_score || 0;
-      const sortedChars = [...animePowerLevels].sort((a, b) => b.power - a.power);
-      const matchedChar = sortedChars.find((c) => score >= c.power) || animePowerLevels[0];
+      const sortedChars = [...animePowerLevels].sort((a, b) => b.minPower - a.minPower);
+      const matchedChar = sortedChars.find((c) => score >= c.minPower) || animePowerLevels[0];
 
       return {
         consistencyScore: ps.consistency || 0,
