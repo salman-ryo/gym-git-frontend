@@ -2,11 +2,11 @@
 
 import AuthGuard from '@/components/AuthGuard';
 import ContributionGraph from '@/components/ContributionGraph';
+import CyberpunkLoader from '@/components/CyberpunkLoader';
 import DailyCheckInModal from '@/components/DailyCheckInModal';
 import EditLogModal from '@/components/EditLogModal';
 import FilterBar from '@/components/FilterBar';
 import Header from '@/components/Header';
-import MonthlyBarChart from '@/components/MonthlyBarChart';
 import StatsOverview from '@/components/StatsOverview';
 import WeeklyPlanModal from '@/components/WeeklyPlanModal';
 import { useAuth } from '@/lib/auth-context';
@@ -19,6 +19,8 @@ import {
 } from '@/lib/gym-service';
 import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import PowerLevelChart from '@/components/PowerLevelChart';
+import Footer from '@/components/Footer';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
@@ -140,16 +142,13 @@ export default function DashboardPage() {
     <AuthGuard>
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
         {/* Navigation Header */}
-        <Header
-          currentStreak={stats?.currentStreak || 0}
-        />
+        <Header currentStreak={stats?.currentStreak || 0} />
 
         {/* Dashboard Main Content */}
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
           {loading ? (
-            <div className="flex items-center justify-center py-20 text-zinc-500 animate-pulse text-sm">
-              Syncing gym logs from API...
-            </div>
+            // Reusable Component inside the main container
+            <CyberpunkLoader text="Summoning your stats" />
           ) : (
             <>
               {/* Analytics & Streaks Overview */}
@@ -173,19 +172,13 @@ export default function DashboardPage() {
 
               {/* Monthly Attendance Bar Chart */}
               {stats?.monthlyData && (
-                <MonthlyBarChart monthlyData={stats.monthlyData} logs={logs} />
+                <PowerLevelChart monthlyData={stats.monthlyData} logs={logs} />
               )}
             </>
           )}
         </main>
 
-        {/* Footer */}
-        <footer className="border-t border-zinc-900 py-6 text-center text-xs text-zinc-600">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>Gym-Git &copy; {new Date().getFullYear()} — Dynamic Workout Planning</span>
-            <span className="text-zinc-500">Built with Next.js, Tailwind CSS &amp; TypeScript</span>
-          </div>
-        </footer>
+        <Footer />
 
         {/* Modals */}
         <DailyCheckInModal

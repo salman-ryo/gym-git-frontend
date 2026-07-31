@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { Dumbbell, Lock, Mail, User as UserIcon, ArrowRight, UserPlus, LogIn, Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const { user, login, signup, loginWithGoogle } = useAuth();
@@ -62,41 +63,87 @@ export default function LoginPage() {
     }
   };
 
-
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center p-4 relative overflow-hidden">
-      {/* Background Glow Accents */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-center items-center p-4 relative overflow-hidden z-0">
+
+      {/* Aesthetic Background Watermarks */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        {/* Large Dumbbell - Bottom Left */}
+        <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] opacity-20 -rotate-[30deg] mix-blend-screen">
+          <Image
+            src="/images/ggdumbell.webp"
+            alt="Dumbbell Background"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+
+        {/* Large Git Tree - Top Right */}
+        <div className="absolute -top-32 -right-20 w-[700px] h-[700px] opacity-20 rotate-[15deg] mix-blend-screen">
+          <Image
+            src="/images/gggit.webp"
+            alt="Git Tree Background"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+
+        {/* Small Dumbbell - Top Left */}
+        <div className="absolute top-10 left-10 w-[200px] h-[200px] opacity-10 rotate-[45deg] mix-blend-screen hidden md:block">
+          <Image
+            src="/images/ggdumbell.webp"
+            alt="Dumbbell Background Small"
+            fill
+            className="object-contain"
+          />
+        </div>
+
+        {/* Small Git Tree - Bottom Right */}
+        <div className="absolute bottom-20 right-10 w-[300px] h-[300px] opacity-10 -rotate-[20deg] mix-blend-screen hidden md:block">
+          <Image
+            src="/images/gggit.webp"
+            alt="Git Tree Background Small"
+            fill
+            className="object-contain"
+          />
+        </div>
+      </div>
+
+      {/* Background Glow Accents - Matched to Logo (Emerald and Purple) */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Main Glassmorphic Container */}
       <div className="w-full max-w-md bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl rounded-2xl p-8 shadow-2xl relative z-10">
+
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="p-3 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl shadow-lg shadow-emerald-500/20 text-zinc-950 mb-3">
-            <Dumbbell className="w-8 h-8 stroke-[2.5]" />
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent">
-            Gym-Git
-          </h1>
-          <p className="text-zinc-400 text-sm mt-1">
+          <Image
+            src="/web-app-manifest-512x512.png"
+            alt="Gym-Git Logo"
+            width={300}
+            height={300}
+            className='size-28 rounded-full shadow-[0_0_20px_rgba(20,184,166,0.15)]'
+          />
+          <p className="text-zinc-400 text-sm mt-3">
             Commit to your fitness. Track your streak like code.
           </p>
         </div>
 
         {/* Sign In / Sign Up Mode Switcher */}
-        <div className="flex rounded-xl bg-zinc-950 p-1 mb-6 border border-zinc-800">
+        <div className="flex rounded-xl bg-zinc-950/60 p-1 mb-6 border border-zinc-800/80">
           <button
             type="button"
             onClick={() => {
               setMode('signin');
               setError('');
             }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
-              mode === 'signin'
-                ? 'bg-emerald-500 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
+            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all duration-300 ${mode === 'signin'
+              ? 'bg-cyan-500 text-zinc-950 shadow-[0_0_15px_rgba(34,211,238,0.4)] ring-1 ring-cyan-400'
+              : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+              }`}
           >
             <LogIn className="w-3.5 h-3.5" />
             Sign In
@@ -107,11 +154,10 @@ export default function LoginPage() {
               setMode('signup');
               setError('');
             }}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all ${
-              mode === 'signup'
-                ? 'bg-emerald-500 text-zinc-950 shadow-md'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
+            className={`flex-1 py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all duration-300 ${mode === 'signup'
+              ? 'bg-cyan-500 text-zinc-950 shadow-[0_0_15px_rgba(34,211,238,0.4)] ring-1 ring-cyan-400'
+              : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+              }`}
           >
             <UserPlus className="w-3.5 h-3.5" />
             Create Account
@@ -130,7 +176,7 @@ export default function LoginPage() {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleSubmitting || submitting}
-          className="w-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 border border-zinc-700/60 rounded-xl py-3 px-4 text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-lg disabled:opacity-50 mb-6 group"
+          className="w-full bg-zinc-800/60 hover:bg-zinc-700/80 text-white border border-zinc-700/60 rounded-xl py-3 px-4 text-sm font-semibold flex items-center justify-center gap-3 transition-all duration-200 hover:shadow-lg disabled:opacity-50 mb-6 group"
         >
           {googleSubmitting ? (
             <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
@@ -179,7 +225,7 @@ export default function LoginPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Alex Developer"
-                  className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
+                  className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
                 />
               </div>
             </div>
@@ -196,7 +242,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
+                className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 rounded-xl py-2.5 pl-10 pr-4 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
               />
             </div>
           </div>
@@ -212,7 +258,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
+                className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all"
               />
               <button
                 type="button"
@@ -232,10 +278,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting || googleSubmitting}
-            className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50 mt-6"
+            className="w-full bg-gradient-to-r from-emerald-700 to-purple-700 hover:from-emerald-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(168,85,247,0.2)] hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] disabled:opacity-50 mt-6"
           >
             {submitting ? (
-              <div className="w-5 h-5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <span>{mode === 'signup' ? 'Create Account & Start' : 'Sign In to Dashboard'}</span>
@@ -244,7 +290,6 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-
 
       </div>
     </div>

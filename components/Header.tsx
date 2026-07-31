@@ -15,7 +15,7 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 px-4 lg:px-8 py-3 transition-all">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-8xl mx-auto flex items-center justify-between">
         {/* Brand & Logo */}
         <div className="flex items-center gap-3">
           <div className="rounded-xl ">
@@ -39,12 +39,12 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
         </div>
 
         {/* Center Pill - Streak Badge */}
-        <div className="hidden md:flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 shadow-inner">
+        {/* <div className="hidden md:flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 shadow-inner">
           <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
           <span className="text-xs font-semibold text-zinc-300">
             Streak: <span className="text-amber-400 font-bold">{currentStreak} Days</span>
           </span>
-        </div>
+        </div> */}
 
         {/* User Navigation & Actions */}
         <div className="flex items-center gap-3">
