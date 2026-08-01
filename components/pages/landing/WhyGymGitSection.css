@@ -1,0 +1,332 @@
+/* ═══════════════════════════════════════════════════
+   WhyGymGitSection.css
+   "Why Gym Git" feature showcase with glassmorphism
+   cards, neon icon glow, and entrance animations
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Section ───────────────────────────────────── */
+.why {
+  position: relative;
+  padding: 96px 0 80px;
+  overflow: hidden;
+  background: #060a0e;
+}
+
+@media (min-width: 768px) {
+  .why {
+    padding: 120px 0 100px;
+  }
+}
+
+/* Subtle grid background */
+.why__grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 255, 136, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(
+    ellipse 70% 50% at 50% 50%,
+    rgba(0, 0, 0, 0.4) 0%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 50% at 50% 50%,
+    rgba(0, 0, 0, 0.4) 0%,
+    transparent 100%
+  );
+}
+
+/* ─── Section Header ────────────────────────────── */
+.why__header {
+  position: relative;
+  z-index: 1;
+  max-width: var(--nav-max-width, 1320px);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  margin-bottom: 56px;
+}
+
+@media (min-width: 768px) {
+  .why__header {
+    padding: 0 40px;
+    margin-bottom: 64px;
+  }
+}
+
+/* Badge */
+.why__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(0, 255, 136, 0.15);
+  background: rgba(0, 255, 136, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.why__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-green, #00ff88);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+  animation: why-badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes why-badge-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
+
+.why__badge-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--neon-green, #00ff88);
+  text-transform: uppercase;
+}
+
+/* Headline */
+.why__headline {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.why__headline-white {
+  color: #fafafa;
+}
+
+.why__headline-accent {
+  background: linear-gradient(
+    135deg,
+    var(--neon-green, #00ff88) 0%,
+    #00e077 40%,
+    var(--neon-cyan, #22d3ee) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtitle */
+.why__subtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  line-height: 1.7;
+  color: #71717a;
+  margin: 0;
+  max-width: 440px;
+}
+
+.why__br-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .why__br-desktop {
+    display: inline;
+  }
+}
+
+/* ─── Cards Grid ────────────────────────────────── */
+.why__cards {
+  position: relative;
+  z-index: 1;
+  max-width: var(--nav-max-width, 1320px);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .why__cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .why__cards {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0 40px;
+    gap: 20px;
+  }
+}
+
+/* ─── Individual Card ───────────────────────────── */
+.why-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 36px 24px 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(39, 39, 42, 0.5);
+  background: rgba(14, 18, 24, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.35s ease;
+  will-change: transform;
+  cursor: default;
+
+  /* Entrance animation */
+  animation: why-card-enter 0.6s cubic-bezier(0.4, 0, 0.2, 1) var(--card-delay, 0s) both;
+}
+
+@keyframes why-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.why-card:hover {
+  border-color: rgba(0, 255, 136, 0.15);
+  background: rgba(14, 18, 24, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 136, 0.05),
+    0 16px 48px -12px rgba(0, 0, 0, 0.5);
+  transform: translateY(-4px);
+}
+
+/* ─── Icon Area ─────────────────────────────────── */
+.why-card__icon-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glow orb behind icon */
+.why-card__icon-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--card-glow-color, rgba(0, 255, 136, 0.25)) 0%,
+    transparent 70%
+  );
+  filter: blur(12px);
+  opacity: 0.3;
+  transition: opacity 0.35s ease, filter 0.35s ease;
+}
+
+.why-card:hover .why-card__icon-glow {
+  opacity: 0.7;
+  filter: blur(16px);
+}
+
+/* Icon circle */
+.why-card__icon-circle {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(24, 24, 27, 0.6);
+  border: 1px solid rgba(63, 63, 70, 0.4);
+  color: var(--card-icon-color, #00ff88);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.why-card:hover .why-card__icon-circle {
+  border-color: color-mix(in srgb, var(--card-icon-color, #00ff88) 30%, transparent);
+  box-shadow: 0 0 12px var(--card-glow-color, rgba(0, 255, 136, 0.15));
+}
+
+.why-card__icon-svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ─── Card Text ─────────────────────────────────── */
+.why-card__title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #e4e4e7;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.why-card__desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #71717a;
+  margin: 0;
+  max-width: 220px;
+}
+
+/* ─── Bottom Accent Line ────────────────────────── */
+.why-card__accent-line {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--card-icon-color, #00ff88),
+    transparent
+  );
+  box-shadow: 0 0 10px var(--card-glow-color, rgba(0, 255, 136, 0.3));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.why-card:hover .why-card__accent-line {
+  width: 60%;
+}
+
+/* ═══════════════════════════════════════════════════
+   GPU & Reduced Motion
+   ═══════════════════════════════════════════════════ */
+
+.why-card,
+.why-card__icon-glow,
+.why-card__accent-line {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .why-card,
+  .why__badge-dot,
+  .why-card__icon-glow,
+  .why-card__accent-line {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
