@@ -13,7 +13,7 @@
   padding-top: calc(var(--nav-height, 72px) + 32px);
   padding-bottom: 64px;
   overflow: hidden;
-  background: #060a0e;
+  background: transparent;
 }
 
 /* ─── Grid Background ───────────────────────────── */

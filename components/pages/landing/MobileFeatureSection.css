@@ -1,0 +1,367 @@
+/* ═══════════════════════════════════════════════════
+   MobileFeatureSection.css
+   Section showing a mobile app mockup with glowing
+   background elements and feature list
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Section Container ─────────────────────────── */
+.mobile-feat {
+  position: relative;
+  padding: 80px 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .mobile-feat {
+    padding: 100px 0 120px;
+  }
+}
+
+.mobile-feat__container {
+  position: relative;
+  z-index: 1;
+  max-width: var(--nav-max-width, 1320px);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .mobile-feat__container {
+    padding: 0 40px;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+/* ─── Left Column: Visual ───────────────────────── */
+.mobile-feat__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.mobile-feat__phone-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Backdrop Effects */
+.mobile-feat__backdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+}
+
+.mobile-feat__dumbbell-glow {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(0, 255, 136, 0.15);
+  filter: blur(40px);
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.mobile-feat__dumbbell-icon {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  color: #18181b; /* Dark metal color */
+  opacity: 0.8;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.4));
+  transform: rotate(-15deg);
+}
+
+/* Abstract Circuit Lines */
+.mobile-feat__circuit {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-image: 
+    radial-gradient(circle at 10px 10px, var(--neon-green) 2px, transparent 2px),
+    linear-gradient(90deg, transparent 9px, rgba(0, 255, 136, 0.2) 9px, rgba(0, 255, 136, 0.2) 11px, transparent 11px),
+    linear-gradient(0deg, transparent 9px, rgba(0, 255, 136, 0.2) 9px, rgba(0, 255, 136, 0.2) 11px, transparent 11px);
+  background-size: 40px 40px;
+  opacity: 0.3;
+}
+
+.mobile-feat__circuit--left {
+  left: -20px;
+  top: 20%;
+  mask-image: linear-gradient(to right, transparent, black);
+  -webkit-mask-image: linear-gradient(to right, transparent, black);
+}
+
+.mobile-feat__circuit--right {
+  right: -20px;
+  bottom: 20%;
+  mask-image: linear-gradient(to left, transparent, black);
+  -webkit-mask-image: linear-gradient(to left, transparent, black);
+}
+
+/* The Phone Mockup */
+.mobile-feat__phone {
+  position: relative;
+  z-index: 1;
+  width: 280px;
+  height: 580px;
+  border-radius: 40px;
+  background: #09090b;
+  border: 4px solid #27272a;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255,255,255,0.05) inset;
+  overflow: hidden;
+}
+
+.mobile-feat__phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 24px;
+  background: #27272a;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  z-index: 10;
+}
+
+/* Phone Screen UI */
+.mobile-feat__screen {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-feat__screen-header {
+  padding: 32px 16px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mobile-feat__screen-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 8px;
+}
+
+.mobile-feat__time {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.mobile-feat__status-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.mobile-feat__icon-signal,
+.mobile-feat__icon-wifi,
+.mobile-feat__icon-battery {
+  width: 14px;
+  height: 10px;
+  background: #fff;
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+.mobile-feat__screen-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.mobile-feat__screen-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.text-neon-green {
+  color: var(--neon-green, #00ff88);
+}
+
+.mobile-feat__screen-dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  font-size: 12px;
+  color: #fff;
+}
+
+.mobile-feat__screen-list {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-feat__screen-section-title {
+  font-size: 12px;
+  color: #a1a1aa;
+  margin-bottom: 4px;
+  margin-top: 0;
+}
+
+.mobile-feat__list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(24, 24, 27, 0.4);
+  border: 1px solid rgba(63, 63, 70, 0.3);
+}
+
+.mobile-feat__list-item--active {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.mobile-feat__item-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.mobile-feat__item-name {
+  font-size: 13px;
+  color: #e4e4e7;
+  font-weight: 500;
+}
+
+.text-neon-purple {
+  color: #a855f7;
+}
+
+/* ─── Right Column: Copy ────────────────────────── */
+.mobile-feat__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mobile-feat__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  width: fit-content;
+  border-radius: 100px;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  background: rgba(0, 255, 136, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.mobile-feat__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-green, #00ff88);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+}
+
+.mobile-feat__badge-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--neon-green, #00ff88);
+  text-transform: uppercase;
+}
+
+.mobile-feat__headline {
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #fafafa;
+  margin: 0;
+}
+
+.mobile-feat__headline-accent {
+  color: var(--neon-green, #00ff88);
+}
+
+.mobile-feat__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-feat__list-item-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: #d4d4d8;
+}
+
+.mobile-feat__check-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--neon-green, #00ff88);
+  flex-shrink: 0;
+}
+
+.mobile-feat__cta-wrap {
+  margin-top: 8px;
+}
+
+.mobile-feat__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a1a1aa;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid rgba(63, 63, 70, 0.6);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.mobile-feat__cta:hover {
+  color: #fafafa;
+  border-color: rgba(161, 161, 170, 0.3);
+  background: rgba(39, 39, 42, 0.3);
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}

@@ -1,4 +1,13 @@
-import { LandingNavbar, HeroSection, WhyGymGitSection } from '@/components/pages/landing';
+import { 
+  LandingNavbar, 
+  HeroSection, 
+  WhyGymGitSection,
+  MobileFeatureSection,
+  TestimonialsSection,
+  CTASection,
+  FooterSection,
+  LandingBackground
+} from '@/components/pages/landing';
 
 export const metadata = {
   title: 'Gym-Git — Track Your Fitness Like a Developer',
@@ -8,22 +17,21 @@ export const metadata = {
 
 export default function LandingPage() {
   return (
-    <div className="landing-page">
+    <div className="landing-page" style={{ position: 'relative', background: '#060a0e' }}>
+      <LandingBackground />
       <LandingNavbar />
 
-      <main>
+      <main style={{ position: 'relative', zIndex: 1 }}>
         <HeroSection />
         <WhyGymGitSection />
-
-        {/* Future sections will go here */}
-        {/* <StatsSection /> */}
-        {/* <CTASection /> */}
-        {/* <TestimonialsSection /> */}
-        {/* <FooterSection /> */}
-
-        {/* Extra height for scroll test */}
-        <section style={{ height: '100vh' }} />
+        <MobileFeatureSection />
+        <TestimonialsSection />
+        <CTASection />
       </main>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <FooterSection />
+      </div>
     </div>
   );
 }

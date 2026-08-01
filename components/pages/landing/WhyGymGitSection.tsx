@@ -1,8 +1,17 @@
 'use client';
 
 import './WhyGymGitSection.css';
-import React from 'react';
-import { Flame, BarChart3, ClipboardList, ShieldCheck } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Flame,
+  BarChart3,
+  ClipboardList,
+  ShieldCheck,
+  Users,
+  Dumbbell,
+  Clock,
+  CalendarCheck,
+} from 'lucide-react';
 
 /* ─────────────────────────────────────────────
    Data
@@ -47,6 +56,45 @@ const FEATURES: FeatureCard[] = [
     title: 'PRIVACY FIRST BY DESIGN',
     description:
       "Your data's yours. You ask. No selling. Just progress.",
+  },
+];
+
+interface StatCounter {
+  icon: React.ReactNode;
+  iconColor: string;
+  value: number;
+  suffix: string;
+  label: string;
+}
+
+const STATS: StatCounter[] = [
+  {
+    icon: <Users className="why-stat__icon-svg" />,
+    iconColor: '#f59e0b',
+    value: 2457,
+    suffix: '+',
+    label: 'Active Lifters',
+  },
+  {
+    icon: <Dumbbell className="why-stat__icon-svg" />,
+    iconColor: '#8b5cf6',
+    value: 18329,
+    suffix: '+',
+    label: 'Workouts Logged',
+  },
+  {
+    icon: <Clock className="why-stat__icon-svg" />,
+    iconColor: '#22d3ee',
+    value: 11250,
+    suffix: '+',
+    label: 'Hours Tracked',
+  },
+  {
+    icon: <CalendarCheck className="why-stat__icon-svg" />,
+    iconColor: '#00ff88',
+    value: 91520,
+    suffix: '+',
+    label: 'Days of Consistency',
   },
 ];
 
@@ -122,6 +170,77 @@ function WhyFeatureCard({
   );
 }
 
+/** Animated counter hook */
+function useCountUp(target: number, duration = 2000) {
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasStarted]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    let frame: number;
+    const start = performance.now();
+
+    const step = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+
+      if (progress < 1) {
+        frame = requestAnimationFrame(step);
+      }
+    };
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [hasStarted, target, duration]);
+
+  return { count, ref };
+}
+
+/** Individual stat counter card */
+function WhyStatCard({ icon, iconColor, value, suffix, label }: StatCounter) {
+  const { count, ref } = useCountUp(value, 2200);
+
+  return (
+    <div
+      ref={ref}
+      className="why-stat"
+      style={{ '--stat-color': iconColor } as React.CSSProperties}
+    >
+      <div className="why-stat__icon" style={{ color: iconColor }}>
+        {icon}
+      </div>
+      <div className="why-stat__content">
+        <span className="why-stat__value">
+          {count.toLocaleString()}
+          <span className="why-stat__suffix">{suffix}</span>
+        </span>
+        <span className="why-stat__label">{label}</span>
+      </div>
+    </div>
+  );
+}
+
 /* ─────────────────────────────────────────────
    Main Section
    ───────────────────────────────────────────── */
@@ -142,6 +261,13 @@ export default function WhyGymGitSection() {
       <div className="why__cards">
         {FEATURES.map((feature, i) => (
           <WhyFeatureCard key={feature.title} {...feature} index={i} />
+        ))}
+      </div>
+
+      {/* Stats counters row */}
+      <div className="why__stats">
+        {STATS.map((stat) => (
+          <WhyStatCard key={stat.label} {...stat} />
         ))}
       </div>
     </section>

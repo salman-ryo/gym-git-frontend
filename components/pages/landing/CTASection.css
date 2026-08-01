@@ -1,0 +1,378 @@
+/* ═══════════════════════════════════════════════════
+   CTASection.css
+   High-end cyberpunk glassmorphism Call-to-Action section
+   with vector Git Tree, neon glows, and micro-interactions
+   ═══════════════════════════════════════════════════ */
+
+.cta-section {
+  position: relative;
+  padding: 80px 0 120px;
+  background: transparent;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .cta-section {
+    padding: 100px 0 140px;
+  }
+}
+
+.cta-section__container {
+  max-width: var(--nav-max-width, 1320px);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (min-width: 1024px) {
+  .cta-section__container {
+    padding: 0 40px;
+  }
+}
+
+/* ─── Outer Card Container ───────────────────────── */
+.cta-card {
+  position: relative;
+  border-radius: 28px;
+  background: rgba(12, 16, 23, 0.75);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 50px -10px rgba(168, 85, 247, 0.12),
+    0 0 80px -20px rgba(0, 255, 136, 0.1),
+    0 24px 64px -16px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.cta-card:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow:
+    0 0 60px -5px rgba(168, 85, 247, 0.18),
+    0 0 90px -15px rgba(0, 255, 136, 0.15),
+    0 32px 80px -16px rgba(0, 0, 0, 0.9),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+/* Ambient Backlights */
+.cta-card__glow-left {
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 50%;
+  height: 140%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 255, 136, 0.12) 0%,
+    transparent 70%
+  );
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.cta-card__glow-right {
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 50%;
+  height: 140%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(168, 85, 247, 0.15) 0%,
+    transparent 70%
+  );
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.cta-card__grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* ─── Inner Layout ──────────────────────────────── */
+.cta-card__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 40px 24px;
+  gap: 36px;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .cta-card__inner {
+    grid-template-columns: 320px 1fr;
+    padding: 56px 64px;
+    gap: 60px;
+  }
+}
+
+/* ─── Left Column: Git Tree Visual ──────────────── */
+.cta-card__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cta-graphic {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .cta-graphic {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+.cta-graphic__glow--purple {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(168, 85, 247, 0.25);
+  filter: blur(35px);
+  border-radius: 50%;
+}
+
+.cta-graphic__glow--green {
+  position: absolute;
+  bottom: 10%;
+  left: 10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(0, 255, 136, 0.2);
+  filter: blur(35px);
+  border-radius: 50%;
+}
+
+.cta-graphic__svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.2));
+}
+
+.cta-node--pulse circle:first-child {
+  animation: node-pulse-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes node-pulse-glow {
+  0%, 100% {
+    r: 10px;
+    opacity: 0.8;
+  }
+  50% {
+    r: 14px;
+    opacity: 1;
+  }
+}
+
+/* Floating Pill Badges */
+.cta-badge-pill {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  background: rgba(18, 24, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  font-size: 11px;
+  font-weight: 600;
+  color: #e4e4e7;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.cta-badge-pill--1 {
+  bottom: 12%;
+  right: 5%;
+  border-color: rgba(0, 255, 136, 0.3);
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.cta-badge-pill--2 {
+  top: 15%;
+  right: 0;
+  border-color: rgba(34, 211, 238, 0.3);
+  animation: float-slow 4s ease-in-out 2s infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ─── Right Column: Content ─────────────────────── */
+.cta-card__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .cta-card__content {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Badge */
+.cta-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #c084fc;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.cta-card__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a855f7;
+  box-shadow: 0 0 8px #a855f7;
+}
+
+/* Headline */
+.cta-card__headline {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin: 0 0 16px;
+}
+
+.cta-card__headline-line1 {
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.cta-card__headline-line2 {
+  background: linear-gradient(
+    135deg,
+    #c084fc 0%,
+    #a855f7 40%,
+    var(--neon-cyan, #22d3ee) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.3));
+}
+
+/* Subtitle */
+.cta-card__subtitle {
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  line-height: 1.65;
+  color: #94a3b8;
+  margin: 0 0 32px;
+  max-width: 520px;
+}
+
+/* Actions */
+.cta-card__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .cta-card__actions {
+    align-items: flex-start;
+  }
+}
+
+.cta-card__btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 36px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #060a0e;
+  text-decoration: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00ff88 0%, #00e077 100%);
+  box-shadow:
+    0 0 25px rgba(0, 255, 136, 0.35),
+    0 8px 20px -4px rgba(0, 255, 136, 0.25);
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.cta-card__btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 0 35px rgba(0, 255, 136, 0.55),
+    0 12px 28px -4px rgba(0, 255, 136, 0.35);
+  background: linear-gradient(135deg, #10b981 0%, #00ff88 100%);
+}
+
+.cta-card__btn-primary:hover .cta-card__btn-icon {
+  transform: translateX(4px);
+}
+
+.cta-card__btn-icon {
+  transition: transform 0.2s ease;
+}
+
+.cta-card__btn-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+}
+
+.cta-card__btn-primary:hover .cta-card__btn-shimmer {
+  animation: shimmer-effect 0.8s ease forwards;
+}
+
+@keyframes shimmer-effect {
+  to { transform: translateX(120%); }
+}
+
+.cta-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
