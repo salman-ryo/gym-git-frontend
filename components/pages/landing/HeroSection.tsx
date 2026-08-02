@@ -13,9 +13,9 @@ import Image from 'next/image';
 /** Floating badge above the headline */
 function HeroBadge() {
   return (
-    <div className="hero__badge" aria-label="Built for Discipline">
-      <span className="hero__badge-dot" aria-hidden="true" />
-      <span className="hero__badge-text">BUILT FOR DISCIPLINE</span>
+    <div className="landing-badge" aria-label="Built for Discipline">
+      <span className="landing-badge-dot" aria-hidden="true" />
+      <span className="landing-badge-text">BUILT FOR DISCIPLINE</span>
     </div>
   );
 }
@@ -64,15 +64,15 @@ function RotatingWord() {
 /** Main headline */
 function HeroHeadline() {
   return (
-    <h1 className="hero__headline">
-      <span className="hero__headline-line">TRACK YOUR</span>
-      <span className="hero__headline-line">
-        <span className="hero__headline-white">FITNESS.</span>
+    <h1 className="flex flex-col gap-0 text-[clamp(2.2rem,5vw,4rem)] font-black leading-[1.05] tracking-tight m-0">
+      <span className="block text-[#fafafa]">TRACK YOUR</span>
+      <span className="block">
+        <span className="text-[#fafafa]">FITNESS.</span>
       </span>
-      <span className="hero__headline-line hero__headline-accent">
+      <span className="block text-gradient-neon filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
         COMMIT TO
       </span>
-      <span className="hero__headline-line hero__headline-accent">
+      <span className="block text-gradient-neon filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
         PROGRESS.
       </span>
     </h1>
@@ -82,11 +82,11 @@ function HeroHeadline() {
 /** Subtitle paragraph */
 function HeroSubtitle() {
   return (
-    <p className="hero__subtitle">
+    <p className="text-[clamp(0.95rem,1.5vw,1.1rem)] leading-relaxed text-[#71717a] m-0 max-w-[480px]">
       Gym-Git is your GitHub-style fitness tracker.{' '}
-      <br className="hero__br-desktop" />
+      <br className="hidden lg:inline" />
       Log workouts, build streaks, and visualize{' '}
-      <br className="hero__br-desktop" />
+      <br className="hidden lg:inline" />
       progress like a <RotatingWord />
     </p>
   );
@@ -95,14 +95,20 @@ function HeroSubtitle() {
 /** CTA buttons */
 function HeroCTAs() {
   return (
-    <div className="hero__ctas">
-      <Link href="/login" className="hero__cta-primary">
-        <span className="hero__cta-primary-text">Start Tracking Now</span>
-        <ArrowRight className="hero__cta-primary-arrow" />
-        <span className="hero__cta-primary-glow" aria-hidden="true" />
+    <div className="flex items-center gap-4 flex-wrap">
+      <Link
+        href="/login"
+        className="relative inline-flex items-center gap-2 px-7 py-3.5 text-[14.5px] font-semibold text-[#080c10] no-underline rounded-lg bg-gradient-to-r from-neon-green to-[#00e077] overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,255,136,0.35),0_8px_24px_-8px_rgba(0,255,136,0.25)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-neon-cyan focus-visible:outline-offset-3 border-none outline-none cursor-pointer group"
+      >
+        <span className="relative z-10 whitespace-nowrap">Start Tracking Now</span>
+        <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-200 group-hover:translate-x-0.5" />
+        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[120%] group-hover:animate-[shimmer-effect_0.8s_ease_forwards]" aria-hidden="true" />
       </Link>
-      <a href="#demo" className="hero__cta-secondary">
-        <Play className="hero__cta-secondary-icon" />
+      <a
+        href="#demo"
+        className="inline-flex items-center gap-2 px-6 py-3.5 text-[14.5px] font-medium text-[#a1a1aa] no-underline rounded-lg border border-[rgba(63,63,70,0.6)] bg-[rgba(24,24,27,0.4)] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.25)] hover:bg-[rgba(0,255,136,0.04)] hover:shadow-[0_0_16px_rgba(0,255,136,0.08)] transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-neon-green focus-visible:outline-offset-3"
+      >
+        <Play className="w-3.5 h-3.5" />
         <span>View Demo</span>
       </a>
     </div>
@@ -111,7 +117,6 @@ function HeroCTAs() {
 
 /** Social proof avatars */
 function SocialProof() {
-  // Placeholder avatar colors representing different users
   const avatars = [
     { initials: 'AK', bg: '#10b981' },
     { initials: 'RJ', bg: '#8b5cf6' },
@@ -121,149 +126,21 @@ function SocialProof() {
   ];
 
   return (
-    <div className="hero__social-proof">
-      <div className="hero__avatar-stack" aria-hidden="true">
+    <div className="flex items-center gap-3 pt-2">
+      <div className="flex" aria-hidden="true">
         {avatars.map((a, i) => (
           <div
             key={i}
-            className="hero__avatar"
+            className="w-8 h-8 rounded-full flex items-center justify-center border-2 border-[#060a0e] -mr-2 relative flex-shrink-0"
             style={{ backgroundColor: a.bg, zIndex: avatars.length - i }}
           >
-            <span className="hero__avatar-text">{a.initials}</span>
+            <span className="text-[10px] font-bold text-white leading-none">{a.initials}</span>
           </div>
         ))}
       </div>
-      <p className="hero__social-text">
-        Join <strong className="hero__social-count">2,457+</strong> lifters building consistency
+      <p className="text-[13px] text-[#52525b] m-0">
+        Join <strong className="text-[#a1a1aa] font-bold">2,457+</strong> lifters building consistency
       </p>
-    </div>
-  );
-}
-
-/* ── Dashboard Mockup (Right Side) ───────────── */
-
-/** Stat card inside the dashboard */
-function StatCard({
-  label,
-  value,
-  icon,
-  iconColor,
-  trend,
-}: {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-  iconColor: string;
-  trend?: string;
-}) {
-  return (
-    <div className="hero-dash__stat-card">
-      <div className="hero-dash__stat-top">
-        <span className="hero-dash__stat-value">{value}</span>
-        <span className="hero-dash__stat-icon" style={{ color: iconColor }}>
-          {icon}
-        </span>
-      </div>
-      <div className="hero-dash__stat-bottom">
-        <span className="hero-dash__stat-label">{label}</span>
-        {trend && <span className="hero-dash__stat-trend">{trend}</span>}
-      </div>
-    </div>
-  );
-}
-
-/** Contribution graph (simplified visual) */
-function ContributionGrid() {
-  // Generate a pattern that resembles a contribution graph
-  const rows = 7;
-  const cols = 20;
-  const intensities = [0, 1, 2, 3, 4];
-
-  // Deterministic pattern
-  const getIntensity = (r: number, c: number): number => {
-    const seed = (r * 31 + c * 17 + 7) % 23;
-    if (seed < 5) return 0;
-    if (seed < 9) return 1;
-    if (seed < 14) return 2;
-    if (seed < 18) return 3;
-    return 4;
-  };
-
-  return (
-    <div className="hero-dash__contrib" aria-label="Contribution graph visualization">
-      <div className="hero-dash__contrib-header">
-        <Activity className="hero-dash__contrib-icon" />
-        <span className="hero-dash__contrib-title">ACTIVITY LOGS</span>
-      </div>
-      <div className="hero-dash__contrib-meta">
-        <span className="hero-dash__contrib-info">
-          <strong>4,024</strong> reps logged in the last 365 days
-        </span>
-      </div>
-      <div className="hero-dash__contrib-grid" role="img" aria-label="Exercise activity heatmap">
-        {Array.from({ length: cols }, (_, c) => (
-          <div key={c} className="hero-dash__contrib-col">
-            {Array.from({ length: rows }, (_, r) => (
-              <div
-                key={r}
-                className={`hero-dash__contrib-cell hero-dash__contrib-cell--${getIntensity(r, c)}`}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/** Power level chart (simplified bar visualization) */
-function PowerLevelChart() {
-  const bars = [35, 48, 62, 55, 72, 68, 80, 75, 85, 78, 90, 88];
-  const labels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
-
-  return (
-    <div className="hero-dash__power">
-      <div className="hero-dash__power-header">
-        <Zap className="hero-dash__power-icon" />
-        <span className="hero-dash__power-title">POWER LEVELS</span>
-      </div>
-      <div className="hero-dash__power-chart" role="img" aria-label="Power level chart">
-        {bars.map((height, i) => (
-          <div key={i} className="hero-dash__power-bar-wrap">
-            <div
-              className="hero-dash__power-bar"
-              style={{ height: `${height}%` }}
-            />
-            <span className="hero-dash__power-label">{labels[i]}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/** Tab bar for activity section */
-function ActivityTabs() {
-  const tabs = ['Today', 'Week', 'Daily', 'Month', 'Monthly', 'Quarterly', 'Custom'];
-  return (
-    <div className="hero-dash__tabs">
-      <span className="hero-dash__tabs-label">
-        <TrendingUp className="hero-dash__tabs-label-icon" />
-        PRIME ACTIVITY
-      </span>
-      <div className="hero-dash__tabs-list">
-        {tabs.map((tab, i) => (
-          <button
-            key={tab}
-            type="button"
-            className={`hero-dash__tab ${i === 0 ? 'hero-dash__tab--active' : ''}`}
-            tabIndex={-1}
-            aria-hidden="true"
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
@@ -273,7 +150,7 @@ function ActivityTabs() {
    ───────────────────────────────────────────── */
 export default function HeroSection() {
   return (
-    <section className="hero" aria-labelledby="hero-heading">
+    <section className="relative min-h-screen flex items-center pt-[calc(var(--nav-height,72px)+32px)] pb-16 overflow-hidden bg-transparent" aria-labelledby="hero-heading">
       {/* Grid background */}
       <div className="hero__grid-bg" aria-hidden="true" />
 
@@ -282,7 +159,7 @@ export default function HeroSection() {
       <div className="hero__gradient-br" aria-hidden="true" />
 
       {/* Floating particles */}
-      <div className="hero__particles" aria-hidden="true">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         {Array.from({ length: 6 }, (_, i) => (
           <div
             key={i}
@@ -297,9 +174,9 @@ export default function HeroSection() {
         ))}
       </div>
 
-      <div className="hero__container">
+      <div className="landing-container relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-14 xl:gap-18 items-center">
         {/* ── Left Column ── */}
-        <div className="hero__content">
+        <div className="flex flex-col gap-6 lg:gap-7">
           <HeroBadge />
           <HeroHeadline />
           <HeroSubtitle />
@@ -308,8 +185,7 @@ export default function HeroSection() {
         </div>
 
         {/* ── Right Column ── */}
-        <div className="hero__visual rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-teal-500/50">
-          {/* <DashboardMockup /> */}
+        <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-teal-500/50">
           <Image src="/images/dashboardsection.png" priority width={1080} height={1920} alt="Dashboard Mockup" />
         </div>
       </div>

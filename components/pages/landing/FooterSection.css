@@ -123,8 +123,15 @@
 }
 
 @keyframes pulse-status {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .landing-footer__status-text {
@@ -281,12 +288,10 @@
 .landing-footer__divider {
   height: 1px;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(63, 63, 70, 0.5),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(63, 63, 70, 0.5),
+      transparent);
   margin-bottom: 24px;
 }
 

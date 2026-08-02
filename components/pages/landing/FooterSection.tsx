@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import './FooterSection.css';
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -89,61 +91,61 @@ export default function FooterSection() {
   };
 
   return (
-    <footer className="landing-footer" aria-labelledby="footer-heading">
+    <footer className="relative bg-[#04070a]/70 backdrop-blur-md border-t border-[rgba(39,39,42,0.6)] py-20 pb-8 overflow-hidden" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">Footer</h2>
       <div className="landing-footer__grid-bg" aria-hidden="true" />
 
-      <div className="landing-footer__container">
+      <div className="landing-container">
         {/* Top Section: Brand + Links Grid */}
-        <div className="landing-footer__top">
-          
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_repeat(3,1fr)_2fr] gap-10 lg:gap-8 mb-16 text-left">
+
           {/* Brand Info Column */}
-          <div className="landing-footer__brand">
-            <Link href="/landing" className="landing-footer__logo">
-              <div className="landing-footer__logo-icon">
+          <div className="flex flex-col gap-5">
+            <Link href="/landing" className="inline-flex items-center gap-2.5 no-underline">
+              <div className="w-9 h-9 rounded-lg bg-[rgba(0,255,136,0.08)] border border-[rgba(0,255,136,0.2)] flex items-center justify-center shadow-[0_0_12px_rgba(0,255,136,0.15)]">
                 <Dumbbell className="w-5 h-5 text-neon-green" />
               </div>
-              <span className="landing-footer__logo-text">
+              <span className="text-xl font-black tracking-tight text-[#fafafa]">
                 GYM<span className="text-neon-green">-</span>GIT
               </span>
             </Link>
 
-            <p className="landing-footer__tagline">
+            <p className="text-[13.5px] leading-relaxed text-[#71717a] m-0">
               Track your fitness like a developer. Commit to progress, build unbreakable streaks, and level up your strength every single day.
             </p>
 
             {/* Status indicator */}
-            <div className="landing-footer__status">
-              <span className="landing-footer__status-dot" aria-hidden="true" />
-              <span className="landing-footer__status-text">All Systems Operational</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[rgba(0,255,136,0.15)] bg-[rgba(0,255,136,0.04)] w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
+              <span className="text-[10px] font-bold text-neon-green uppercase tracking-wide">All Systems Operational</span>
             </div>
 
             {/* Social Icons */}
-            <div className="landing-footer__socials">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="landing-footer__social-btn" aria-label="GitHub">
+            <div className="flex items-center gap-3">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg border border-[rgba(63,63,70,0.5)] bg-[rgba(24,24,27,0.4)] text-[#a1a1aa] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.2)] hover:bg-[rgba(39,39,42,0.6)] flex items-center justify-center transition-all cursor-pointer" aria-label="GitHub">
                 <GithubIcon className="w-4 h-4" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="landing-footer__social-btn" aria-label="Twitter">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg border border-[rgba(63,63,70,0.5)] bg-[rgba(24,24,27,0.4)] text-[#a1a1aa] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.2)] hover:bg-[rgba(39,39,42,0.6)] flex items-center justify-center transition-all cursor-pointer" aria-label="Twitter">
                 <TwitterIcon className="w-4 h-4" />
               </a>
-              <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="landing-footer__social-btn" aria-label="Discord">
+              <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg border border-[rgba(63,63,70,0.5)] bg-[rgba(24,24,27,0.4)] text-[#a1a1aa] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.2)] hover:bg-[rgba(39,39,42,0.6)] flex items-center justify-center transition-all cursor-pointer" aria-label="Discord">
                 <DiscordIcon className="w-4 h-4" />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="landing-footer__social-btn" aria-label="YouTube">
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg border border-[rgba(63,63,70,0.5)] bg-[rgba(24,24,27,0.4)] text-[#a1a1aa] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.2)] hover:bg-[rgba(39,39,42,0.6)] flex items-center justify-center transition-all cursor-pointer" aria-label="YouTube">
                 <YoutubeIcon className="w-4 h-4" />
               </a>
             </div>
           </div>
 
           {/* Links Column 1: Product */}
-          <div className="landing-footer__col">
-            <h3 className="landing-footer__col-title">Product</h3>
-            <ul className="landing-footer__col-list">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#fafafa] uppercase m-0">Product</h3>
+            <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
               {PRODUCT_LINKS.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="landing-footer__link">
+                  <Link href={link.href} className="flex items-center gap-2 text-[13.5px] text-[#a1a1aa] no-underline hover:text-[#fafafa] transition-all">
                     <span>{link.name}</span>
-                    {link.isNew && <span className="landing-footer__pill-badge">v2.0</span>}
+                    {link.isNew && <span className="px-1.5 py-0.5 rounded-full bg-neon-green-subtle/20 border border-neon-green/30 text-[9px] font-bold text-neon-green">v2.0</span>}
                   </Link>
                 </li>
               ))}
@@ -151,12 +153,12 @@ export default function FooterSection() {
           </div>
 
           {/* Links Column 2: Resources */}
-          <div className="landing-footer__col">
-            <h3 className="landing-footer__col-title">Resources</h3>
-            <ul className="landing-footer__col-list">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#fafafa] uppercase m-0">Resources</h3>
+            <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
               {RESOURCE_LINKS.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="landing-footer__link">
+                  <Link href={link.href} className="flex items-center gap-2 text-[13.5px] text-[#a1a1aa] no-underline hover:text-[#fafafa] transition-all">
                     <span>{link.name}</span>
                   </Link>
                 </li>
@@ -165,14 +167,14 @@ export default function FooterSection() {
           </div>
 
           {/* Links Column 3: Company */}
-          <div className="landing-footer__col">
-            <h3 className="landing-footer__col-title">Company</h3>
-            <ul className="landing-footer__col-list">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#fafafa] uppercase m-0">Company</h3>
+            <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
               {COMPANY_LINKS.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="landing-footer__link">
+                  <Link href={link.href} className="flex items-center gap-2 text-[13.5px] text-[#a1a1aa] no-underline hover:text-[#fafafa] transition-all">
                     <span>{link.name}</span>
-                    {link.badge && <span className="landing-footer__pill-badge landing-footer__pill-badge--purple">{link.badge}</span>}
+                    {link.badge && <span className="px-1.5 py-0.5 rounded-full bg-neon-purple/10 border border-neon-purple/30 text-[9px] font-bold text-[#a855f7]">{link.badge}</span>}
                   </Link>
                 </li>
               ))}
@@ -180,23 +182,23 @@ export default function FooterSection() {
           </div>
 
           {/* Column 4: Newsletter */}
-          <div className="landing-footer__col landing-footer__col--newsletter">
-            <h3 className="landing-footer__col-title">Stay Updated</h3>
-            <p className="landing-footer__newsletter-desc">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#fafafa] uppercase m-0">Stay Updated</h3>
+            <p className="text-[13px] leading-relaxed text-[#71717a] m-0">
               Subscribe for release notes, lifting guides, and developer fitness hacks.
             </p>
 
-            <form onSubmit={handleSubscribe} className="landing-footer__newsletter-form">
-              <div className="landing-footer__input-wrap">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-2 w-full max-w-[280px]">
+              <div className="relative flex items-center">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="enter.your@email.com"
                   required
-                  className="landing-footer__input"
+                  className="w-full px-4 py-2.5 rounded-lg border border-[rgba(63,63,70,0.6)] bg-[rgba(24,24,27,0.4)] text-[13.5px] text-[#fafafa] placeholder-zinc-600 focus:outline-none focus:border-neon-green transition-all"
                 />
-                <button type="submit" className="landing-footer__submit-btn" aria-label="Subscribe">
+                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-md bg-[rgba(39,39,42,0.6)] text-[#a1a1aa] hover:text-white border-none cursor-pointer transition-all" aria-label="Subscribe">
                   {subscribed ? (
                     <CheckCircle2 className="w-4 h-4 text-neon-green" />
                   ) : (
@@ -205,7 +207,7 @@ export default function FooterSection() {
                 </button>
               </div>
               {subscribed && (
-                <span className="landing-footer__success-msg">
+                <span className="text-[11px] font-semibold text-neon-green mt-1">
                   ✓ Subscribed! Welcome to the squad.
                 </span>
               )}
@@ -215,17 +217,17 @@ export default function FooterSection() {
         </div>
 
         {/* Divider */}
-        <div className="landing-footer__divider" aria-hidden="true" />
+        <div className="h-[1px] bg-[rgba(63,63,70,0.3)] my-8" aria-hidden="true" />
 
         {/* Bottom Bar: Copyright + Legal */}
-        <div className="landing-footer__bottom">
-          <div className="landing-footer__copyright">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-[12.5px] text-[#71717a] font-medium text-center md:text-left">
             © {new Date().getFullYear()} Gym-Git, Inc. All rights reserved. Crafted for lifters worldwide.
           </div>
 
-          <div className="landing-footer__legal-links">
+          <div className="flex items-center gap-4 flex-wrap justify-center">
             {LEGAL_LINKS.map((link) => (
-              <Link key={link.name} href={link.href} className="landing-footer__legal-link">
+              <Link key={link.name} href={link.href} className="text-[12px] text-[#71717a] no-underline hover:text-[#fafafa] transition-all">
                 {link.name}
               </Link>
             ))}

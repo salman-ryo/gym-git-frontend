@@ -54,16 +54,16 @@ const TESTIMONIALS: Testimonial[] = [
 
 function SectionBadge() {
   return (
-    <div className="testimonials__badge">
-      <span className="testimonials__badge-dot" aria-hidden="true" />
-      <span className="testimonials__badge-text">WHAT LIFTERS SAY</span>
+    <div className="landing-badge">
+      <span className="landing-badge-dot" aria-hidden="true" />
+      <span className="landing-badge-text">WHAT LIFTERS SAY</span>
     </div>
   );
 }
 
 function SectionHeadline() {
   return (
-    <h2 className="testimonials__headline">
+    <h2 className="text-[clamp(1.5rem,3vw,2.25rem)] font-black leading-tight tracking-tight text-[#fafafa] m-0">
       TRUSTED BY DISCIPLINED MINDS
     </h2>
   );
@@ -71,20 +71,20 @@ function SectionHeadline() {
 
 function TestimonialCard({ quote, name, handle, role, avatarInitials, avatarColor }: Testimonial) {
   return (
-    <article className="testi-card">
+    <article className="glass-card p-8 flex flex-col justify-between select-none relative group">
       {/* Quote Icon watermark */}
-      <div className="testi-card__quote-mark" aria-hidden="true">"</div>
+      <div className="absolute top-2 right-6 text-zinc-800 text-[6rem] leading-none font-serif opacity-20 pointer-events-none select-none" aria-hidden="true">"</div>
       
-      <p className="testi-card__quote">{quote}</p>
+      <p className="text-[14.5px] leading-relaxed text-[#e4e4e7] relative z-10 mb-6 italic">{quote}</p>
       
-      <div className="testi-card__author">
-        <div className="testi-card__avatar" style={{ backgroundColor: avatarColor }}>
+      <div className="flex items-center gap-3 mt-auto relative z-10">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: avatarColor }}>
           {avatarInitials}
         </div>
-        <div className="testi-card__author-info">
-          <span className="testi-card__name">{name}</span>
-          <span className="testi-card__handle">{handle}</span>
-          <span className="testi-card__role">{role}</span>
+        <div className="flex flex-col gap-0.5 text-left">
+          <span className="text-[13.5px] font-bold text-[#fafafa]">{name}</span>
+          <span className="text-[11.5px] text-[#71717a] font-medium">{handle}</span>
+          <span className="text-[11px] text-neon-green font-semibold tracking-wide uppercase mt-0.5">{role}</span>
         </div>
       </div>
     </article>
@@ -97,8 +97,6 @@ function TestimonialCard({ quote, name, handle, role, avatarInitials, avatarColo
 export default function TestimonialsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // In a real carousel we would use these, for now we show a CSS grid on desktop
-  // and they just exist as UI elements matching the design
   const handlePrev = () => {
     setActiveIndex((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
   };
@@ -108,17 +106,17 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="testimonials" aria-labelledby="testimonials-heading">
-      <div className="testimonials__header">
+    <section className="relative py-20 md:py-24 bg-transparent overflow-hidden" aria-labelledby="testimonials-heading">
+      <div className="landing-container relative z-10 flex flex-col items-center text-center gap-4 mb-12">
         <SectionBadge />
         <SectionHeadline />
       </div>
 
-      <div className="testimonials__container">
+      <div className="landing-container relative z-10 flex items-center gap-6">
         
         {/* Left Arrow */}
         <button 
-          className="testimonials__nav-btn testimonials__nav-btn--prev"
+          className="hidden lg:flex items-center justify-center w-12 h-12 rounded-full bg-[rgba(24,24,27,0.5)] border border-[rgba(63,63,70,0.5)] text-[#a1a1aa] hover:text-[#fafafa] hover:bg-[rgba(39,39,42,0.6)] hover:border-[rgba(161,161,170,0.3)] transition-all cursor-pointer flex-shrink-0"
           onClick={handlePrev}
           aria-label="Previous testimonial"
         >
@@ -126,7 +124,7 @@ export default function TestimonialsSection() {
         </button>
 
         {/* Carousel / Grid Track */}
-        <div className="testimonials__track">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
           {TESTIMONIALS.map((t) => (
             <TestimonialCard key={t.id} {...t} />
           ))}
@@ -134,7 +132,7 @@ export default function TestimonialsSection() {
 
         {/* Right Arrow */}
         <button 
-          className="testimonials__nav-btn testimonials__nav-btn--next"
+          className="hidden lg:flex items-center justify-center w-12 h-12 rounded-full bg-[rgba(24,24,27,0.5)] border border-[rgba(63,63,70,0.5)] text-[#a1a1aa] hover:text-[#fafafa] hover:bg-[rgba(39,39,42,0.6)] hover:border-[rgba(161,161,170,0.3)] transition-all cursor-pointer flex-shrink-0"
           onClick={handleNext}
           aria-label="Next testimonial"
         >
@@ -144,11 +142,11 @@ export default function TestimonialsSection() {
       </div>
 
       {/* Pagination Dots */}
-      <div className="testimonials__pagination" aria-hidden="true">
+      <div className="flex items-center justify-center gap-2 mt-8 md:hidden" aria-hidden="true">
         {TESTIMONIALS.map((_, i) => (
           <span 
             key={i} 
-            className={`testimonials__dot ${i === activeIndex ? 'testimonials__dot--active' : ''}`}
+            className={`w-2 h-2 rounded-full bg-zinc-700 cursor-pointer transition-all duration-300 ${i === activeIndex ? 'w-6 bg-neon-green' : ''}`}
             onClick={() => setActiveIndex(i)}
           />
         ))}

@@ -29,7 +29,7 @@ export default function LandingBackground() {
   }, []);
 
   return (
-    <div className="landing-bg-layer" aria-hidden="true">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#060a0e]" aria-hidden="true">
       {/* ── Animated Cyberpunk Grid Background ── */}
       <div className="landing-bg-layer__grid" />
 
@@ -40,7 +40,7 @@ export default function LandingBackground() {
       <div className="landing-bg-layer__orb landing-bg-layer__orb--bottom-right" />
 
       {/* ── Page-wide Floating Particles ── */}
-      <div className="landing-bg-layer__particles">
+      <div className="absolute inset-0 pointer-events-none">
         {particles.map((p) => (
           <div
             key={p.id}

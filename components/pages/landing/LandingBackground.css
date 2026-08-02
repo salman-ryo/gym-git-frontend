@@ -5,15 +5,6 @@
    and GPU-accelerated floating particles.
    ═══════════════════════════════════════════════════ */
 
-.landing-bg-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-  background: #060a0e;
-}
-
 /* ─── Animated Grid Backdrop ────────────────────── */
 .landing-bg-layer__grid {
   position: absolute;
@@ -114,13 +105,6 @@
   0% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(60px, -30px) scale(1.08); }
   100% { transform: translate(-30px, 50px) scale(0.92); }
-}
-
-/* ─── Floating Particles ────────────────────────── */
-.landing-bg-layer__particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
 }
 
 .landing-bg-layer__particle {

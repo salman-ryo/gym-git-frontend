@@ -107,9 +107,9 @@ function PhoneMockup() {
 /** Section badge */
 function SectionBadge() {
   return (
-    <div className="mobile-feat__badge">
-      <span className="mobile-feat__badge-dot" aria-hidden="true" />
-      <span className="mobile-feat__badge-text">BUILT FOR LIFTERS</span>
+    <div className="landing-badge">
+      <span className="landing-badge-dot" aria-hidden="true" />
+      <span className="landing-badge-text">BUILT FOR LIFTERS</span>
     </div>
   );
 }
@@ -117,12 +117,12 @@ function SectionBadge() {
 /** Section headline */
 function SectionHeadline() {
   return (
-    <h2 className="mobile-feat__headline">
+    <h2 className="text-[clamp(1.8rem,4.5vw,3rem)] font-black leading-tight tracking-tight text-white mb-6">
       LOG LIKE A DEV.
       <br />
       PROGRESS LIKE
       <br />
-      AN <span className="mobile-feat__headline-accent">ATHLETE.</span>
+      AN <span className="text-gradient-neon">ATHLETE.</span>
     </h2>
   );
 }
@@ -130,10 +130,10 @@ function SectionHeadline() {
 /** Feature list */
 function FeatureList() {
   return (
-    <ul className="mobile-feat__list" role="list">
+    <ul className="list-none m-0 p-0 flex flex-col gap-4 mb-8" role="list">
       {FEATURES.map((feature, i) => (
-        <li key={i} className="mobile-feat__list-item-text">
-          <CheckCircle2 className="mobile-feat__check-icon" />
+        <li key={i} className="flex items-center gap-3 text-[14.5px] text-[#fafafa] font-medium">
+          <CheckCircle2 className="w-4.5 h-4.5 text-neon-green flex-shrink-0" />
           <span>{feature}</span>
         </li>
       ))}
@@ -144,7 +144,7 @@ function FeatureList() {
 /** CTA Button */
 function ExploreCTA() {
   return (
-    <Link href="#features" className="mobile-feat__cta">
+    <Link href="#features" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[14px] font-semibold text-[#fafafa] no-underline rounded-lg border border-[rgba(63,63,70,0.6)] bg-[rgba(24,24,27,0.4)] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.25)] hover:bg-[rgba(0,255,136,0.04)] hover:shadow-[0_0_16px_rgba(0,255,136,0.08)] transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-neon-green">
       <span>Explore Features</span>
       <ChevronRight className="w-4 h-4" />
     </Link>
@@ -156,20 +156,20 @@ function ExploreCTA() {
    ───────────────────────────────────────────── */
 export default function MobileFeatureSection() {
   return (
-    <section className="mobile-feat" aria-labelledby="mobile-feat-heading">
-      <div className="mobile-feat__container">
+    <section className="relative py-20 md:py-24 bg-transparent overflow-hidden" aria-labelledby="mobile-feat-heading">
+      <div className="landing-container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-10 items-center">
         
         {/* ── Left Column: Visual ── */}
-        <div className="mobile-feat__visual">
+        <div className="flex justify-center items-center relative">
           <PhoneMockup />
         </div>
 
         {/* ── Right Column: Copy ── */}
-        <div className="mobile-feat__content">
+        <div className="flex flex-col items-start">
           <SectionBadge />
           <SectionHeadline />
           <FeatureList />
-          <div className="mobile-feat__cta-wrap">
+          <div className="flex items-center">
             <ExploreCTA />
           </div>
         </div>
