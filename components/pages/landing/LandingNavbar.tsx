@@ -92,18 +92,40 @@ function GitHubStarLink() {
   );
 }
 
-/** Launch App CTA button */
 function LaunchAppButton() {
+  const handleClick = () => {
+    const isMobile =
+      /Android|iPhone|iPad|iPod/i.test(
+        navigator.userAgent
+      );
+
+    if (isMobile) {
+      import("@/lib/appLauncher").then(
+        ({ openMobileApp }) => {
+          openMobileApp();
+        }
+      );
+    } else {
+      window.location.href = "/login";
+    }
+  };
+
   return (
-    <Link
-      href="/login"
+    <button
+      onClick={handleClick}
       className="landing-nav__cta"
     >
-      <span className="landing-nav__cta-text">Launch App</span>
+      <span className="landing-nav__cta-text">
+        Login
+      </span>
+
       <ChevronRight className="landing-nav__cta-arrow" />
-      {/* Neon border glow */}
-      <span className="landing-nav__cta-glow" aria-hidden="true" />
-    </Link>
+
+      <span
+        className="landing-nav__cta-glow"
+        aria-hidden="true"
+      />
+    </button>
   );
 }
 
@@ -224,14 +246,20 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             <Star className="w-4 h-4" />
             Star on GitHub
           </a>
-          <Link
-            href="/login"
+          <button
             className="landing-nav__drawer-launch"
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              import("@/lib/appLauncher").then(
+                ({ openMobileApp }) => {
+                  openMobileApp();
+                }
+              );
+            }}
           >
             Launch App
             <ChevronRight className="w-4 h-4" />
-          </Link>
+          </button>
         </div>
       </div>
     </>

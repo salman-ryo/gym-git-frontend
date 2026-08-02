@@ -1,6 +1,6 @@
-import { 
-  LandingNavbar, 
-  HeroSection, 
+import {
+  LandingNavbar,
+  HeroSection,
   WhyGymGitSection,
   MobileFeatureSection,
   TestimonialsSection,

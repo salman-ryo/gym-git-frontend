@@ -4,6 +4,7 @@ import './HeroSection.css';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Play, Flame, Zap, TrendingUp, Activity } from 'lucide-react';
+import Image from 'next/image';
 
 /* ─────────────────────────────────────────────
    Sub-components
@@ -267,65 +268,6 @@ function ActivityTabs() {
   );
 }
 
-/** Full dashboard mockup */
-function DashboardMockup() {
-  return (
-    <div className="hero-dash" aria-hidden="true">
-      {/* Glow backdrop */}
-      <div className="hero-dash__glow" />
-
-      {/* Dashboard frame */}
-      <div className="hero-dash__frame">
-        {/* Header bar */}
-        <div className="hero-dash__header">
-          <div className="hero-dash__header-dots">
-            <span className="hero-dash__dot hero-dash__dot--red" />
-            <span className="hero-dash__dot hero-dash__dot--yellow" />
-            <span className="hero-dash__dot hero-dash__dot--green" />
-          </div>
-          <span className="hero-dash__header-title">GRIND STATS</span>
-          <div className="hero-dash__header-badge">
-            <Flame className="hero-dash__header-flame" />
-          </div>
-        </div>
-
-        {/* Stats row */}
-        <div className="hero-dash__stats-row">
-          <StatCard
-            label="Current Streak"
-            value="9"
-            icon={<Flame className="w-4 h-4" />}
-            iconColor="#f59e0b"
-            trend="🔥"
-          />
-          <StatCard
-            label="Consistency"
-            value="92%"
-            icon={<TrendingUp className="w-4 h-4" />}
-            iconColor="#10b981"
-            trend="↑ 5%"
-          />
-          <StatCard
-            label="Power Level"
-            value="19.1"
-            icon={<Zap className="w-4 h-4" />}
-            iconColor="#8b5cf6"
-          />
-        </div>
-
-        {/* Tabs + Activity */}
-        <ActivityTabs />
-
-        {/* Contribution graph */}
-        <ContributionGrid />
-
-        {/* Power chart */}
-        <PowerLevelChart />
-      </div>
-    </div>
-  );
-}
-
 /* ─────────────────────────────────────────────
    Main Hero Section
    ───────────────────────────────────────────── */
@@ -366,8 +308,9 @@ export default function HeroSection() {
         </div>
 
         {/* ── Right Column ── */}
-        <div className="hero__visual">
-          <DashboardMockup />
+        <div className="hero__visual rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-teal-500/50">
+          {/* <DashboardMockup /> */}
+          <Image src="/images/dashboardsection.png" priority width={1080} height={1920} alt="Dashboard Mockup" />
         </div>
       </div>
     </section>

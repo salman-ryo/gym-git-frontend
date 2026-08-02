@@ -11,7 +11,7 @@ function GitCommitTreeGraphic() {
     <div className="cta-graphic" aria-hidden="true">
       <div className="cta-graphic__glow cta-graphic__glow--purple" />
       <div className="cta-graphic__glow cta-graphic__glow--green" />
-      
+
       <svg
         className="cta-graphic__svg"
         viewBox="0 0 280 280"
@@ -131,7 +131,7 @@ function GitCommitTreeGraphic() {
 
 export default function CTASection() {
   return (
-    <section className="cta-section" aria-labelledby="cta-heading">
+    <section className="cta-section transition-all duration-300" aria-labelledby="cta-heading">
       <div className="cta-section__container">
         <div className="cta-card">
           {/* Ambient Inner Lights */}
