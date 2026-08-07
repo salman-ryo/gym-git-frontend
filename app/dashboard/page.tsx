@@ -27,6 +27,7 @@ import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PowerLevelChart from '@/components/PowerLevelChart';
 import Footer from '@/components/Footer';
+import { LandingBackground } from '@/components/pages/landing';
 import { Sparkles, Database, RotateCcw, Check, Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -193,12 +194,16 @@ export default function DashboardPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-        {/* Navigation Header */}
-        <Header currentStreak={stats?.currentStreak || 0} />
+      <div className="min-h-screen bg-[#060a0e] text-[#fafafa] flex flex-col font-sans relative overflow-hidden selection:bg-neon-green/20 selection:text-neon-green">
+        {/* ── Animated Cyberpunk Background from Landing Page ── */}
+        <LandingBackground />
 
-        {/* Dashboard Main Content */}
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        <div className="relative z-10 flex flex-col min-h-screen">
+          {/* Navigation Header */}
+          <Header currentStreak={stats?.currentStreak || 0} />
+
+          {/* Dashboard Main Content */}
+          <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
           {/* Floating Testing Toolbar for 365-day screenshot — conditionally rendered when enable_mock_data is true */}
           {enable_mock_data && (
             <div className="bg-zinc-900/90 border border-neon-green/30 backdrop-blur-md rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_25px_rgba(0,255,136,0.08)]">
@@ -326,6 +331,7 @@ export default function DashboardPage() {
           onSavePlan={handleSavePlan}
           preventClose={needsPlanSelection}
         />
+        </div>
       </div>
     </AuthGuard>
   );
