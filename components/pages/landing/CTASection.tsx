@@ -132,7 +132,7 @@ function GitCommitTreeGraphic() {
 export default function CTASection() {
   return (
     <section className="relative py-20 md:py-24 bg-transparent overflow-hidden transition-all duration-300" aria-labelledby="cta-heading">
-      <div className="landing-container">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10">
         <div className="cta-card">
           {/* Ambient Inner Lights */}
           <div className="absolute -top-[20%] -left-[10%] w-1/2 h-[140%] bg-[radial-gradient(ellipse_at_center,rgba(0,255,136,0.12)_0%,transparent_70%)] blur-[50px] pointer-events-none" aria-hidden="true" />
@@ -155,7 +155,7 @@ export default function CTASection() {
               <h2 className="text-[clamp(2rem,4vw,3.1rem)] font-black leading-[1.08] tracking-tight m-0 mb-4" id="cta-heading">
                 <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">READY TO COMMIT</span>
                 <br />
-                <span className="text-gradient-neon filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">TO YOUR BEST SELF?</span>
+                <span className="bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">TO YOUR BEST SELF?</span>
               </h2>
 
               <p className="text-[clamp(0.95rem,1.4vw,1.1rem)] leading-relaxed text-[#94a3b8] mb-8 max-w-[520px]">

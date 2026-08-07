@@ -54,9 +54,9 @@ const TESTIMONIALS: Testimonial[] = [
 
 function SectionBadge() {
   return (
-    <div className="landing-badge">
-      <span className="landing-badge-dot" aria-hidden="true" />
-      <span className="landing-badge-text">WHAT LIFTERS SAY</span>
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-neon-green/4 backdrop-blur-md">
+      <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
+      <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">WHAT LIFTERS SAY</span>
     </div>
   );
 }
@@ -71,7 +71,7 @@ function SectionHeadline() {
 
 function TestimonialCard({ quote, name, handle, role, avatarInitials, avatarColor }: Testimonial) {
   return (
-    <article className="glass-card p-8 flex flex-col justify-between select-none relative group">
+    <article className="relative rounded-2xl border border-zinc-800/50 bg-glass-bg backdrop-blur-md overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-neon-green/15 hover:bg-glass-bg-scrolled hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] hover:-translate-y-1 will-change-transform p-8 flex flex-col justify-between select-none relative group">
       {/* Quote Icon watermark */}
       <div className="absolute top-2 right-6 text-zinc-800 text-[6rem] leading-none font-serif opacity-20 pointer-events-none select-none" aria-hidden="true">"</div>
       
@@ -107,12 +107,12 @@ export default function TestimonialsSection() {
 
   return (
     <section className="relative py-20 md:py-24 bg-transparent overflow-hidden" aria-labelledby="testimonials-heading">
-      <div className="landing-container relative z-10 flex flex-col items-center text-center gap-4 mb-12">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 flex flex-col items-center text-center gap-4 mb-12">
         <SectionBadge />
         <SectionHeadline />
       </div>
 
-      <div className="landing-container relative z-10 flex items-center gap-6">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 flex items-center gap-6">
         
         {/* Left Arrow */}
         <button 

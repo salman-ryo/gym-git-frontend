@@ -95,7 +95,7 @@ export default function FooterSection() {
       <h2 id="footer-heading" className="sr-only">Footer</h2>
       <div className="landing-footer__grid-bg" aria-hidden="true" />
 
-      <div className="landing-container">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10">
         {/* Top Section: Brand + Links Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_repeat(3,1fr)_2fr] gap-10 lg:gap-8 mb-16 text-left">
 

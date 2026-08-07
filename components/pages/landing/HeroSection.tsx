@@ -13,9 +13,9 @@ import Image from 'next/image';
 /** Floating badge above the headline */
 function HeroBadge() {
   return (
-    <div className="landing-badge" aria-label="Built for Discipline">
-      <span className="landing-badge-dot" aria-hidden="true" />
-      <span className="landing-badge-text">BUILT FOR DISCIPLINE</span>
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-neon-green/4 backdrop-blur-md" aria-label="Built for Discipline">
+      <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
+      <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">BUILT FOR DISCIPLINE</span>
     </div>
   );
 }
@@ -69,10 +69,10 @@ function HeroHeadline() {
       <span className="block">
         <span className="text-[#fafafa]">FITNESS.</span>
       </span>
-      <span className="block text-gradient-neon filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+      <span className="block bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
         COMMIT TO
       </span>
-      <span className="block text-gradient-neon filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+      <span className="block bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">
         PROGRESS.
       </span>
     </h1>
@@ -174,7 +174,7 @@ export default function HeroSection() {
         ))}
       </div>
 
-      <div className="landing-container relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-14 xl:gap-18 items-center">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-12 lg:gap-14 xl:gap-18 items-center">
         {/* ── Left Column ── */}
         <div className="flex flex-col gap-6 lg:gap-7">
           <HeroBadge />

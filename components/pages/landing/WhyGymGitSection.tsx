@@ -105,9 +105,9 @@ const STATS: StatCounter[] = [
 /** Section badge */
 function SectionBadge() {
   return (
-    <div className="landing-badge">
-      <span className="landing-badge-dot" aria-hidden="true" />
-      <span className="landing-badge-text">WHY GYM GIT</span>
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-neon-green/4 backdrop-blur-md">
+      <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
+      <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">WHY GYM GIT</span>
     </div>
   );
 }
@@ -119,7 +119,7 @@ function SectionHeadline() {
       <span className="text-[#fafafa]">BUILT DIFFERENT.</span>
       <br />
       <span className="text-[#fafafa]">BUILT FOR </span>
-      <span className="text-gradient-neon">YOU.</span>
+      <span className="bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">YOU.</span>
     </h2>
   );
 }
@@ -146,7 +146,7 @@ function WhyFeatureCard({
 }: FeatureCard & { index: number }) {
   return (
     <article
-      className="glass-card why-card flex flex-col items-center text-center px-6 pt-9 pb-8 cursor-default group"
+      className="relative rounded-2xl border border-zinc-800/50 bg-glass-bg backdrop-blur-md overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-neon-green/15 hover:bg-glass-bg-scrolled hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] hover:-translate-y-1 will-change-transform why-card flex flex-col items-center text-center px-6 pt-9 pb-8 cursor-default group"
       style={
         {
           '--card-delay': `${index * 0.1}s`,
@@ -254,21 +254,21 @@ export default function WhyGymGitSection() {
       <div className="why__grid-bg" aria-hidden="true" />
 
       {/* Section header */}
-      <div className="landing-container relative z-10 flex flex-col items-center text-center gap-4 mb-14 md:mb-16">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 flex flex-col items-center text-center gap-4 mb-14 md:mb-16">
         <SectionBadge />
         <SectionHeadline />
         <SectionSubtitle />
       </div>
 
       {/* Feature cards grid */}
-      <div className="landing-container relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
         {FEATURES.map((feature, i) => (
           <WhyFeatureCard key={feature.title} {...feature} index={i} />
         ))}
       </div>
 
       {/* Stats counters row */}
-      <div className="landing-container relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mt-12 md:mt-14">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mt-12 md:mt-14">
         {STATS.map((stat) => (
           <WhyStatCard key={stat.label} {...stat} />
         ))}

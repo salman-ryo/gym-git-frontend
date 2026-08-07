@@ -311,7 +311,7 @@ export default function LandingNavbar() {
         scrolled && "opacity-80"
       )} aria-hidden="true" />
 
-      <div className="landing-container h-full flex items-center justify-between gap-6">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 h-full flex items-center justify-between gap-6">
         {/* Left — Logo */}
         <div className="flex-shrink-0">
           <Link href="/" className="flex items-center gap-[10px] no-underline outline-none focus-visible:outline-2 focus-visible:outline-neon-green focus-visible:outline-offset-4 focus-visible:rounded-lg group" aria-label="Gym Git home">

@@ -100,6 +100,15 @@ input[type="radio"],
   --color-neon-cyan: var(--neon-cyan);
   --color-neon-cyan-glow: var(--neon-cyan-glow);
 
+  --color-brand-primary: var(--neon-green);
+  --color-brand-primary-dim: var(--neon-green-dim);
+  --color-brand-primary-glow: var(--neon-green-glow);
+  --color-brand-primary-subtle: var(--neon-green-subtle);
+  --color-brand-secondary: var(--neon-cyan);
+  --color-brand-secondary-glow: var(--neon-cyan-glow);
+  --color-brand-accent: var(--neon-purple);
+  --color-brand-accent-glow: var(--neon-purple-glow);
+
   --color-glass-bg: var(--glass-bg);
   --color-glass-bg-scrolled: var(--glass-bg-scrolled);
   --color-glass-border: var(--glass-border);
@@ -158,20 +167,35 @@ input[type="radio"],
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  /* Landing page design tokens */
-  --neon-green: #00ff88;
-  --neon-green-dim: #00cc6a;
-  --neon-green-glow: rgba(0, 255, 136, 0.4);
-  --neon-green-subtle: rgba(0, 255, 136, 0.08);
-  --neon-purple: #a855f7;
-  --neon-purple-glow: rgba(168, 85, 247, 0.35);
-  --neon-cyan: #22d3ee;
-  --neon-cyan-glow: rgba(34, 211, 238, 0.25);
+  /* ─── Customizable Brand Colors ──────────────────
+     Adjust the RGB values below to change colors
+     across the entire landing page.
+     ──────────────────────────────────────────────── */
+  --brand-primary-rgb: 0, 255, 136;
+  /* Default: Neon Green */
+  --brand-primary-dim-rgb: 0, 204, 106;
+  /* Default: Darker Neon Green */
+  --brand-secondary-rgb: 34, 211, 238;
+  /* Default: Neon Cyan */
+  --brand-accent-rgb: 168, 85, 247;
+  /* Default: Neon Purple */
+
+  /* Semantic Brand Mappings & Backward Compatibility */
+  --neon-green: rgb(var(--brand-primary-rgb));
+  --neon-green-dim: rgb(var(--brand-primary-dim-rgb));
+  --neon-green-glow: rgba(var(--brand-primary-rgb), 0.4);
+  --neon-green-subtle: rgba(var(--brand-primary-rgb), 0.08);
+
+  --neon-cyan: rgb(var(--brand-secondary-rgb));
+  --neon-cyan-glow: rgba(var(--brand-secondary-rgb), 0.25);
+
+  --neon-purple: rgb(var(--brand-accent-rgb));
+  --neon-purple-glow: rgba(var(--brand-accent-rgb), 0.35);
 
   --glass-bg: rgba(8, 12, 16, 0.72);
   --glass-bg-scrolled: rgba(8, 12, 16, 0.92);
-  --glass-border: rgba(0, 255, 136, 0.08);
-  --glass-border-scrolled: rgba(0, 255, 136, 0.15);
+  --glass-border: rgba(var(--brand-primary-rgb), 0.08);
+  --glass-border-scrolled: rgba(var(--brand-primary-rgb), 0.15);
 
   --nav-height: 72px;
   --nav-max-width: 1320px;
@@ -191,97 +215,37 @@ input[type="radio"],
   }
 }
 
-/* ─── Shared Landing Page Utility Classes ─── */
-.landing-container {
-  max-width: var(--nav-max-width, 1320px);
-  margin: 0 auto;
-  padding: 0 24px;
-}
 
-@media (min-width: 1024px) {
-  .landing-container {
-    padding: 0 40px;
-  }
-}
-
-/* Shared Glowing Badges */
-.landing-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-radius: 100px;
-  border: 1px solid rgba(0, 255, 136, 0.15);
-  background: rgba(0, 255, 136, 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.landing-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--neon-green, #00ff88);
-  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
-  animation: badge-pulse 2s ease-in-out infinite;
-}
-
-.landing-badge-text {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--neon-green, #00ff88);
-  text-transform: uppercase;
-}
-
-/* Glassmorphism Card base class */
-.glass-card {
-  position: relative;
-  border-radius: 16px;
-  border: 1px solid rgba(39, 39, 42, 0.5);
-  background: rgba(14, 18, 24, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  overflow: hidden;
-  transition:
-    border-color 0.35s ease,
-    box-shadow 0.35s ease,
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    background 0.35s ease;
-  will-change: transform;
-}
-
-.glass-card:hover {
-  border-color: rgba(0, 255, 136, 0.15);
-  background: rgba(14, 18, 24, 0.8);
-  box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.5);
-  transform: translateY(-4px);
-}
-
-/* Neon Text Gradient class */
-.text-gradient-neon {
-  background: linear-gradient(
-    135deg,
-    var(--neon-green, #00ff88) 0%,
-    #00e077 40%,
-    var(--neon-cyan, #22d3ee) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
 /* Keyframe Animations */
 @keyframes badge-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.75); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.75);
+  }
 }
 
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 @keyframes shimmer-effect {
-  to { transform: translateX(120%); }
+  to {
+    transform: translateX(120%);
+  }
 }

@@ -107,9 +107,9 @@ function PhoneMockup() {
 /** Section badge */
 function SectionBadge() {
   return (
-    <div className="landing-badge">
-      <span className="landing-badge-dot" aria-hidden="true" />
-      <span className="landing-badge-text">BUILT FOR LIFTERS</span>
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-neon-green/4 backdrop-blur-md">
+      <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
+      <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">BUILT FOR LIFTERS</span>
     </div>
   );
 }
@@ -122,7 +122,7 @@ function SectionHeadline() {
       <br />
       PROGRESS LIKE
       <br />
-      AN <span className="text-gradient-neon">ATHLETE.</span>
+      AN <span className="bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">ATHLETE.</span>
     </h2>
   );
 }
@@ -157,7 +157,7 @@ function ExploreCTA() {
 export default function MobileFeatureSection() {
   return (
     <section className="relative py-20 md:py-24 bg-transparent overflow-hidden" aria-labelledby="mobile-feat-heading">
-      <div className="landing-container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-10 items-center">
+      <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-10 items-center">
         
         {/* ── Left Column: Visual ── */}
         <div className="flex justify-center items-center relative">
