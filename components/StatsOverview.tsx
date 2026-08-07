@@ -2,7 +2,7 @@
 
 import { Stats } from '@/lib/types';
 import React from 'react';
-import { ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Flame, Trophy, CheckSquare, Clock } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import Image from 'next/image';
 
@@ -18,6 +18,8 @@ type StatTheme = {
   diamondShadow: string;
   textUnit: string;
   textSub: string;
+  accentBar: string;
+  glowOrb: string;
   imgShadow: string;
 };
 
@@ -32,7 +34,7 @@ interface StatCardProps {
   theme: StatTheme;
 }
 
-// Reusable Sub-component to keep the main file DRY
+// Reusable Cyberpunk Stat Card Component
 function StatCard({
   title,
   value,
@@ -40,14 +42,20 @@ function StatCard({
   subtext,
   imageSrc,
   imageAlt,
-  contentWidth = 'w-[65%]',
+  contentWidth = 'w-[70%]',
   theme,
 }: StatCardProps) {
   return (
     <div
-      className={`relative flex flex-col justify-center min-h-[130px] bg-zinc-950 border-2 rounded-xl overflow-visible group transition-all ${theme.border} ${theme.shadow} ${theme.hoverShadow}`}
+      className={`relative flex flex-col justify-center min-h-[135px] bg-[#080c10]/85 border backdrop-blur-2xl rounded-2xl overflow-hidden group transition-all duration-300 ${theme.border} ${theme.shadow} ${theme.hoverShadow}`}
     >
-      {/* Diamonds */}
+      {/* Top Ambient Glow Line */}
+      <div className={`absolute top-0 left-0 right-0 h-[2px] ${theme.accentBar}`} />
+
+      {/* Ambient Corner Orb */}
+      <div className={`absolute -top-12 -left-12 w-28 h-28 rounded-full blur-2xl pointer-events-none ${theme.glowOrb}`} />
+
+      {/* Futuristic Corner Diamonds */}
       <div
         className={`absolute -top-1.5 -left-1.5 w-3 h-3 rotate-45 z-20 rounded-sm ${theme.diamondBg} ${theme.diamondShadow}`}
       />
@@ -56,29 +64,29 @@ function StatCard({
       />
 
       <div className={`relative z-10 p-5 ${contentWidth}`}>
-        <div className="text-[10px] font-black text-zinc-300 uppercase tracking-widest mb-1">
+        <div className="text-[10.5px] font-black text-zinc-400 uppercase tracking-widest mb-1">
           {title}
         </div>
         <div className="flex items-baseline gap-2 mt-1">
-          <span className="text-4xl font-black text-white">{value}</span>
-          <span className={`text-sm font-bold ${theme.textUnit}`}>{unit}</span>
+          <span className="text-4xl font-black text-white tracking-tight">{value}</span>
+          <span className={`text-sm font-extrabold ${theme.textUnit}`}>{unit}</span>
         </div>
         <div
-          className={`mt-2 flex items-start gap-1.5 text-[10px] font-semibold leading-tight ${theme.textSub}`}
+          className={`mt-2.5 flex items-center gap-1.5 text-[11px] font-semibold leading-tight ${theme.textSub}`}
         >
           {subtext}
         </div>
       </div>
 
-      {/* Icon/Image */}
+      {/* Icon / Image with Cyber Glow */}
       <div
-        className={`absolute bottom-0 right-3 w-[45%] h-full pointer-events-none flex items-center justify-end group-hover:scale-105 transition-transform ${theme.imgShadow}`}
+        className={`absolute bottom-0 right-3 w-[45%] h-full pointer-events-none flex items-center justify-end group-hover:scale-108 transition-transform duration-300 ${theme.imgShadow}`}
       >
         <Image
           src={imageSrc}
           alt={imageAlt}
-          width={80}
-          height={80}
+          width={82}
+          height={82}
           unoptimized
           className="object-contain"
         />
@@ -92,7 +100,7 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
 
   const streak = stats.scientificStreak;
 
-  // Data mapping for the cards
+  // Data mapping for the cards matching the Landing & Cyberpunk palette
   const statCardsData: StatCardProps[] = [
     {
       title: 'Current Streak',
@@ -100,39 +108,48 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
       unit: 'Days',
       subtext: (
         <>
-          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-          <span>Rest days protected by plan</span>
+          <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-neon-green" />
+          <span>Rest days protected</span>
         </>
       ),
       imageSrc: '/images/icons/fire.svg',
       imageAlt: 'Streak',
       theme: {
-        border: 'border-amber-500',
-        shadow: 'shadow-[0_0_15px_rgba(245,158,11,0.15)]',
-        hoverShadow: 'hover:shadow-[0_0_25px_rgba(245,158,11,0.3)]',
-        diamondBg: 'bg-amber-500',
-        diamondShadow: 'shadow-[0_0_10px_#f59e0b]',
-        textUnit: 'text-amber-500',
-        textSub: 'text-amber-500/80',
-        imgShadow: 'drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]',
+        border: 'border-neon-green/15 hover:border-neon-green/60',
+        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+        hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
+        diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
+        diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
+        textUnit: 'text-neon-green',
+        textSub: 'text-zinc-400 group-hover:text-zinc-300',
+        accentBar: 'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
+        glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
+        imgShadow: 'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
       },
     },
     {
       title: 'Longest Streak',
       value: stats.longestStreak,
       unit: 'Days Record',
-      subtext: <span>Best plan-compliant sequence</span>,
+      subtext: (
+        <>
+          <Trophy className="w-3.5 h-3.5 shrink-0 text-neon-cyan" />
+          <span>Best sequence record</span>
+        </>
+      ),
       imageSrc: '/images/icons/trophy.svg',
       imageAlt: 'Longest Streak',
       theme: {
-        border: 'border-emerald-500',
-        shadow: 'shadow-[0_0_15px_rgba(16,185,129,0.15)]',
-        hoverShadow: 'hover:shadow-[0_0_25px_rgba(16,185,129,0.3)]',
-        diamondBg: 'bg-emerald-400',
-        diamondShadow: 'shadow-[0_0_10px_#34d399]',
-        textUnit: 'text-emerald-400',
-        textSub: 'text-emerald-400/80',
-        imgShadow: 'drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]',
+        border: 'border-neon-cyan/15 hover:border-neon-cyan/60',
+        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+        hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
+        diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
+        diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
+        textUnit: 'text-neon-cyan',
+        textSub: 'text-zinc-400 group-hover:text-zinc-300',
+        accentBar: 'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
+        glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
+        imgShadow: 'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
       },
     },
     {
@@ -141,25 +158,26 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
       unit: 'Compliance',
       subtext: (
         <>
-          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+          <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-neon-purple" />
           <span>
-            This Week: {streak?.currentWeekDone || 3}/
-            {streak?.currentWeekTarget || 4} ({streak?.currentWeekStatus || 'On Track'})
+            Wk: {streak?.currentWeekDone || 3}/{streak?.currentWeekTarget || 4} ({streak?.currentWeekStatus || 'On Track'})
           </span>
         </>
       ),
       imageSrc: '/images/icons/check.svg',
       imageAlt: 'Plan Adherence',
-      contentWidth: 'w-[70%]',
+      contentWidth: 'w-[72%]',
       theme: {
-        border: 'border-purple-500',
-        shadow: 'shadow-[0_0_15px_rgba(168,85,247,0.15)]',
-        hoverShadow: 'hover:shadow-[0_0_25px_rgba(168,85,247,0.3)]',
-        diamondBg: 'bg-purple-400',
-        diamondShadow: 'shadow-[0_0_10px_#c084fc]',
-        textUnit: 'text-purple-400',
-        textSub: 'text-purple-400/80',
-        imgShadow: 'drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]',
+        border: 'border-neon-purple/15 hover:border-neon-purple/60',
+        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+        hoverShadow: 'hover:shadow-[0_0_30px_rgba(168,85,247,0.22)]',
+        diamondBg: 'bg-neon-purple/70 group-hover:bg-neon-purple',
+        diamondShadow: 'shadow-[0_0_4px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_10px_#a855f7]',
+        textUnit: 'text-neon-purple',
+        textSub: 'text-zinc-400 group-hover:text-zinc-300',
+        accentBar: 'bg-gradient-to-r from-neon-purple/25 via-neon-purple/10 to-transparent group-hover:from-neon-purple/60 group-hover:via-neon-purple/30',
+        glowOrb: 'bg-neon-purple/[0.03] group-hover:bg-neon-purple/10',
+        imgShadow: 'drop-shadow-[0_0_8px_rgba(168,85,247,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(168,85,247,0.4)]',
       },
     },
     {
@@ -167,21 +185,26 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
       value: stats.totalHours,
       unit: 'hrs',
       subtext: (
-        <span>
-          {stats.totalDays} sessions (~{stats.averageHoursPerSession}h avg)
-        </span>
+        <>
+          <Clock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+          <span>
+            {stats.totalDays} sessions (~{stats.averageHoursPerSession}h avg)
+          </span>
+        </>
       ),
       imageSrc: '/images/icons/clock.svg',
       imageAlt: 'Hours Invested',
       theme: {
-        border: 'border-blue-500',
-        shadow: 'shadow-[0_0_15px_rgba(59,130,246,0.15)]',
-        hoverShadow: 'hover:shadow-[0_0_25px_rgba(59,130,246,0.3)]',
-        diamondBg: 'bg-blue-400',
-        diamondShadow: 'shadow-[0_0_10px_#60a5fa]',
-        textUnit: 'text-blue-400',
-        textSub: 'text-blue-400/80',
-        imgShadow: 'drop-shadow-[0_0_15px_rgba(59,130,246,0.4)]',
+        border: 'border-amber-400/15 hover:border-amber-400/60',
+        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+        hoverShadow: 'hover:shadow-[0_0_30px_rgba(251,191,36,0.22)]',
+        diamondBg: 'bg-amber-400/70 group-hover:bg-amber-400',
+        diamondShadow: 'shadow-[0_0_4px_rgba(251,191,36,0.4)] group-hover:shadow-[0_0_10px_#fbbf24]',
+        textUnit: 'text-amber-400',
+        textSub: 'text-zinc-400 group-hover:text-zinc-300',
+        accentBar: 'bg-gradient-to-r from-amber-400/25 via-amber-400/10 to-transparent group-hover:from-amber-400/60 group-hover:via-amber-400/30',
+        glowOrb: 'bg-amber-400/[0.03] group-hover:bg-amber-400/10',
+        imgShadow: 'drop-shadow-[0_0_8px_rgba(251,191,36,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(251,191,36,0.4)]',
       },
     },
   ];
@@ -189,17 +212,17 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
   return (
     <TooltipProvider delayDuration={50}>
       <div className="w-full mt-6 mb-10">
-        {/* GRIND STATS Header */}
+        {/* GRIND STATS Cyberpunk Header */}
         <div className="flex justify-center items-center mb-8 relative">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-indigo-900/50 to-indigo-500/80" />
-          <div className="px-8 py-2 mx-4 bg-zinc-950 border border-indigo-500/50 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.3)] flex items-center gap-3 relative z-10">
-            <div className="w-2 h-2 rotate-45 bg-indigo-400 shadow-[0_0_8px_#818cf8]" />
-            <span className="text-sm font-black tracking-[0.25em] text-indigo-100 uppercase drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]">
+          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-neon-green/30 to-neon-cyan/60" />
+          <div className="px-7 py-2 mx-4 bg-[#080c10]/90 border border-neon-green/30 backdrop-blur-xl rounded-full shadow-[0_0_20px_rgba(0,255,136,0.15)] flex items-center gap-3 relative z-10">
+            <div className="w-2 h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
+            <span className="text-xs font-black tracking-[0.25em] bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase drop-shadow-[0_0_10px_rgba(0,255,136,0.4)]">
               Grind Stats
             </span>
-            <div className="w-2 h-2 rotate-45 bg-indigo-400 shadow-[0_0_8px_#818cf8]" />
+            <div className="w-2 h-2 rotate-45 bg-neon-cyan shadow-[0_0_8px_#22d3ee] animate-[badge-pulse_2s_ease-in-out_infinite]" />
           </div>
-          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-indigo-900/50 to-indigo-500/80" />
+          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-neon-green/30 to-neon-cyan/60" />
         </div>
 
         {/* Stats Cards Grid */}
