@@ -132,17 +132,17 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
 
   return (
     <TooltipProvider delayDuration={50}>
-      <div className="bg-zinc-950 border border-zinc-800 p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] space-y-6 relative overflow-hidden">
+      <div className="bg-zinc-950/80 border border-zinc-800 p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] space-y-6 relative overflow-hidden">
 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-4 border-b border-zinc-800">
           <div className="w-full">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-2 h-2 rotate-45 bg-indigo-400 shadow-[0_0_8px_#818cf8]" />
-              <h2 className="text-sm font-black text-indigo-400 uppercase tracking-[0.2em] drop-shadow-[0_0_8px_rgba(129,140,248,0.5)] flex items-center gap-2">
-                <Swords className="w-4 h-4 text-indigo-400" />
+              <div className="w-2 h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
+              <h2 className="text-xs font-black bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase tracking-[0.25em] drop-shadow-[0_0_10px_rgba(0,255,136,0.3)] flex items-center gap-2">
+                <Swords className="w-4 h-4 text-neon-green" />
                 <span>Power Levels</span>
               </h2>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-indigo-500/30 to-transparent ml-2" />
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-neon-green/30 to-transparent ml-2" />
             </div>
 
             <p className="text-[11px] text-zinc-400 mt-2 font-medium tracking-wide">

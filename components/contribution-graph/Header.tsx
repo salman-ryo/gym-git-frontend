@@ -65,11 +65,10 @@ export default function Header({
         <button
           type="button"
           onClick={() => setTimeframe('year')}
-          className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${
-            timeframe === 'year'
+          className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${timeframe === 'year'
               ? 'bg-indigo-400 text-zinc-950 font-black shadow-[0_0_12px_rgba(129,140,248,0.4)]'
               : 'text-zinc-400 hover:text-zinc-200 font-bold'
-          }`}
+            }`}
         >
           <CalendarRange className="w-3 h-3" />
           <span>365 Days</span>
@@ -78,11 +77,10 @@ export default function Header({
         <button
           type="button"
           onClick={() => setTimeframe('month')}
-          className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${
-            timeframe === 'month'
+          className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${timeframe === 'month'
               ? 'bg-indigo-400 text-zinc-950 font-black shadow-[0_0_12px_rgba(129,140,248,0.4)]'
               : 'text-zinc-400 hover:text-zinc-200 font-bold'
-          }`}
+            }`}
         >
           <Calendar className="w-3 h-3" />
           <span>Month</span>
@@ -91,11 +89,10 @@ export default function Header({
         <button
           type="button"
           onClick={() => setTimeframe('week')}
-          className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${
-            timeframe === 'week'
+          className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${timeframe === 'week'
               ? 'bg-indigo-400 text-zinc-950 font-black shadow-[0_0_12px_rgba(129,140,248,0.4)]'
               : 'text-zinc-400 hover:text-zinc-200 font-bold'
-          }`}
+            }`}
         >
           <CalendarDays className="w-3 h-3" />
           <span>Week</span>

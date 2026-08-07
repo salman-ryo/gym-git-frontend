@@ -230,7 +230,7 @@ export default function ContributionGraph({
   }, [logMap]);
 
   return (
-    <div className="bg-zinc-950 border border-zinc-800 p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] relative overflow-hidden">
+    <div className="bg-zinc-950/80 border border-zinc-800 p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] relative overflow-hidden">
       <Header
         timeframe={timeframe}
         setTimeframe={setTimeframe}

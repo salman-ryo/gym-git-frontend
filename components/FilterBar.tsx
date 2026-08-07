@@ -81,7 +81,7 @@ export default function FilterBar({
   });
 
   return (
-    <div className="bg-[#080c10]/80 border border-[rgba(0,255,136,0.15)] backdrop-blur-xl rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-[0_4px_25px_rgba(0,0,0,0.6)] mb-6 transition-all duration-300">
+    <div className="bg-zinc-950/80 border border-[rgba(0,255,136,0.15)] backdrop-blur-xl rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-[0_4px_25px_rgba(0,0,0,0.6)] mb-6 transition-all duration-300">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 text-neon-green">
           <SlidersHorizontal className="w-4 h-4" />
@@ -107,9 +107,8 @@ export default function FilterBar({
               key={category}
               type="button"
               onClick={() => onFilterChange(category)}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                isActive ? theme.active : theme.inactive
-              }`}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${isActive ? theme.active : theme.inactive
+                }`}
             >
               <span>{category}</span>
             </button>

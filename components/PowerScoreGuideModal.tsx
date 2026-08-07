@@ -13,10 +13,10 @@ export default function PowerScoreGuideModal() {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="px-4 py-1.5 bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-indigo-400 hover:border-indigo-500/50 hover:shadow-[0_0_10px_rgba(129,140,248,0.2)] rounded-full text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 transition-all duration-300 self-start sm:self-center shrink-0"
+          className="px-4 py-1.5 bg-[#05080c] hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-neon-cyan hover:border-neon-cyan/50 hover:shadow-[0_0_12px_rgba(34,211,238,0.2)] rounded-full text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 transition-all duration-200 self-start sm:self-center shrink-0 cursor-pointer"
           title="How Power Score is calculated"
         >
-          <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+          <HelpCircle className="w-3.5 h-3.5 text-neon-cyan" />
           <span>What is it?</span>
         </button>
       </DialogTrigger>

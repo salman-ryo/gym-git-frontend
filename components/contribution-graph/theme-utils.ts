@@ -29,7 +29,7 @@ export interface WorkoutTheme {
   todayDot: string;
 }
 
-export const THEMES: { name: string; [key: string]: string }[] = [
+export const THEMES: { name: string;[key: string]: string }[] = [
   {
     name: 'sky',
     tile: 'bg-sky-400 border-sky-500 text-zinc-950',

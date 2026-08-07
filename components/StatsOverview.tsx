@@ -47,7 +47,7 @@ function StatCard({
 }: StatCardProps) {
   return (
     <div
-      className={`relative flex flex-col justify-center min-h-[135px] bg-[#080c10]/85 border backdrop-blur-2xl rounded-2xl overflow-hidden group transition-all duration-300 ${theme.border} ${theme.shadow} ${theme.hoverShadow}`}
+      className={`relative flex flex-col justify-center min-h-[135px] bg-zinc-950/80 border backdrop-blur-2xl rounded-2xl overflow-hidden group transition-all duration-300 ${theme.border} ${theme.shadow} ${theme.hoverShadow}`}
     >
       {/* Top Ambient Glow Line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] ${theme.accentBar}`} />
@@ -215,7 +215,7 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
         {/* GRIND STATS Cyberpunk Header */}
         <div className="flex justify-center items-center mb-8 relative">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-neon-green/30 to-neon-cyan/60" />
-          <div className="px-7 py-2 mx-4 bg-[#080c10]/90 border border-neon-green/30 backdrop-blur-xl rounded-full shadow-[0_0_20px_rgba(0,255,136,0.15)] flex items-center gap-3 relative z-10">
+          <div className="px-7 py-2 mx-4 bg-zinc-950/80 border border-neon-green/30 backdrop-blur-xl rounded-full shadow-[0_0_20px_rgba(0,255,136,0.15)] flex items-center gap-3 relative z-10">
             <div className="w-2 h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
             <span className="text-xs font-black tracking-[0.25em] bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase drop-shadow-[0_0_10px_rgba(0,255,136,0.4)]">
               Grind Stats
