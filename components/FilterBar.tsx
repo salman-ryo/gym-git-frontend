@@ -66,29 +66,16 @@ export default function FilterBar({
   onFilterChange,
   weeklyPlan,
   onOpenPlanModal,
-  availableTypes = [],
 }: FilterBarProps) {
+  // Display ONLY the categories defined in the user's active weekly plan
   const planCategories = weeklyPlan?.categories || ['Push', 'Pull', 'Legs', 'Cardio', 'Custom'];
-  const extraHistoricalTypes = availableTypes.filter(
-    (t) => !planCategories.includes(t) && t !== 'All'
-  );
 
-  const uniqueLabels = new Set<string>();
-  const displayFilterItems: { label: WorkoutType | 'All'; isExtra?: boolean }[] = [];
-
-  displayFilterItems.push({ label: 'All' });
-  uniqueLabels.add('All');
+  const displayFilterItems: (WorkoutType | 'All')[] = ['All'];
+  const uniqueLabels = new Set<string>(['All']);
 
   planCategories.forEach((cat) => {
     if (!uniqueLabels.has(cat)) {
-      displayFilterItems.push({ label: cat });
-      uniqueLabels.add(cat);
-    }
-  });
-
-  extraHistoricalTypes.forEach((cat) => {
-    if (!uniqueLabels.has(cat)) {
-      displayFilterItems.push({ label: cat, isExtra: true });
+      displayFilterItems.push(cat);
       uniqueLabels.add(cat);
     }
   });
@@ -111,23 +98,20 @@ export default function FilterBar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {displayFilterItems.map((item) => {
-          const isActive = activeFilter === item.label;
-          const theme = getThemeForWorkout(item.label);
+        {displayFilterItems.map((category) => {
+          const isActive = activeFilter === category;
+          const theme = getThemeForWorkout(category);
 
           return (
             <button
-              key={item.label}
+              key={category}
               type="button"
-              onClick={() => onFilterChange(item.label)}
+              onClick={() => onFilterChange(category)}
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                isActive ? theme.active : item.isExtra ? theme.extra : theme.inactive
+                isActive ? theme.active : theme.inactive
               }`}
             >
-              <span>{item.label}</span>
-              {item.isExtra && (
-                <span className="ml-1.5 text-[8.5px] px-1 rounded bg-black/40 text-zinc-400">Past</span>
-              )}
+              <span>{category}</span>
             </button>
           );
         })}

@@ -285,7 +285,6 @@ export default function DashboardPage() {
                 onFilterChange={setActiveFilter}
                 weeklyPlan={user?.weeklyPlan}
                 onOpenPlanModal={() => setShowPlanModal(true)}
-                availableTypes={availableHistoricalTypes}
               />
 
               {/* Flexible Contribution Graph (Year / Month / Week views) */}
