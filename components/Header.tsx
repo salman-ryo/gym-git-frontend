@@ -14,7 +14,7 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
   const { user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 px-4 lg:px-8 py-3 transition-all">
+    <header className="sticky top-0 z-30 bg-[#060a0e]/80 backdrop-blur-xl border-b border-zinc-800/80 px-4 lg:px-8 py-3 transition-all">
       <div className="max-w-8xl mx-auto flex items-center justify-between">
         {/* Brand & Logo */}
         <Link href="/" className="flex items-center gap-3 no-underline group cursor-pointer">
@@ -29,7 +29,7 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-black tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent">
+              <span className="text-xl font-black tracking-tight bg-gradient-to-r from-neon-green via-teal-300 to-emerald-200 bg-clip-text text-transparent">
                 Gym-Git
               </span>
             </div>
@@ -37,20 +37,11 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
           </div>
         </Link>
 
-        {/* Center Pill - Streak Badge */}
-        {/* <div className="hidden md:flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 shadow-inner">
-          <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
-          <span className="text-xs font-semibold text-zinc-300">
-            Streak: <span className="text-amber-400 font-bold">{currentStreak} Days</span>
-          </span>
-        </div> */}
-
         {/* User Navigation & Actions */}
         <div className="flex items-center gap-3">
-
           {/* User Profile Info */}
           {user && (
-            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-1.5 pl-3">
+            <div className="flex items-center gap-2 bg-[#080c10] border border-zinc-800 rounded-xl p-1.5 pl-3">
               {user.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -75,7 +66,7 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
             type="button"
             onClick={() => logout()}
             title="Sign Out"
-            className="p-2 bg-zinc-900 hover:bg-red-500/10 text-zinc-400 hover:text-red-400 border border-zinc-800 hover:border-red-500/30 rounded-xl text-xs transition-all"
+            className="p-2 bg-[#080c10] hover:bg-red-500/10 text-zinc-400 hover:text-red-400 border border-zinc-800 hover:border-red-500/30 rounded-xl text-xs transition-all cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
           </button>
