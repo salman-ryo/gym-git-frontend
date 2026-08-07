@@ -17,10 +17,17 @@ import {
   fetchGymLogs,
   saveGymLog,
 } from '@/lib/gym-service';
+import {
+  generate365MockLogs,
+  generateMockStats,
+  seedMockLogsToBackend,
+} from '@/lib/mock-data-generator';
+import { enable_mock_data, auto_load_mock_on_startup } from '@/lib/flags';
 import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PowerLevelChart from '@/components/PowerLevelChart';
 import Footer from '@/components/Footer';
+import { Sparkles, Database, RotateCcw, Check, Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
@@ -28,6 +35,9 @@ export default function DashboardPage() {
   const [logs, setLogs] = useState<GymLog[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isMockActive, setIsMockActive] = useState<boolean>(false);
+  const [isSeeding, setIsSeeding] = useState<boolean>(false);
+  const [seedProgress, setSeedProgress] = useState<string>('');
 
   // Filter state
   const [activeFilter, setActiveFilter] = useState<WorkoutType | 'All'>('All');
@@ -66,11 +76,54 @@ export default function DashboardPage() {
     }
   }, [user?.weeklyPlan]);
 
+  // Activate 365-day mock data with workout durations < 2 hours
+  const activateMockData = useCallback(() => {
+    const mockLogs = generate365MockLogs(365);
+    const mockStats = generateMockStats(mockLogs, user?.weeklyPlan);
+    setLogs(mockLogs);
+    setStats(mockStats);
+    setIsMockActive(true);
+    setLoading(false);
+  }, [user?.weeklyPlan]);
+
+  // Reset back to real live data from backend
+  const resetToRealData = useCallback(async () => {
+    setIsMockActive(false);
+    setLoading(true);
+    await refreshData();
+  }, [refreshData]);
+
+  // Seed all 365 days of mock logs to backend database
+  const handleSeedToBackend = async () => {
+    setIsSeeding(true);
+    setSeedProgress('0%');
+    try {
+      await seedMockLogsToBackend((current, total) => {
+        const pct = Math.round((current / total) * 100);
+        setSeedProgress(`${pct}% (${current}/${total})`);
+      });
+      setSeedProgress('Saved!');
+      setTimeout(() => setSeedProgress(''), 3000);
+      await refreshData();
+    } catch (err) {
+      console.error('Failed to seed mock logs', err);
+      setSeedProgress('Error seeding');
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   // Check if we need to force plan selection (onboarding)
   const needsPlanSelection = !!(user && !user.weeklyPlan);
 
   useEffect(() => {
     async function initDashboard() {
+      // Solely controlled by lib/flags.ts
+      if (enable_mock_data && auto_load_mock_on_startup) {
+        activateMockData();
+        return;
+      }
+
       const currentLogs = await refreshData();
       const todayStr = formatDateKey(new Date());
       setTodayDateStr(todayStr);
@@ -89,7 +142,7 @@ export default function DashboardPage() {
     if (user) {
       initDashboard();
     }
-  }, [refreshData, user, needsPlanSelection]);
+  }, [refreshData, user, needsPlanSelection, activateMockData]);
 
   // Handle Daily Check-in Yes
   const handleDailyCheckInYes = async (
@@ -146,6 +199,73 @@ export default function DashboardPage() {
 
         {/* Dashboard Main Content */}
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+          {/* Floating Testing Toolbar for 365-day screenshot — conditionally rendered when enable_mock_data is true */}
+          {enable_mock_data && (
+            <div className="bg-zinc-900/90 border border-neon-green/30 backdrop-blur-md rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_25px_rgba(0,255,136,0.08)]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-neon-green/10 border border-neon-green/30 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-neon-green" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-zinc-100 flex items-center gap-2 m-0">
+                    <span>365-Day Mock Testing Suite</span>
+                    {isMockActive && (
+                      <span className="px-2 py-0.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-[10px] font-extrabold text-neon-green">
+                        ACTIVE PREVIEW
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-[11px] text-zinc-400 m-0">
+                    {isMockActive
+                      ? 'Populated ~300 workout sessions (all < 2 hours) across 365 days'
+                      : 'Toggle 365-day colored preview for screenshots or seed to database'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {!isMockActive ? (
+                  <button
+                    type="button"
+                    onClick={activateMockData}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] text-xs font-extrabold shadow-[0_0_20px_rgba(0,255,136,0.35)] hover:scale-[1.02] active:scale-100 transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Fill 365-Day Graph (&lt;2h)</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={resetToRealData}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>Reset Real Data</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleSeedToBackend}
+                  disabled={isSeeding}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold border border-zinc-700/80 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSeeding ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 text-neon-green animate-spin" />
+                      <span>{seedProgress || 'Seeding...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Database className="w-3.5 h-3.5 text-neon-cyan" />
+                      <span>Save to Backend DB</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             // Reusable Component inside the main container
             <CyberpunkLoader text="Summoning your stats" />
