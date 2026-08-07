@@ -3,6 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { Dumbbell, Flame, LogOut, User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 interface HeaderProps {
@@ -11,21 +12,19 @@ interface HeaderProps {
 
 export default function Header({ currentStreak = 0 }: HeaderProps) {
   const { user, logout } = useAuth();
-  console.log("User====== ", user)
 
   return (
     <header className="sticky top-0 z-30 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 px-4 lg:px-8 py-3 transition-all">
       <div className="max-w-8xl mx-auto flex items-center justify-between">
         {/* Brand & Logo */}
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl ">
-            {/* <Dumbbell className="w-5 h-5 stroke-[2.5]" /> */}
+        <Link href="/" className="flex items-center gap-3 no-underline group cursor-pointer">
+          <div className="rounded-xl">
             <Image
               src="/web-app-manifest-512x512.png"
               alt="Gym-Git Logo"
               width={300}
               height={300}
-              className='size-16'
+              className="size-16 transition-transform duration-200 group-hover:scale-105"
             />
           </div>
           <div>
@@ -36,7 +35,7 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
             </div>
             <p className="text-xs text-zinc-400 hidden sm:block">GitHub-style Fitness Tracker</p>
           </div>
-        </div>
+        </Link>
 
         {/* Center Pill - Streak Badge */}
         {/* <div className="hidden md:flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 shadow-inner">

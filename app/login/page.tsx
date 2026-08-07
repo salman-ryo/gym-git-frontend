@@ -35,7 +35,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [user, router]);
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
       } else {
         await login(email, password);
       }
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err?.message || `${mode === 'signup' ? 'Sign up' : 'Login'} failed. Please try again.`);
     } finally {

@@ -101,7 +101,7 @@ export default function FooterSection() {
 
           {/* Brand Info Column */}
           <div className="flex flex-col gap-5">
-            <Link href="/landing" className="inline-flex items-center gap-2.5 no-underline">
+            <Link href="/" className="inline-flex items-center gap-2.5 no-underline">
               <div className="w-9 h-9 rounded-lg bg-[rgba(0,255,136,0.08)] border border-[rgba(0,255,136,0.2)] flex items-center justify-center shadow-[0_0_12px_rgba(0,255,136,0.15)]">
                 <Dumbbell className="w-5 h-5 text-neon-green" />
               </div>

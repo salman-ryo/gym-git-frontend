@@ -35,9 +35,8 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Protected routes: /dashboard, /logs, /settings, /
+  // Protected routes: /dashboard, /logs, /settings
   const isProtectedRoute =
-    pathname === '/' ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/logs') ||
     pathname.startsWith('/settings');
@@ -54,7 +53,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 

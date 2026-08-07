@@ -11,6 +11,7 @@
 - [x] **Task 1.1:** Centralizing design tokens (`--neon-green`, `--neon-cyan`, `--neon-purple`) and shared animations (`badge-pulse`, `float-slow`, `shimmer-effect`) into `app/globals.css` ([01-globals-theme-tokens.md](file:///.agent/features/landing-and-css-refactor/01-globals-theme-tokens.md))
 - [x] **Task 2.1:** Refactoring landing sections (Navbar, Hero, Why Gym-Git, Mobile Features, Testimonials, CTA, Footer, Background) with unified glassmorphism and Tailwind utilities ([02-landing-components-refactor.md](file:///.agent/features/landing-and-css-refactor/02-landing-components-refactor.md))
 - [x] **Task 2.2:** Harmonizing Login page (`app/login/page.tsx`) with Landing Page theme tokens, animated cyberpunk background, cyber glassmorphic card, and neon accents.
+- [x] **Task 2.3:** Transitioning root home page (`app/page.tsx`) to Landing Page, migrating full authenticated dashboard to `app/dashboard/page.tsx`, and updating middleware & auth flows.
 
 ---
 
@@ -22,3 +23,4 @@
 | `2026-08-07T17:10:00Z` | `01-globals-theme-tokens` | Migrated root CSS variables and keyframe animations into `app/globals.css` | All neon color utilities (`bg-neon-green`, `text-neon-cyan`) functional |
 | `2026-08-07T17:40:00Z` | `02-landing-components-refactor` | Refactored landing components and committed `feat(Landing page): v1 added` (commit `02521be`) | Responsive across mobile (<640px), tablet (768px), and desktop (1280px+) |
 | `2026-08-07T18:20:00Z` | `02-landing-theme-login` | Harmonized `app/login/page.tsx` with `LandingBackground`, cyber glassmorphic card, preserved background watermarks, and neon green/cyan CTA buttons | Visually and functionally unified with landing page aesthetic |
+| `2026-08-07T18:25:00Z` | `02-landing-root-route` | Configured `app/page.tsx` as Landing Page, moved dashboard logic to `app/dashboard/page.tsx`, updated middleware and auth redirects | Root `/` displays landing page for public visitors; dashboard fully preserved at `/dashboard` |
