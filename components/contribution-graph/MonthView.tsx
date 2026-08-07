@@ -20,7 +20,7 @@ export default function MonthView({
 }: MonthViewProps) {
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
-      <div className="grid grid-cols-7 gap-2 text-center text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">
+      <div className="grid grid-cols-7 gap-2 text-center text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-2">
         <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
       </div>
 
@@ -53,7 +53,7 @@ export default function MonthView({
                   <div className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">Future Date Locked</div>
                 ) : (
                   <div className="text-left">
-                    <div className="font-bold text-indigo-400 text-xs">
+                    <div className="font-bold text-white text-xs">
                       {day.hours > 0 ? `${day.hours} hrs spent` : 'No gym session'}
                     </div>
                     <div className="text-[11px] text-zinc-300 mt-0.5">

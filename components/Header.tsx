@@ -5,6 +5,7 @@ import { Dumbbell, Flame, LogOut, User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
   currentStreak?: number;
@@ -41,35 +42,47 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
         <div className="flex items-center gap-3">
           {/* User Profile Info */}
           {user && (
-            <div className="flex items-center gap-2 bg-[#080c10] border border-zinc-800 rounded-xl p-1.5 pl-3">
+            <div className="flex items-center gap-2.5 bg-zinc-950/80 border border-zinc-800/90 hover:border-neon-green/40 hover:shadow-[0_0_15px_rgba(0,255,136,0.12)] rounded-xl p-1.5 pl-3 transition-all duration-200 group/user">
               {user.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={user.avatarUrl}
                   alt={user.name}
-                  className="w-7 h-7 rounded-full object-cover bg-zinc-800"
+                  className="w-7 h-7 rounded-full object-cover bg-zinc-800 border border-neon-green/30 group-hover/user:border-neon-green group-hover/user:shadow-[0_0_8px_#00ff88] transition-all"
                 />
               ) : (
-                <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
-                  {user.name ? user.name[0] : <UserIcon className="w-4 h-4" />}
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-neon-green/20 to-neon-cyan/20 border border-neon-green/30 text-neon-green flex items-center justify-center font-black text-xs group-hover/user:border-neon-green group-hover/user:shadow-[0_0_8px_#00ff88] transition-all">
+                  {user.name ? user.name[0].toUpperCase() : <UserIcon className="w-4 h-4" />}
                 </div>
               )}
               <div className="hidden lg:block text-left pr-2">
-                <p className="text-xs font-bold text-zinc-200 leading-tight">{user.name}</p>
-                <p className="text-[10px] text-zinc-400 leading-tight">{user.email}</p>
+                <p className="text-xs font-extrabold text-zinc-200 group-hover/user:text-white leading-tight flex items-center gap-1.5">
+                  <span>{user.name}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_6px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
+                </p>
+                <p className="text-[10px] text-zinc-400 font-medium leading-tight">{user.email}</p>
               </div>
             </div>
           )}
 
-          {/* Logout Button */}
-          <button
-            type="button"
-            onClick={() => logout()}
-            title="Sign Out"
-            className="p-2 bg-[#080c10] hover:bg-red-500/10 text-zinc-400 hover:text-red-400 border border-zinc-800 hover:border-red-500/30 rounded-xl text-xs transition-all cursor-pointer"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          {/* Compact Door Sign Out Button with Tooltip */}
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  aria-label="Sign Out"
+                  className="w-9 h-9 p-0 bg-zinc-950/80 hover:bg-red-500/15 text-zinc-400 hover:text-red-400 border border-zinc-800 hover:border-red-500/40 rounded-xl transition-all duration-200 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.25)] cursor-pointer flex items-center justify-center group/logout"
+                >
+                  <LogOut className="w-4 h-4 transition-transform duration-200 group-hover/logout:translate-x-0.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-[#05080c] border border-red-500/30 text-red-400 text-[11px] font-bold shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                Sign Out
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
     </header>
