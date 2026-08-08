@@ -4,6 +4,7 @@ import { GymLog, WorkoutType } from '@/lib/types';
 import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, Trash2, X, Check, Save, Plus } from 'lucide-react';
 import { getThemeForWorkout } from '../../contribution-graph/theme-utils';
+import Image from 'next/image';
 
 interface EditLogModalProps {
   dateStr: string | null;
@@ -102,8 +103,8 @@ export default function EditLogModal({
 
         {/* Header */}
         <div className="flex items-center gap-3.5 mb-6 pb-4 border-b border-zinc-800/80">
-          <div className="p-3 bg-zinc-950 border border-neon-green/30 rounded-2xl text-neon-green shadow-[0_0_15px_rgba(0,255,136,0.15)]">
-            <Calendar className="w-5 h-5 text-neon-green" />
+          <div >
+            <Image src={"/images/icons/write.png"} alt='Log workout' width={100} height={100} unoptimized className="size-10" />
           </div>
           <div>
             <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">
@@ -136,8 +137,8 @@ export default function EditLogModal({
                     setIsCustomHours(false);
                   }}
                   className={`flex-1 py-2 text-xs font-black rounded-xl transition-all border cursor-pointer ${!isCustomHours && hours === h
-                      ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                      : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                    ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+                    : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
                     }`}
                 >
                   {h === 0 ? 'Off' : `${h}h`}
@@ -147,8 +148,8 @@ export default function EditLogModal({
                 type="button"
                 onClick={() => setIsCustomHours(true)}
                 className={`py-2 px-2.5 text-xs font-black rounded-xl transition-all border flex items-center gap-1 cursor-pointer ${isCustomHours
-                    ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                    : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
+                  ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+                  : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
                   }`}
               >
                 <Plus className="w-3 h-3" />
@@ -187,7 +188,7 @@ export default function EditLogModal({
           {/* Workout Type Selector */}
           <div>
             <label className="block text-xs font-black text-zinc-300 uppercase tracking-widest mb-2">
-              Workout Category:
+              Select Workout Type:
             </label>
             <div className="grid grid-cols-3 gap-2 max-h-36 overflow-y-auto pr-1">
               {categories.map((type) => {
@@ -200,8 +201,8 @@ export default function EditLogModal({
                     type="button"
                     onClick={() => setWorkoutType(type)}
                     className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${isSelected
-                        ? typeTheme.filterActive
-                        : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      ? typeTheme.filterActive
+                      : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                   >
                     <span className="truncate">{type}</span>
@@ -215,7 +216,7 @@ export default function EditLogModal({
           {/* Notes */}
           <div>
             <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5">
-              Session Notes:
+              Session Notes?
             </label>
             <input
               type="text"
@@ -258,6 +259,6 @@ export default function EditLogModal({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
