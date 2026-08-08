@@ -27,3 +27,4 @@
 | `2026-08-08T15:56:00Z` | `02-landing-footer-refactor` | Refactored footer into a unified glassmorphic `Footer` component in `components/layout/Footer.tsx` with logo and socials; deleted old bloated footer | Built and verified clean compile successfully via `npm run build` |
 | `2026-08-08T15:59:00Z` | `02-landing-cta-compaction` | Shrank CTASection container, card padding, and graphic size; arranged button/tag line to inline row layout and adjusted text size clamps | Compiled successfully in Next.js production build check |
 | `2026-08-08T16:09:00Z` | `02-landing-footer-credits` | Updated footer Built With stack credits line to include Supabase and Go/Gin | Verified visually |
+| `2026-08-08T16:16:00Z` | `02-landing-hero-cta-update` | Removed View Demo button and updated primary button text in `HeroSection.tsx` to "Start Your Journey" | Verified visually |

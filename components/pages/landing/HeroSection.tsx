@@ -3,7 +3,7 @@
 import './HeroSection.css';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Play, Flame, Zap, TrendingUp, Activity } from 'lucide-react';
+import { ArrowRight, Flame, Zap, TrendingUp, Activity } from 'lucide-react';
 import Image from 'next/image';
 
 /* ─────────────────────────────────────────────
@@ -100,17 +100,10 @@ function HeroCTAs() {
         href="/login"
         className="relative inline-flex items-center gap-2 px-7 py-3.5 text-[14.5px] font-semibold text-[#080c10] no-underline rounded-lg bg-gradient-to-r from-neon-green to-[#00e077] overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,255,136,0.35),0_8px_24px_-8px_rgba(0,255,136,0.25)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-neon-cyan focus-visible:outline-offset-3 border-none outline-none cursor-pointer group"
       >
-        <span className="relative z-10 whitespace-nowrap">Start Tracking Now</span>
+        <span className="relative z-10 whitespace-nowrap">Start Your Journey</span>
         <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-200 group-hover:translate-x-0.5" />
         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[120%] group-hover:animate-[shimmer-effect_0.8s_ease_forwards]" aria-hidden="true" />
       </Link>
-      <a
-        href="#demo"
-        className="inline-flex items-center gap-2 px-6 py-3.5 text-[14.5px] font-medium text-[#a1a1aa] no-underline rounded-lg border border-[rgba(63,63,70,0.6)] bg-[rgba(24,24,27,0.4)] hover:text-[#fafafa] hover:border-[rgba(0,255,136,0.25)] hover:bg-[rgba(0,255,136,0.04)] hover:shadow-[0_0_16px_rgba(0,255,136,0.08)] transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-neon-green focus-visible:outline-offset-3"
-      >
-        <Play className="w-3.5 h-3.5" />
-        <span>View Demo</span>
-      </a>
     </div>
   );
 }

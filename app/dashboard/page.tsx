@@ -204,133 +204,133 @@ export default function DashboardPage() {
 
           {/* Dashboard Main Content */}
           <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-          {/* Floating Testing Toolbar for 365-day screenshot — conditionally rendered when enable_mock_data is true */}
-          {enable_mock_data && (
-            <div className="bg-zinc-900/90 border border-neon-green/30 backdrop-blur-md rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_25px_rgba(0,255,136,0.08)]">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-neon-green/10 border border-neon-green/30 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-neon-green" />
+            {/* Floating Testing Toolbar for 365-day screenshot — conditionally rendered when enable_mock_data is true */}
+            {enable_mock_data && (
+              <div className="bg-zinc-900/90 border border-neon-green/30 backdrop-blur-md rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_25px_rgba(0,255,136,0.08)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-neon-green/10 border border-neon-green/30 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-neon-green" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-zinc-100 flex items-center gap-2 m-0">
+                      <span>365-Day Mock Testing Suite</span>
+                      {isMockActive && (
+                        <span className="px-2 py-0.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-[10px] font-extrabold text-neon-green">
+                          ACTIVE PREVIEW
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-[11px] text-zinc-400 m-0">
+                      {isMockActive
+                        ? 'Populated ~300 workout sessions (all < 2 hours) across 365 days'
+                        : 'Toggle 365-day colored preview for screenshots or seed to database'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-zinc-100 flex items-center gap-2 m-0">
-                    <span>365-Day Mock Testing Suite</span>
-                    {isMockActive && (
-                      <span className="px-2 py-0.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-[10px] font-extrabold text-neon-green">
-                        ACTIVE PREVIEW
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-[11px] text-zinc-400 m-0">
-                    {isMockActive
-                      ? 'Populated ~300 workout sessions (all < 2 hours) across 365 days'
-                      : 'Toggle 365-day colored preview for screenshots or seed to database'}
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2.5 flex-wrap">
-                {!isMockActive ? (
-                  <button
-                    type="button"
-                    onClick={activateMockData}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] text-xs font-extrabold shadow-[0_0_20px_rgba(0,255,136,0.35)] hover:scale-[1.02] active:scale-100 transition-all cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Fill 365-Day Graph (&lt;2h)</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={resetToRealData}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>Reset Real Data</span>
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleSeedToBackend}
-                  disabled={isSeeding}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold border border-zinc-700/80 transition-all cursor-pointer disabled:opacity-50"
-                >
-                  {isSeeding ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 text-neon-green animate-spin" />
-                      <span>{seedProgress || 'Seeding...'}</span>
-                    </>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  {!isMockActive ? (
+                    <button
+                      type="button"
+                      onClick={activateMockData}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] text-xs font-extrabold shadow-[0_0_20px_rgba(0,255,136,0.35)] hover:scale-[1.02] active:scale-100 transition-all cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Fill 365-Day Graph (&lt;2h)</span>
+                    </button>
                   ) : (
-                    <>
-                      <Database className="w-3.5 h-3.5 text-neon-cyan" />
-                      <span>Save to Backend DB</span>
-                    </>
+                    <button
+                      type="button"
+                      onClick={resetToRealData}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Reset Real Data</span>
+                    </button>
                   )}
-                </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSeedToBackend}
+                    disabled={isSeeding}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold border border-zinc-700/80 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {isSeeding ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 text-neon-green animate-spin" />
+                        <span>{seedProgress || 'Seeding...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Database className="w-3.5 h-3.5 text-neon-cyan" />
+                        <span>Save to Backend DB</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {loading ? (
-            // Reusable Component inside the main container
-            <CyberpunkLoader text="Summoning your stats" />
-          ) : (
-            <>
-              {/* Analytics & Streaks Overview */}
-              <StatsOverview stats={stats} />
+            {loading ? (
+              // Reusable Component inside the main container
+              <CyberpunkLoader text="Summoning your stats" />
+            ) : (
+              <>
+                {/* Analytics & Streaks Overview */}
+                <StatsOverview stats={stats} />
 
-              {/* Dynamic Workout Filter Controls */}
-              <FilterBar
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-                weeklyPlan={user?.weeklyPlan}
-                onOpenPlanModal={() => setShowPlanModal(true)}
-              />
+                {/* Dynamic Workout Filter Controls */}
+                <FilterBar
+                  activeFilter={activeFilter}
+                  onFilterChange={setActiveFilter}
+                  weeklyPlan={user?.weeklyPlan}
+                  onOpenPlanModal={() => setShowPlanModal(true)}
+                />
 
-              {/* Flexible Contribution Graph (Year / Month / Week views) */}
-              <ContributionGraph
-                logs={logs}
-                activeFilter={activeFilter}
-                onTileClick={handleTileClick}
-                weeklyPlan={user?.weeklyPlan}
-              />
+                {/* Flexible Contribution Graph (Year / Month / Week views) */}
+                <ContributionGraph
+                  logs={logs}
+                  activeFilter={activeFilter}
+                  onTileClick={handleTileClick}
+                  weeklyPlan={user?.weeklyPlan}
+                />
 
-              {/* Monthly Attendance Bar Chart */}
-              {stats?.monthlyData && (
-                <PowerLevelChart monthlyData={stats.monthlyData} logs={logs} />
-              )}
-            </>
-          )}
-        </main>
+                {/* Monthly Attendance Bar Chart */}
+                {stats?.monthlyData && (
+                  <PowerLevelChart monthlyData={stats.monthlyData} logs={logs} />
+                )}
+              </>
+            )}
+          </main>
 
-        <Footer />
+          <Footer />
 
-        {/* Modals */}
-        <DailyCheckInModal
-          dateStr={todayDateStr}
-          isOpen={showDailyCheckIn}
-          onCheckInYes={handleDailyCheckInYes}
-          onCheckInNo={handleDailyCheckInNo}
-          availableWorkoutTypes={user?.weeklyPlan?.categories}
-        />
+          {/* Modals */}
+          <DailyCheckInModal
+            dateStr={todayDateStr}
+            isOpen={showDailyCheckIn}
+            onCheckInYes={handleDailyCheckInYes}
+            onCheckInNo={handleDailyCheckInNo}
+            availableWorkoutTypes={user?.weeklyPlan?.categories}
+          />
 
-        <EditLogModal
-          dateStr={editTileDate}
-          existingLog={editTileLog}
-          isOpen={!!editTileDate}
-          onClose={() => setEditTileDate(null)}
-          onSave={handleSaveEdit}
-          onDelete={handleDeleteEdit}
-          availableWorkoutTypes={user?.weeklyPlan?.categories}
-        />
+          <EditLogModal
+            dateStr={editTileDate}
+            existingLog={editTileLog}
+            isOpen={!!editTileDate}
+            onClose={() => setEditTileDate(null)}
+            onSave={handleSaveEdit}
+            onDelete={handleDeleteEdit}
+            availableWorkoutTypes={user?.weeklyPlan?.categories}
+          />
 
-        <WeeklyPlanModal
-          currentPlan={user?.weeklyPlan}
-          isOpen={showPlanModal || needsPlanSelection}
-          onClose={() => setShowPlanModal(false)}
-          onSavePlan={handleSavePlan}
-          preventClose={needsPlanSelection}
-        />
+          <WeeklyPlanModal
+            currentPlan={user?.weeklyPlan}
+            isOpen={showPlanModal || needsPlanSelection}
+            onClose={() => setShowPlanModal(false)}
+            onSavePlan={handleSavePlan}
+            preventClose={needsPlanSelection}
+          />
         </div>
       </div>
     </AuthGuard>
