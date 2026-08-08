@@ -98,7 +98,7 @@ function HeroCTAs() {
     <div className="flex items-center gap-4 flex-wrap">
       <Link
         href="/login"
-        className="relative inline-flex items-center gap-2 px-7 py-3.5 text-[14.5px] font-semibold text-[#080c10] no-underline rounded-lg bg-gradient-to-r from-neon-green to-[#00e077] overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,255,136,0.35),0_8px_24px_-8px_rgba(0,255,136,0.25)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-neon-cyan focus-visible:outline-offset-3 border-none outline-none cursor-pointer group"
+        className="relative inline-flex items-center gap-2 px-7 py-3.5 text-[14.5px] font-semibold text-[#080c10] no-underline rounded-lg bg-gradient-to-r from-neon-green to-teal-500 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,255,136,0.35),0_8px_24px_-8px_rgba(0,255,136,0.25)] active:translate-y-0 focus-visible:outline-2 focus-visible:outline-neon-cyan focus-visible:outline-offset-3 border-none outline-none cursor-pointer group"
       >
         <span className="relative z-10 whitespace-nowrap">Start Your Journey</span>
         <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -178,7 +178,7 @@ export default function HeroSection() {
         </div>
 
         {/* ── Right Column ── */}
-        <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-teal-500/50">
+        <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-cyan-400">
           <Image src="/images/landing/dashboardsection.webp" priority unoptimized width={1080} height={1920} quality={100} alt="Dashboard Mockup" />
         </div>
       </div>

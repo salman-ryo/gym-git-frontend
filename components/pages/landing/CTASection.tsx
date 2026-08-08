@@ -162,7 +162,7 @@ export default function CTASection() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center lg:justify-start">
-                <Link href="/login" className="relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-extrabold text-[#060a0e] rounded-xl bg-gradient-to-r from-neon-green to-[#00e077] shadow-[0_0_15px_rgba(0,255,136,0.25),0_4px_10px_-2px_rgba(0,255,136,0.15)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-emerald-500 hover:to-neon-green hover:shadow-[0_0_20px_rgba(0,255,136,0.35),0_6px_14px_-2px_rgba(0,255,136,0.25)] transition-all duration-200 border-none outline-none cursor-pointer overflow-hidden group">
+                <Link href="/login" className="relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-extrabold text-[#060a0e] rounded-xl bg-gradient-to-r from-neon-green to-teal-500 shadow-[0_0_15px_rgba(0,255,136,0.25),0_4px_10px_-2px_rgba(0,255,136,0.15)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-emerald-500 hover:to-neon-green hover:shadow-[0_0_20px_rgba(0,255,136,0.35),0_6px_14px_-2px_rgba(0,255,136,0.25)] transition-all duration-200 border-none outline-none cursor-pointer overflow-hidden group">
                   <span>Start Your Journey</span>
                   <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[120%] group-hover:animate-[shimmer-effect_0.8s_ease_forwards]" aria-hidden="true" />

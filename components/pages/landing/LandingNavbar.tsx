@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { socialLinks } from '@/lib/links';
 
 /* ─────────────────────────────────────────────
    Types
@@ -241,7 +242,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         {/* Drawer CTAs */}
         <div className="flex flex-col gap-3 pt-3 border-t border-[rgba(0,255,136,0.08)] relative z-10">
           <a
-            href="https://github.com/gymgit"
+            href={socialLinks.github}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 p-3.5 text-[#a1a1aa] text-sm font-medium no-underline border border-[rgba(63,63,70,0.6)] rounded-[10px] bg-[rgba(24,24,27,0.5)] hover:text-[#fafafa] hover:border-[rgba(161,161,170,0.3)] hover:bg-[rgba(39,39,42,0.6)] transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-neon-green"
