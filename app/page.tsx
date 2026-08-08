@@ -5,9 +5,9 @@ import {
   MobileFeatureSection,
   TestimonialsSection,
   CTASection,
-  FooterSection,
   LandingBackground,
 } from '@/components/pages/landing';
+import Footer from '@/components/layout/Footer';
 
 export const metadata = {
   title: 'Gym-Git — Track Your Fitness Like a Developer',
@@ -30,7 +30,7 @@ export default function HomePage() {
       </main>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <FooterSection />
+        <Footer />
       </div>
     </div>
   );

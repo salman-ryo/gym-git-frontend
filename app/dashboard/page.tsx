@@ -26,7 +26,7 @@ import { enable_mock_data, auto_load_mock_on_startup } from '@/lib/flags';
 import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PowerLevelChart from '@/components/PowerLevelChart';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 import { LandingBackground } from '@/components/pages/landing';
 import { Sparkles, Database, RotateCcw, Check, Loader2 } from 'lucide-react';
 
