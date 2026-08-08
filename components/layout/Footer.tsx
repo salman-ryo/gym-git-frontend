@@ -41,7 +41,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-glass-bg border-t border-glass-border py-8 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        
+
         {/* Left Side: Brand & description */}
         <div className="flex flex-col items-center md:items-start gap-3">
           <Link href="/" className="flex items-center gap-3 no-underline group cursor-pointer">
@@ -88,7 +88,7 @@ export default function Footer() {
 
           <div className="text-center md:text-right flex flex-col items-center md:items-end gap-1">
             <span className="text-xs text-zinc-500">Gym-Git &copy; {new Date().getFullYear()} — Dynamic Workout Planning</span>
-            <span className="text-[10px] text-zinc-600">Built with Next.js, Tailwind CSS &amp; TypeScript</span>
+            <span className="text-[10px] text-zinc-600">Built with Next.js, Go/Gin  &amp; Supabase </span>
           </div>
         </div>
 

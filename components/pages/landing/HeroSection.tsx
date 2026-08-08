@@ -21,7 +21,7 @@ function HeroBadge() {
 }
 
 /** Typewriter-rotating word in the headline */
-const ROTATING_WORDS = ['developer.', 'engineer.', 'lifter.', 'athlete.'];
+const ROTATING_WORDS = ['a developer.', 'an engineer.', 'a lifter.', 'an athlete.'];
 
 function RotatingWord() {
   const [index, setIndex] = useState(0);
@@ -55,8 +55,8 @@ function RotatingWord() {
 
   return (
     <span className="hero__rotating-word" aria-live="polite">
-      <span className="hero__rotating-text">{displayed}</span>
-      <span className="hero__cursor" aria-hidden="true">|</span>
+      <span className="text-cyan-400">{displayed}</span>
+      <span className="text-teal-400" aria-hidden="true">|</span>
     </span>
   );
 }
@@ -82,12 +82,12 @@ function HeroHeadline() {
 /** Subtitle paragraph */
 function HeroSubtitle() {
   return (
-    <p className="text-[clamp(0.95rem,1.5vw,1.1rem)] leading-relaxed text-[#71717a] m-0 max-w-[480px]">
+    <p className="text-[clamp(0.95rem,1.5vw,1.1rem)] leading-relaxed text-gray-300 m-0 max-w-[480px]">
       Gym-Git is your GitHub-style fitness tracker.{' '}
       <br className="hidden lg:inline" />
       Log workouts, build streaks, and visualize{' '}
       <br className="hidden lg:inline" />
-      progress like a <RotatingWord />
+      progress like <RotatingWord />
     </p>
   );
 }

@@ -8,7 +8,7 @@ import { ArrowRight, GitCommit, ShieldCheck, Zap } from 'lucide-react';
 /** Glowing Git Branch / Commit Tree SVG Graphic for the Left Side */
 function GitCommitTreeGraphic() {
   return (
-    <div className="relative w-[260px] h-[260px] lg:w-[280px] lg:h-[280px] flex items-center justify-center group" aria-hidden="true">
+    <div className="relative w-[150px] h-[150px] lg:w-[170px] lg:h-[170px] flex items-center justify-center group" aria-hidden="true">
       <div className="absolute top-[10%] right-[10%] w-[140px] h-[140px] bg-[#a855f7]/25 blur-[35px] rounded-full" />
       <div className="absolute bottom-[10%] left-[10%] w-[140px] h-[140px] bg-[#00ff88]/20 blur-[35px] rounded-full" />
 
@@ -131,7 +131,7 @@ function GitCommitTreeGraphic() {
 
 export default function CTASection() {
   return (
-    <section className="relative py-20 md:py-24 bg-transparent overflow-hidden transition-all duration-300" aria-labelledby="cta-heading">
+    <section className="relative mb-16" aria-labelledby="cta-heading">
       <div className="max-w-nav-max-width mx-auto px-6 lg:px-10">
         <div className="cta-card">
           {/* Ambient Inner Lights */}
@@ -139,7 +139,7 @@ export default function CTASection() {
           <div className="absolute -bottom-[20%] -right-[10%] w-1/2 h-[140%] bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.15)_0%,transparent_70%)] blur-[50px] pointer-events-none" aria-hidden="true" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" aria-hidden="true" />
 
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[320px_1fr] p-10 lg:py-14 lg:px-16 gap-9 lg:gap-14 items-center">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[190px_1fr] p-6 lg:py-8 lg:px-10 gap-5 lg:gap-8 items-center">
             {/* Left Column: Glowing Git Tree Illustration */}
             <div className="flex justify-center items-center">
               <GitCommitTreeGraphic />
@@ -147,31 +147,30 @@ export default function CTASection() {
 
             {/* Right Column: Content */}
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#a855f7]/[0.08] border border-[#a855f7]/25 text-[11px] font-bold tracking-wider text-[#c084fc] mb-4 uppercase">
+              <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#a855f7]/[0.08] border border-[#a855f7]/25 text-[10px] font-bold tracking-wider text-[#c084fc] mb-3 uppercase">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#a855f7] shadow-[0_0_8px_#a855f7]" />
                 <span>START YOUR COMMIT STREAK TODAY</span>
               </div>
 
-              <h2 className="text-[clamp(2rem,4vw,3.1rem)] font-black leading-[1.08] tracking-tight m-0 mb-4" id="cta-heading">
-                <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">READY TO COMMIT</span>
-                <br />
+              <h2 className="text-[clamp(1.4rem,3.2vw,2rem)] font-black leading-tight tracking-tight m-0 mb-3" id="cta-heading">
+                <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">READY TO COMMIT </span>
                 <span className="bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent filter drop-shadow-[0_0_15px_rgba(168,85,247,0.3)]">TO YOUR BEST SELF?</span>
               </h2>
 
-              <p className="text-[clamp(0.95rem,1.4vw,1.1rem)] leading-relaxed text-[#94a3b8] mb-8 max-w-[520px]">
+              <p className="text-sm leading-relaxed text-[#94a3b8] mb-4 max-w-[500px]">
                 Join thousands of lifters who treat their workouts like code. Log sets, build streaks, and level up your physical build.
               </p>
 
-              <div className="flex flex-col items-center lg:items-start gap-4 w-full">
-                <Link href="/login" className="relative inline-flex items-center justify-center gap-2.5 px-9 py-4 text-base font-extrabold text-[#060a0e] rounded-[14px] bg-gradient-to-r from-neon-green to-[#00e077] shadow-[0_0_25px_rgba(0,255,136,0.35),0_8px_20px_-4px_rgba(0,255,136,0.25)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-emerald-500 hover:to-neon-green hover:shadow-[0_0_35px_rgba(0,255,136,0.55),0_12px_28px_-4px_rgba(0,255,136,0.35)] transition-all duration-200 border-none outline-none cursor-pointer overflow-hidden group">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center lg:justify-start">
+                <Link href="/login" className="relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-extrabold text-[#060a0e] rounded-xl bg-gradient-to-r from-neon-green to-[#00e077] shadow-[0_0_15px_rgba(0,255,136,0.25),0_4px_10px_-2px_rgba(0,255,136,0.15)] hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-emerald-500 hover:to-neon-green hover:shadow-[0_0_20px_rgba(0,255,136,0.35),0_6px_14px_-2px_rgba(0,255,136,0.25)] transition-all duration-200 border-none outline-none cursor-pointer overflow-hidden group">
                   <span>Start Your Journey</span>
-                  <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[120%] group-hover:animate-[shimmer-effect_0.8s_ease_forwards]" aria-hidden="true" />
                 </Link>
 
-                <div className="flex items-center gap-2 text-[13px] text-[#64748b] font-medium">
-                  <ShieldCheck className="w-4 h-4 text-neon-green" />
-                  <span>No credit card required &bull; Free forever tier</span>
+                <div className="flex items-center gap-1.5 text-xs text-[#64748b] font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-neon-green" />
+                  <span>Free forever tier</span>
                 </div>
               </div>
             </div>
