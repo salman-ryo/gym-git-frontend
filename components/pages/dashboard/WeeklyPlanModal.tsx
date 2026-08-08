@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Settings2, X, Dumbbell } from 'lucide-react';
 import PrebuiltPlanGrid from './weekly-plan/PrebuiltPlanGrid';
 import CustomPlanEditor from './weekly-plan/CustomPlanEditor';
+import Image from 'next/image';
 
 interface WeeklyPlanModalProps {
   currentPlan?: WeeklyPlan;
@@ -130,9 +131,7 @@ export default function WeeklyPlanModal({
 
             {/* Modal Header */}
             <div className="flex items-center gap-3.5 mb-6 pb-4 border-b border-zinc-800/80">
-              <div className="p-3 bg-zinc-950 border border-neon-green/30 rounded-2xl text-neon-green shadow-[0_0_15px_rgba(0,255,136,0.15)]">
-                <Settings2 className="w-5 h-5 text-neon-green animate-spin-slow" />
-              </div>
+              <Image src={"/images/icons/week.png"} alt='Plan workout' width={100} height={100} unoptimized className="size-12" />
               <div className="pr-8">
                 <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">
                   {preventClose ? 'Setup Your Workout Plan' : 'Weekly Workout Plan & Filters'}

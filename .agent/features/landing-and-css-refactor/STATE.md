@@ -29,3 +29,6 @@
 | `2026-08-08T16:09:00Z` | `02-landing-footer-credits` | Updated footer Built With stack credits line to include Supabase and Go/Gin | Verified visually |
 | `2026-08-08T16:16:00Z` | `02-landing-hero-cta-update` | Removed View Demo button and updated primary button text in `HeroSection.tsx` to "Start Your Journey" | Verified visually |
 | `2026-08-08T17:29:00Z` | `02-landing-clean-duplicate` | Resolved import issues by deleting duplicate root `components/PowerLevelChart.tsx` | Compiled successfully in Next.js production build check |
+| `2026-08-08T18:04:00Z` | `02-dashboard-checkin-mascot` | Replaced bouncing dumbbell icon in `DailyCheckInModal.tsx` with Zoro question mascot and a bouncing question mark badge | Verified visually & typed cleanly |
+| `2026-08-08T18:17:00Z` | `02-dashboard-checkin-cyber` | Updated `DailyCheckInModal.tsx` with high-aesthetic glassmorphism, glowing radial layers, and layout styling matching the other modals | Verified visually & typed cleanly |
+| `2026-08-08T18:18:00Z` | `02-dashboard-checkin-buttons` | Implemented high-end animations, scaling feedback (hover & active click states), and custom icon transitions for yes/no check-in buttons | Verified visually & typed cleanly |
