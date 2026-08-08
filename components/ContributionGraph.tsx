@@ -1,6 +1,6 @@
 'use client';
 
-import { GymLog, TimeframeView, WorkoutType } from '@/lib/types';
+import { GymLog, TimeframeView, WeeklyPlan, WorkoutType } from '@/lib/types';
 import { formatDateKey } from '@/lib/scientific-streak';
 import React, { useMemo, useState } from 'react';
 import Header from './contribution-graph/Header';
@@ -13,12 +13,14 @@ interface ContributionGraphProps {
   logs: GymLog[];
   activeFilter: WorkoutType | 'All';
   onTileClick: (dateStr: string, log?: GymLog) => void;
+  weeklyPlan?: WeeklyPlan;
 }
 
 export default function ContributionGraph({
   logs,
   activeFilter,
   onTileClick,
+  weeklyPlan,
 }: ContributionGraphProps) {
   const [timeframe, setTimeframe] = useState<TimeframeView>('year');
 
@@ -62,46 +64,34 @@ export default function ContributionGraph({
         yearHours += hours;
       }
 
-      const monthIndex = currentDate.getMonth();
-      if (monthIndex !== lastMonth) {
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        if (months.length > 0) {
-          const lastAdded = months[months.length - 1];
-          if (currentWeekIndex - lastAdded.weekIndex < 3) {
-            if (lastAdded.weekIndex === 0) {
-              months.pop();
-            }
-          }
-        }
-
-        if (months.length === 0 || currentWeekIndex - months[months.length - 1].weekIndex >= 3) {
-          months.push({ name: monthNames[monthIndex], weekIndex: currentWeekIndex });
-        }
-
-        lastMonth = monthIndex;
-      }
-
-      const tileTime = new Date(currentDate);
-      tileTime.setHours(0, 0, 0, 0);
-
-      currentWeekDays.push({
+      const dayTile: DayTile = {
         dateStr,
         dateObj: new Date(currentDate),
         log,
         hours,
         workoutType: log?.workoutType,
         isToday: dateStr === todayStr,
-        isFuture: tileTime.getTime() > todayObj.getTime(),
-      });
+        isFuture: currentDate > todayObj,
+      };
+
+      currentWeekDays.push(dayTile);
+
+      const m = currentDate.getMonth();
+      if (m !== lastMonth) {
+        months.push({
+          name: currentDate.toLocaleDateString('en-US', { month: 'short' }),
+          weekIndex: currentWeekIndex,
+        });
+        lastMonth = m;
+      }
 
       if (currentWeekDays.length === 7) {
         resultWeeks.push({
           weekIndex: currentWeekIndex,
           days: currentWeekDays,
         });
-        currentWeekIndex++;
         currentWeekDays = [];
+        currentWeekIndex++;
       }
 
       currentDate.setDate(currentDate.getDate() + 1);
@@ -122,110 +112,99 @@ export default function ContributionGraph({
     };
   }, [logMap]);
 
-  // 2. MONTH VIEW DATA
+  // 2. MONTH VIEW DATA (Strictly Current Real Calendar Month)
   const monthData = useMemo(() => {
-    const todayObj = new Date();
-    const todayStr = formatDateKey(todayObj);
-    todayObj.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = formatDateKey(today);
 
-    const year = todayObj.getFullYear();
-    const month = todayObj.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    const year = today.getFullYear();
+    const month = today.getMonth();
 
-    const monthDays: DayTile[] = [];
-    let monthWorkouts = 0;
-    let monthHours = 0;
+    const firstDayOfMonth = new Date(year, month, 1);
+    const startPadding = firstDayOfMonth.getDay();
 
-    const startPadding = firstDay.getDay();
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const totalDays = lastDayOfMonth.getDate();
 
-    let d = new Date(firstDay);
-    while (d <= lastDay) {
-      const dateStr = formatDateKey(d);
+    const days: DayTile[] = [];
+    let mWorkouts = 0;
+    let mHours = 0;
+
+    for (let d = 1; d <= totalDays; d++) {
+      const dateObj = new Date(year, month, d);
+      const dateStr = formatDateKey(dateObj);
       const log = logMap.get(dateStr);
       const hours = log ? log.hours : 0;
 
       if (hours > 0) {
-        monthWorkouts++;
-        monthHours += hours;
+        mWorkouts++;
+        mHours += hours;
       }
 
-      const tileTime = new Date(d);
-      tileTime.setHours(0, 0, 0, 0);
-
-      monthDays.push({
+      days.push({
         dateStr,
-        dateObj: new Date(d),
+        dateObj,
         log,
         hours,
         workoutType: log?.workoutType,
-        dayOfMonth: d.getDate(),
+        dayOfMonth: d,
         isToday: dateStr === todayStr,
-        isFuture: tileTime.getTime() > todayObj.getTime(),
+        isFuture: dateObj > today,
       });
-      d.setDate(d.getDate() + 1);
     }
 
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
     return {
-      monthName: monthNames[month],
-      year,
       startPadding,
-      days: monthDays,
-      totalWorkouts: monthWorkouts,
-      totalHours: Number(monthHours.toFixed(1)),
+      days,
+      totalWorkouts: mWorkouts,
+      totalHours: Number(mHours.toFixed(1)),
+      monthName: today.toLocaleDateString('en-US', { month: 'long' }),
+      year,
     };
   }, [logMap]);
 
-  // 3. WEEK VIEW DATA
+  // 3. WEEK VIEW DATA (Strictly Current Real Calendar Week: Sun to Sat)
   const weekData = useMemo(() => {
-    const todayObj = new Date();
-    const todayStr = formatDateKey(todayObj);
-    todayObj.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = formatDateKey(today);
 
-    const dayOfWeek = todayObj.getDay();
-    const distanceToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(todayObj);
-    monday.setDate(todayObj.getDate() + distanceToMon);
+    const dayOfWeek = today.getDay();
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - dayOfWeek);
 
-    const weekDays: DayTile[] = [];
-    let weekWorkouts = 0;
-    let weekHours = 0;
+    const days: DayTile[] = [];
+    let wWorkouts = 0;
+    let wHours = 0;
 
     for (let i = 0; i < 7; i++) {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
-      const dateStr = formatDateKey(d);
+      const dateObj = new Date(sunday);
+      dateObj.setDate(sunday.getDate() + i);
+      const dateStr = formatDateKey(dateObj);
       const log = logMap.get(dateStr);
       const hours = log ? log.hours : 0;
 
       if (hours > 0) {
-        weekWorkouts++;
-        weekHours += hours;
+        wWorkouts++;
+        wHours += hours;
       }
 
-      const tileTime = new Date(d);
-      tileTime.setHours(0, 0, 0, 0);
-
-      weekDays.push({
+      days.push({
         dateStr,
-        dateObj: d,
+        dateObj: dateObj,
         log,
         hours,
         workoutType: log?.workoutType,
         isToday: dateStr === todayStr,
-        isFuture: tileTime.getTime() > todayObj.getTime(),
+        isFuture: dateObj > today,
       });
     }
 
     return {
-      days: weekDays,
-      totalWorkouts: weekWorkouts,
-      totalHours: Number(weekHours.toFixed(1)),
+      days: days,
+      totalWorkouts: wWorkouts,
+      totalHours: Number(wHours.toFixed(1)),
     };
   }, [logMap]);
 
@@ -254,6 +233,7 @@ export default function ContributionGraph({
           days={monthData.days}
           activeFilter={activeFilter}
           onTileClick={onTileClick}
+          weeklyPlan={weeklyPlan}
         />
       )}
 
@@ -262,6 +242,7 @@ export default function ContributionGraph({
           days={weekData.days}
           activeFilter={activeFilter}
           onTileClick={onTileClick}
+          weeklyPlan={weeklyPlan}
         />
       )}
     </div>

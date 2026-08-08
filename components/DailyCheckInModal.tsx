@@ -3,6 +3,7 @@
 import { WorkoutType } from '@/lib/types';
 import React, { useState } from 'react';
 import { Dumbbell, Check, X, Sparkles, Clock, Calendar, ArrowRight, Plus } from 'lucide-react';
+import { getThemeForWorkout } from './contribution-graph/theme-utils';
 
 interface DailyCheckInModalProps {
   dateStr: string;
@@ -116,13 +117,12 @@ export default function DailyCheckInModal({
               </div>
             </div>
 
-            {/* Hours Selection + Custom Time Input */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-emerald-400" /> Time Spent (Hours)
+                <label className="text-xs font-black text-zinc-300 flex items-center gap-1.5 uppercase tracking-wider">
+                  <Clock className="w-3.5 h-3.5 text-neon-green" /> Time Spent (Hours)
                 </label>
-                <span className="text-emerald-400 font-bold text-sm">
+                <span className="text-neon-green font-black text-sm drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">
                   {isCustomHours ? `${customHoursInput || '0'} hrs` : `${hours} hrs`}
                 </span>
               </div>
@@ -137,11 +137,10 @@ export default function DailyCheckInModal({
                       setHours(h);
                       setIsCustomHours(false);
                     }}
-                    className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all border ${
-                      !isCustomHours && hours === h
-                        ? 'bg-emerald-500 text-zinc-950 border-emerald-400 shadow-md shadow-emerald-500/20'
-                        : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
-                    }`}
+                    className={`flex-1 py-2 text-xs font-black rounded-xl transition-all border cursor-pointer ${!isCustomHours && hours === h
+                        ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+                        : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                      }`}
                   >
                     {h}h
                   </button>
@@ -149,11 +148,10 @@ export default function DailyCheckInModal({
                 <button
                   type="button"
                   onClick={() => setIsCustomHours(true)}
-                  className={`py-2 px-2.5 text-xs font-bold rounded-xl transition-all border flex items-center gap-1 ${
-                    isCustomHours
-                      ? 'bg-emerald-500 text-zinc-950 border-emerald-400'
-                      : 'bg-zinc-950 text-amber-400 border-amber-500/40 hover:border-amber-400'
-                  }`}
+                  className={`py-2 px-2.5 text-xs font-black rounded-xl transition-all border flex items-center gap-1 cursor-pointer ${isCustomHours
+                      ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+                      : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
+                    }`}
                 >
                   <Plus className="w-3 h-3" />
                   <span>Custom</span>
@@ -162,8 +160,8 @@ export default function DailyCheckInModal({
 
               {/* Custom Hours Numeric Field */}
               {isCustomHours && (
-                <div className="flex items-center gap-2 p-2.5 bg-zinc-950 border border-emerald-500/50 rounded-xl animate-in fade-in">
-                  <span className="text-xs font-semibold text-zinc-400">Custom Duration:</span>
+                <div className="flex items-center gap-2 p-2.5 bg-[#05080c] border border-neon-green/50 rounded-xl animate-in fade-in">
+                  <span className="text-xs font-bold text-zinc-400">Custom Duration:</span>
                   <input
                     type="number"
                     min="0.1"
@@ -172,7 +170,7 @@ export default function DailyCheckInModal({
                     value={customHoursInput}
                     onChange={(e) => setCustomHoursInput(e.target.value)}
                     placeholder="e.g. 3.5"
-                    className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-xs text-emerald-400 font-bold outline-none focus:border-emerald-400"
+                    className="flex-1 bg-zinc-900 border border-zinc-800 focus:border-neon-green rounded-lg px-2.5 py-1 text-xs text-neon-green font-black outline-none"
                   />
                   <span className="text-xs font-bold text-zinc-400">hours</span>
                 </div>
@@ -181,39 +179,43 @@ export default function DailyCheckInModal({
 
             {/* Workout Type Selector */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 mb-2">
-                Workout Type
+              <label className="block text-xs font-black text-zinc-300 uppercase tracking-wider mb-2">
+                Workout Category:
               </label>
               <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto pr-1">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setWorkoutType(cat)}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between ${
-                      workoutType === cat
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-                        : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
-                    }`}
-                  >
-                    <span className="truncate">{cat}</span>
-                    {workoutType === cat && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
-                  </button>
-                ))}
+                {categories.map((cat) => {
+                  const isSelected = workoutType === cat;
+                  const catTheme = getThemeForWorkout(cat);
+
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setWorkoutType(cat)}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${isSelected
+                          ? catTheme.filterActive
+                          : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                        }`}
+                    >
+                      <span className="truncate">{cat}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
-                Session Notes (Optional)
+              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5">
+                Session Notes (Optional):
               </label>
               <input
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. 3.5h intense leg & core marathon!"
-                className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 rounded-xl py-2 px-3 text-xs text-zinc-100 placeholder-zinc-600 outline-none"
+                className="w-full bg-[#05080c] border border-zinc-800 focus:border-neon-green focus:shadow-[0_0_15px_rgba(0,255,136,0.2)] rounded-xl py-2 px-3 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition-all"
               />
             </div>
 
@@ -222,14 +224,14 @@ export default function DailyCheckInModal({
               type="button"
               onClick={handleSaveDetails}
               disabled={saving}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-extrabold py-3 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,136,0.4)] text-[#060a0e] font-black py-3.5 px-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
             >
               {saving ? (
-                <div className="w-5 h-5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#060a0e] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Save Workout Log</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <Check className="w-4 h-4 text-[#060a0e]" />
+                  <span>Log This Session</span>
                 </>
               )}
             </button>

@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { Sparkles, X, Plus } from 'lucide-react';
+import { getThemeForWorkout } from '@/components/contribution-graph/theme-utils';
+import { WeeklyPlan } from '@/lib/types';
 
 interface CustomPlanEditorProps {
   selectedPlanId: string;
@@ -28,29 +30,36 @@ export default function CustomPlanEditor({
   setNewCatInput,
   handleAddCategory,
 }: CustomPlanEditorProps) {
+  const customPlanObj: WeeklyPlan = {
+    id: 'custom-plan',
+    name: customName || 'Custom Plan',
+    categories: customCategories,
+  };
+
   return (
     <>
       {/* Custom Plan Fields (only shown when custom-plan is active) */}
       {selectedPlanId === 'custom-plan' && (
-        <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 mb-6 space-y-3">
-          <span className="text-xs font-bold text-zinc-200 flex items-center gap-1.5 border-b border-zinc-800 pb-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Plan Profile Details:
+        <div className="bg-zinc-950/80 border border-zinc-800/90 rounded-2xl p-4 mb-6 space-y-3.5 shadow-inner">
+          <span className="text-xs font-black text-zinc-200 flex items-center gap-2 border-b border-zinc-800 pb-2.5">
+            <Sparkles className="w-3.5 h-3.5 text-neon-green animate-pulse" />
+            <span className="tracking-wide">Plan Profile Details</span>
           </span>
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div>
-              <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5">
                 Plan Name:
               </label>
               <input
                 type="text"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
-                placeholder="e.g. My Hypertrophy Split"
-                className="w-full bg-zinc-900 border border-zinc-800 focus:border-emerald-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 outline-none"
+                placeholder="e.g. My Cyberpunk Hypertrophy Split"
+                className="w-full bg-[#05080c] border border-zinc-800 focus:border-neon-green focus:shadow-[0_0_15px_rgba(0,255,136,0.2)] rounded-xl px-3.5 py-2 text-xs text-zinc-100 outline-none transition-all"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5">
                 Plan Description:
               </label>
               <input
@@ -58,7 +67,7 @@ export default function CustomPlanEditor({
                 value={customDesc}
                 onChange={(e) => setCustomDesc(e.target.value)}
                 placeholder="e.g. 5-day training program targeting weaknesses"
-                className="w-full bg-zinc-900 border border-zinc-800 focus:border-emerald-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 outline-none"
+                className="w-full bg-[#05080c] border border-zinc-800 focus:border-neon-green focus:shadow-[0_0_15px_rgba(0,255,136,0.2)] rounded-xl px-3.5 py-2 text-xs text-zinc-100 outline-none transition-all"
               />
             </div>
           </div>
@@ -66,32 +75,39 @@ export default function CustomPlanEditor({
       )}
 
       {/* Customize Categories Section */}
-      <div className="bg-zinc-950/80 border border-zinc-800 rounded-2xl p-4 space-y-3 mb-6">
+      <div className="bg-zinc-950/80 border border-zinc-800/90 rounded-2xl p-4 space-y-3 mb-6 shadow-inner">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Workout Categories:
+          <span className="text-xs font-black text-zinc-200 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-neon-cyan animate-pulse" />
+            <span className="tracking-wide">Workout Categories &amp; Color Sync</span>
           </span>
-          <span className="text-[10px] text-zinc-400">Add or remove tags</span>
+          <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+            {customCategories.length} Categories
+          </span>
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {customCategories.map((cat) => (
-            <span
-              key={cat}
-              className="text-xs font-bold px-2.5 py-1 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-200 flex items-center gap-1.5"
-            >
-              <span>{cat}</span>
-              {customCategories.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveCategory(cat)}
-                  className="text-zinc-500 hover:text-red-400 transition-colors"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-2 pt-1">
+          {customCategories.map((cat) => {
+            const catTheme = getThemeForWorkout(cat, customPlanObj);
+            return (
+              <span
+                key={cat}
+                className={`text-xs font-extrabold px-3 py-1.5 rounded-xl border flex items-center gap-2 transition-all ${catTheme.pillWeek} shadow-sm`}
+              >
+                <span>{cat}</span>
+                {customCategories.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCategory(cat)}
+                    aria-label={`Remove ${cat}`}
+                    className="text-zinc-400 hover:text-red-400 hover:scale-110 transition-all cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </span>
+            );
+          })}
         </div>
 
         {/* Add custom tag input */}
@@ -106,15 +122,15 @@ export default function CustomPlanEditor({
                 handleAddCategory();
               }
             }}
-            placeholder="e.g. Mobility, Core, Calisthenics..."
-            className="flex-1 bg-zinc-900 border border-zinc-800 focus:border-emerald-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 outline-none"
+            placeholder="e.g. Mobility, Core, Cardio, Calisthenics..."
+            className="flex-1 bg-[#05080c] border border-zinc-800 focus:border-neon-cyan focus:shadow-[0_0_15px_rgba(34,211,238,0.2)] rounded-xl px-3.5 py-2 text-xs text-zinc-100 outline-none transition-all"
           />
           <button
             type="button"
             onClick={handleAddCategory}
-            className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-xs font-bold text-zinc-200 flex items-center gap-1 transition-colors"
+            className="px-4 py-2 bg-neon-cyan/10 hover:bg-neon-cyan/20 border border-neon-cyan/30 hover:border-neon-cyan text-neon-cyan rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-[0_0_12px_rgba(34,211,238,0.15)] cursor-pointer shrink-0"
           >
-            <Plus className="w-3.5 h-3.5 text-emerald-400" /> Add Tag
+            <Plus className="w-3.5 h-3.5" /> <span>Add Tag</span>
           </button>
         </div>
       </div>

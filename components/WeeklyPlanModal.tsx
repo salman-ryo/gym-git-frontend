@@ -104,14 +104,14 @@ export default function WeeklyPlanModal({
       `}</style>
 
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-150"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/85 backdrop-blur-xl animate-in fade-in duration-200"
         onClick={() => {
           if (!preventClose) onClose();
         }}
       >
-        {/* OUTER CONTAINER: Handles the shape, borders, and clipping */}
+        {/* OUTER CONTAINER: Handles the cyberpunk shape, borders, and glow */}
         <div
-          className="relative w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in scale-in-95 duration-150"
+          className="relative w-full max-w-xl bg-[#080c10]/95 border border-[rgba(0,255,136,0.2)] rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col max-h-[90vh] overflow-hidden animate-in scale-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* FIXED CLOSE BUTTON: Stays at the top right while content scrolls */}
@@ -119,25 +119,25 @@ export default function WeeklyPlanModal({
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-5 right-5 z-20 text-zinc-400 hover:text-zinc-100 p-1.5 rounded-xl bg-zinc-800/80 backdrop-blur-sm hover:bg-zinc-700 transition-colors"
+              className="absolute top-5 right-5 z-20 text-zinc-400 hover:text-red-400 p-2 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-red-500/40 backdrop-blur-sm transition-all cursor-pointer group"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />
             </button>
           )}
 
           {/* INNER CONTAINER: Handles the padding and the actual scrolling */}
-          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
 
             {/* Modal Header */}
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-800">
-              <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400">
-                <Settings2 className="w-5 h-5" />
+            <div className="flex items-center gap-3.5 mb-6 pb-4 border-b border-zinc-800/80">
+              <div className="p-3 bg-zinc-950 border border-neon-green/30 rounded-2xl text-neon-green shadow-[0_0_15px_rgba(0,255,136,0.15)]">
+                <Settings2 className="w-5 h-5 text-neon-green animate-spin-slow" />
               </div>
               <div className="pr-8">
-                <h3 className="text-base font-bold text-zinc-100">
+                <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">
                   {preventClose ? 'Setup Your Workout Plan' : 'Weekly Workout Plan & Filters'}
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-zinc-400 font-medium mt-0.5">
                   {preventClose
                     ? 'To get started, choose an existing split or create your own custom workout categories.'
                     : 'Customize your split. Past workout data remains safe & intact!'}
@@ -146,8 +146,8 @@ export default function WeeklyPlanModal({
             </div>
 
             {/* Workout Plan Split Options */}
-            <div className="space-y-4 mb-6">
-              <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+            <div className="space-y-3 mb-6">
+              <label className="block text-[11px] font-black text-zinc-300 uppercase tracking-widest">
                 Choose a Workout Split:
               </label>
 
@@ -177,14 +177,14 @@ export default function WeeklyPlanModal({
               type="button"
               onClick={handleSave}
               disabled={saving || (selectedPlanId === 'custom-plan' && !customName.trim())}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 font-extrabold py-3 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,136,0.4)] text-[#060a0e] font-black py-3.5 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 cursor-pointer"
             >
               {saving ? (
-                <div className="w-5 h-5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[#060a0e] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <Dumbbell className="w-4 h-4" />
-                  <span>Apply Weekly Plan</span>
+                  <Dumbbell className="w-4 h-4 text-[#060a0e]" />
+                  <span className="tracking-wide uppercase text-xs font-black">Apply Weekly Plan</span>
                 </>
               )}
             </button>

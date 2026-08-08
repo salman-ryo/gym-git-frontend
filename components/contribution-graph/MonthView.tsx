@@ -1,15 +1,16 @@
 'use client';
 
 import React from 'react';
-import { GymLog, WorkoutType } from '@/lib/types';
+import { GymLog, WeeklyPlan, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
-import { DayTile, getThemeForWorkout } from './theme-utils';
+import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout } from './theme-utils';
 
 interface MonthViewProps {
   startPadding: number;
   days: DayTile[];
   activeFilter: WorkoutType | 'All';
   onTileClick: (dateStr: string, log?: GymLog) => void;
+  weeklyPlan?: WeeklyPlan;
 }
 
 export default function MonthView({
@@ -17,6 +18,7 @@ export default function MonthView({
   days,
   activeFilter,
   onTileClick,
+  weeklyPlan,
 }: MonthViewProps) {
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
@@ -30,11 +32,12 @@ export default function MonthView({
         ))}
 
         {days.map((day) => {
-          const isFilteredOut = activeFilter !== 'All' && day.hours > 0 && day.workoutType !== activeFilter;
+          const isRestOrNoSession = day.hours <= 0 || day.workoutType?.toLowerCase() === 'rest';
+          const isFilteredOut = activeFilter !== 'All' && !isRestOrNoSession && day.workoutType !== activeFilter;
 
-          const theme = (day.hours > 0 && day.workoutType)
-            ? getThemeForWorkout(day.workoutType)
-            : getThemeForWorkout('All');
+          const theme = !isRestOrNoSession && day.workoutType
+            ? getThemeForWorkout(day.workoutType, weeklyPlan)
+            : DEFAULT_GREEN_THEME;
 
           const formattedDate = day.dateObj.toLocaleDateString('en-US', {
             weekday: 'short',
@@ -53,13 +56,13 @@ export default function MonthView({
                   <div className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">Future Date Locked</div>
                 ) : (
                   <div className="text-left">
-                    <div className="font-bold text-white text-xs">
-                      {day.hours > 0 ? `${day.hours} hrs spent` : 'No gym session'}
+                    <div className={`font-bold text-xs ${!isRestOrNoSession ? theme.text : 'text-zinc-200'}`}>
+                      {!isRestOrNoSession ? `${day.hours} hrs spent` : 'No gym session'}
                     </div>
                     <div className="text-[11px] text-zinc-300 mt-0.5">
                       {displayDate}
-                      {day.workoutType && (
-                        <span className="ml-1.5 font-bold text-amber-400">
+                      {!isRestOrNoSession && day.workoutType && (
+                        <span className={`ml-1.5 font-bold ${theme.text}`}>
                           • {day.workoutType}
                         </span>
                       )}
@@ -75,9 +78,9 @@ export default function MonthView({
                 className={`h-16 rounded-xl p-2 flex flex-col justify-between text-left transition-all border relative overflow-hidden group 
                   ${day.isFuture
                     ? 'bg-zinc-950/40 border-zinc-800/40 opacity-40 cursor-not-allowed'
-                    : 'cursor-pointer ' + (day.hours > 0
+                    : 'cursor-pointer ' + (!isRestOrNoSession
                       ? theme.cardGlow
-                      : 'bg-zinc-950 border-zinc-800/50 hover:border-zinc-700')
+                      : 'bg-zinc-950/80 border-zinc-800/60 hover:border-zinc-700')
                   } 
                   ${isFilteredOut && !day.isFuture ? 'opacity-20' : ''} 
                   ${day.isToday ? theme.todayRingMonth : ''}
@@ -87,14 +90,14 @@ export default function MonthView({
                   <span className={`text-xs font-black transition-colors ${day.isToday ? theme.text : day.isFuture ? 'text-zinc-700' : 'text-zinc-400'}`}>
                     {day.dayOfMonth}
                   </span>
-                  {day.hours > 0 && (
+                  {!isRestOrNoSession && day.hours > 0 && (
                     <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${theme.pillMonth}`}>
                       {day.hours}h
                     </span>
                   )}
                 </div>
 
-                {day.workoutType && (
+                {!isRestOrNoSession && day.workoutType && (
                   <span className={`text-[9px] font-bold truncate w-full uppercase tracking-wide transition-colors ${theme.text}`}>
                     {day.workoutType}
                   </span>

@@ -12,6 +12,7 @@ import {
   Clock,
   CalendarCheck,
 } from 'lucide-react';
+import Image from 'next/image';
 
 /* ─────────────────────────────────────────────
    Data
@@ -26,7 +27,7 @@ interface FeatureCard {
 
 const FEATURES: FeatureCard[] = [
   {
-    icon: <Flame className="w-5.5 h-5.5" />,
+    icon: <Image src={"/images/icons/git.png"} alt='Git tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#f59e0b',
     glowColor: 'rgba(245, 158, 11, 0.25)',
     title: 'GITHUB-STYLE STREAKS',
@@ -34,7 +35,7 @@ const FEATURES: FeatureCard[] = [
       'Streaks that actually motivate. Commit to your plan and keep the flame alive.',
   },
   {
-    icon: <BarChart3 className="w-5.5 h-5.5" />,
+    icon: <Image src={"/images/icons/progress.png"} alt='Progress tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#8b5cf6',
     glowColor: 'rgba(139, 92, 246, 0.25)',
     title: 'DEEP PROGRESS INSIGHTS',
@@ -42,7 +43,7 @@ const FEATURES: FeatureCard[] = [
       'Visualize your volume, consistency, and performance over time.',
   },
   {
-    icon: <ClipboardList className="w-5.5 h-5.5" />,
+    icon: <Image src={"/images/icons/plan.png"} alt='Plan tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.25)',
     title: 'PLAN & LOG SMARTER',
@@ -50,7 +51,7 @@ const FEATURES: FeatureCard[] = [
       'Structured workout plans with easy logging and auto tracking.',
   },
   {
-    icon: <ShieldCheck className="w-5.5 h-5.5" />,
+    icon: <Image src={"/images/icons/privacy.png"} alt='Privacy tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#00ff88',
     glowColor: 'rgba(0, 255, 136, 0.25)',
     title: 'PRIVACY FIRST BY DESIGN',
@@ -69,28 +70,28 @@ interface StatCounter {
 
 const STATS: StatCounter[] = [
   {
-    icon: <Users className="w-4.5 h-4.5" />,
+    icon: <Image src={"/images/icons/users.png"} alt='Users' width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#f59e0b',
     value: 2457,
     suffix: '+',
     label: 'Active Lifters',
   },
   {
-    icon: <Dumbbell className="w-4.5 h-4.5" />,
+    icon: <Image src={"/images/icons/workout.png"} alt='Workout' width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#8b5cf6',
     value: 18329,
     suffix: '+',
     label: 'Workouts Logged',
   },
   {
-    icon: <Clock className="w-4.5 h-4.5" />,
+    icon: <Image src={"/images/icons/time.png"} alt='Time' width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#22d3ee',
     value: 11250,
     suffix: '+',
     label: 'Hours Tracked',
   },
   {
-    icon: <CalendarCheck className="w-4.5 h-4.5" />,
+    icon: <Image src={"/images/icons/consistency.png"} alt='Consistency' width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#00ff88',
     value: 91520,
     suffix: '+',
@@ -158,7 +159,7 @@ function WhyFeatureCard({
       {/* Glow orb behind the icon */}
       <div className="relative w-14 h-14 mb-5 flex items-center justify-center">
         <div className="absolute -inset-2 rounded-full bg-[radial-gradient(circle,var(--card-glow-color,rgba(0,255,136,0.25))_0%,transparent_70%)] blur-md opacity-30 group-hover:opacity-70 group-hover:blur-lg transition-all duration-300" aria-hidden="true" />
-        <div className="relative z-10 w-12 h-12 rounded-xl flex items-center justify-center bg-[rgba(24,24,27,0.6)] border border-[rgba(63,63,70,0.4)] transition-all duration-300 group-hover:border-current group-hover:shadow-[0_0_12px_var(--card-glow-color,rgba(0,255,136,0.15))]" style={{ color: iconColor }}>{icon}</div>
+        <div className="relative z-10">{icon}</div>
       </div>
 
       <h3 className="text-[12.5px] font-extrabold tracking-wider text-[#e4e4e7] mb-2.5 leading-tight">{title}</h3>
@@ -230,9 +231,7 @@ function WhyStatCard({ icon, iconColor, value, suffix, label }: StatCounter) {
       {/* Left color accent bar */}
       <span className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-[2px] bg-[var(--stat-color,#00ff88)] shadow-[0_0_8px_var(--stat-color,#00ff88)] opacity-0 group-hover:opacity-70 transition-opacity duration-300" aria-hidden="true" />
 
-      <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-lg bg-[rgba(24,24,27,0.6)] border border-[rgba(63,63,70,0.4)] transition-all duration-300 group-hover:border-current" style={{ color: iconColor }}>
-        {icon}
-      </div>
+      {icon}
       <div className="flex flex-col gap-0.5">
         <span className="text-[clamp(1.3rem,2.5vw,1.7rem)] font-extrabold text-[#fafafa] leading-tight tracking-tight [font-variant-numeric:tabular-nums]">
           {count.toLocaleString()}

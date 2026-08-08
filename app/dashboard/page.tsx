@@ -292,6 +292,7 @@ export default function DashboardPage() {
                 logs={logs}
                 activeFilter={activeFilter}
                 onTileClick={handleTileClick}
+                weeklyPlan={user?.weeklyPlan}
               />
 
               {/* Monthly Attendance Bar Chart */}

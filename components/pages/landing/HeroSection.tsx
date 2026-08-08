@@ -13,9 +13,9 @@ import Image from 'next/image';
 /** Floating badge above the headline */
 function HeroBadge() {
   return (
-    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-neon-green/4 backdrop-blur-md" aria-label="Built for Discipline">
-      <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
-      <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">BUILT FOR DISCIPLINE</span>
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-zinc-950/80 backdrop-blur-md md:w-fit" aria-label="Track Your Grind">
+      <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
+      <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">Track Your Grind</span>
     </div>
   );
 }
@@ -186,7 +186,7 @@ export default function HeroSection() {
 
         {/* ── Right Column ── */}
         <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-teal-500/50">
-          <Image src="/images/dashboardsection.png" priority width={1080} height={1920} alt="Dashboard Mockup" />
+          <Image src="/images/landing/dashboardsection.webp" priority unoptimized width={1080} height={1920} quality={100} alt="Dashboard Mockup" />
         </div>
       </div>
     </section>
