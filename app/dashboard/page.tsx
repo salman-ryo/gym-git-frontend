@@ -1,14 +1,14 @@
 'use client';
 
 import AuthGuard from '@/components/AuthGuard';
-import ContributionGraph from '@/components/ContributionGraph';
+import ContributionGraph from '@/components/pages/dashboard/ContributionGraph';
 import CyberpunkLoader from '@/components/CyberpunkLoader';
-import DailyCheckInModal from '@/components/DailyCheckInModal';
-import EditLogModal from '@/components/EditLogModal';
-import FilterBar from '@/components/FilterBar';
-import Header from '@/components/Header';
-import StatsOverview from '@/components/StatsOverview';
-import WeeklyPlanModal from '@/components/WeeklyPlanModal';
+import DailyCheckInModal from '@/components/pages/dashboard/DailyCheckInModal';
+import EditLogModal from '@/components/pages/dashboard/EditLogModal';
+import FilterBar from '@/components/pages/dashboard/FilterBar';
+import Header from '@/components/pages/dashboard/Header';
+import StatsOverview from '@/components/pages/dashboard/StatsOverview';
+import WeeklyPlanModal from '@/components/pages/dashboard/WeeklyPlanModal';
 import { useAuth } from '@/lib/auth-context';
 import { formatDateKey } from '@/lib/scientific-streak';
 import {
@@ -25,7 +25,7 @@ import {
 import { enable_mock_data, auto_load_mock_on_startup } from '@/lib/flags';
 import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import PowerLevelChart from '@/components/PowerLevelChart';
+import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import Footer from '@/components/layout/Footer';
 import { LandingBackground } from '@/components/pages/landing';
 import { Sparkles, Database, RotateCcw, Check, Loader2 } from 'lucide-react';

@@ -3,7 +3,7 @@
 import { GymLog, WorkoutType } from '@/lib/types';
 import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, Trash2, X, Check, Save, Plus } from 'lucide-react';
-import { getThemeForWorkout } from './contribution-graph/theme-utils';
+import { getThemeForWorkout } from '../../contribution-graph/theme-utils';
 
 interface EditLogModalProps {
   dateStr: string | null;
@@ -135,11 +135,10 @@ export default function EditLogModal({
                     setHours(h);
                     setIsCustomHours(false);
                   }}
-                  className={`flex-1 py-2 text-xs font-black rounded-xl transition-all border cursor-pointer ${
-                    !isCustomHours && hours === h
+                  className={`flex-1 py-2 text-xs font-black rounded-xl transition-all border cursor-pointer ${!isCustomHours && hours === h
                       ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
                       : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
-                  }`}
+                    }`}
                 >
                   {h === 0 ? 'Off' : `${h}h`}
                 </button>
@@ -147,11 +146,10 @@ export default function EditLogModal({
               <button
                 type="button"
                 onClick={() => setIsCustomHours(true)}
-                className={`py-2 px-2.5 text-xs font-black rounded-xl transition-all border flex items-center gap-1 cursor-pointer ${
-                  isCustomHours
+                className={`py-2 px-2.5 text-xs font-black rounded-xl transition-all border flex items-center gap-1 cursor-pointer ${isCustomHours
                     ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
                     : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
-                }`}
+                  }`}
               >
                 <Plus className="w-3 h-3" />
                 <span>Custom</span>
@@ -201,11 +199,10 @@ export default function EditLogModal({
                     key={type}
                     type="button"
                     onClick={() => setWorkoutType(type)}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${
-                      isSelected
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${isSelected
                         ? typeTheme.filterActive
                         : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                    }`}
+                      }`}
                   >
                     <span className="truncate">{type}</span>
                     {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
