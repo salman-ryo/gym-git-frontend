@@ -134,34 +134,34 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
       imageAlt: 'Streak',
       theme: stats.isFrozen
         ? {
-            border: 'border-neon-cyan/25 hover:border-neon-cyan/60',
-            shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-            hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
-            diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
-            diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
-            textUnit: 'text-neon-cyan',
-            textSub: 'text-zinc-400 group-hover:text-zinc-300',
-            accentBar:
-              'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
-            glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
-            imgShadow:
-              'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
-            imageFilter: 'hue-rotate(140deg) brightness(1.2) drop-shadow(0 0 10px rgba(34,211,238,0.5))',
-          }
+          border: 'border-neon-cyan/25 hover:border-neon-cyan/60',
+          shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+          hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
+          diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
+          diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
+          textUnit: 'text-neon-cyan',
+          textSub: 'text-zinc-400 group-hover:text-zinc-300',
+          accentBar:
+            'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
+          glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
+          imgShadow:
+            'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
+          imageFilter: 'hue-rotate(140deg) brightness(1.2) drop-shadow(0 0 10px rgba(34,211,238,0.5))',
+        }
         : {
-            border: 'border-neon-green/15 hover:border-neon-green/60',
-            shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-            hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
-            diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
-            diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
-            textUnit: 'text-neon-green',
-            textSub: 'text-zinc-400 group-hover:text-zinc-300',
-            accentBar:
-              'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
-            glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
-            imgShadow:
-              'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
-          },
+          border: 'border-neon-green/15 hover:border-neon-green/60',
+          shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+          hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
+          diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
+          diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
+          textUnit: 'text-neon-green',
+          textSub: 'text-zinc-400 group-hover:text-zinc-300',
+          accentBar:
+            'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
+          glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
+          imgShadow:
+            'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
+        },
     },
     {
       title: 'Longest Streak',
@@ -247,9 +247,9 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
 
   return (
     <TooltipProvider delayDuration={50}>
-      <div className="w-full mt-6 mb-10">
+      <div className="w-full mt-6 mb-10 space-y-6">
         {/* GRIND STATS Cyberpunk Header */}
-        <div className="flex justify-center items-center mb-8 relative">
+        <div className="flex justify-center items-center relative">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-neon-green/30 to-neon-cyan/60" />
           <div className="px-7 py-2 mx-4 bg-zinc-950/80 border border-neon-green/30 backdrop-blur-xl rounded-full shadow-[0_0_20px_rgba(0,255,136,0.15)] flex items-center gap-3 relative z-10">
             <div className="w-2 h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
@@ -261,18 +261,15 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
           <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-neon-green/30 to-neon-cyan/60" />
         </div>
 
-        {/* Main Stats Layout: Left is CycleProgressCard, Right is 2x2 grid of StatCards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          <div className="lg:col-span-1">
-            {user && <CycleProgressCard stats={stats} user={user} />}
-          </div>
-
-          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {statCardsData.map((card, index) => (
-              <StatCard key={index} {...card} />
-            ))}
-          </div>
+        {/* Row 1: 4 Stat Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {statCardsData.map((card, index) => (
+            <StatCard key={index} {...card} />
+          ))}
         </div>
+
+        {/* Row 2: Cycle Progress Card — full width */}
+        {user && <CycleProgressCard stats={stats} user={user} />}
       </div>
     </TooltipProvider>
   );

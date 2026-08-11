@@ -23,7 +23,7 @@ import {
   seedMockLogsToBackend,
 } from '@/lib/mock-data-generator';
 import { enable_mock_data, auto_load_mock_on_startup } from '@/lib/flags';
-import { GymLog, Stats, WeeklyPlan, WorkoutType, UserInventoryItem, ActiveItemEffect } from '@/lib/types';
+import { GymLog, Stats, WeeklyPlan, WorkoutType, UserInventoryItem, ActiveItemEffect, RoadmapMilestone } from '@/lib/types';
 import { fetchUserInventory, consumeInventoryItem } from '@/lib/inventory-service';
 import InventoryDrawer from '@/components/inventory/InventoryDrawer';
 import ActiveEffectsBar from '@/components/inventory/ActiveEffectsBar';
@@ -34,6 +34,11 @@ import { LandingBackground } from '@/components/pages/landing';
 import { Sparkles, Database, RotateCcw, Check, Loader2, Snowflake } from 'lucide-react';
 import FreezeModal from '@/components/pages/dashboard/FreezeModal';
 import FrozenStateBanner from '@/components/pages/dashboard/FrozenStateBanner';
+import RewardRoadmap from '@/components/rewards/RewardRoadmap';
+import ClaimCelebrationModal from '@/components/rewards/ClaimCelebrationModal';
+import { fetchRewardRoadmap } from '@/lib/rewards-service';
+import StreakBrokenModal from '@/components/pages/dashboard/StreakBrokenModal';
+import StreakRiskWarningBanner from '@/components/pages/dashboard/StreakRiskWarningBanner';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
@@ -68,6 +73,18 @@ export default function DashboardPage() {
   const [editTileDate, setEditTileDate] = useState<string | null>(null);
   const [editTileLog, setEditTileLog] = useState<GymLog | undefined>(undefined);
 
+  // Phase 5 — Reward Roadmap state
+  const [roadmapMilestones, setRoadmapMilestones] = useState<RoadmapMilestone[]>([]);
+  const [celebrationDetails, setCelebrationDetails] = useState<{
+    itemName: string;
+    itemId: string;
+    quantity: number;
+    rarity: string;
+  } | null>(null);
+
+  // Phase 6 — Streak Lifecycle state
+  const [hasSeenBrokenModal, setHasSeenBrokenModal] = useState<boolean>(false);
+
   // Extract all workout types present across historical logs to preserve data queryability
   const availableHistoricalTypes = useMemo(() => {
     const types = new Set<string>();
@@ -92,6 +109,14 @@ export default function DashboardPage() {
           setActiveEffects(invData.active_effects || []);
         } catch (invErr) {
           console.warn('Failed to load inventory:', invErr);
+        }
+
+        try {
+          const planId = user.weeklyPlan?.id;
+          const roadmap = await fetchRewardRoadmap(planId);
+          setRoadmapMilestones(Array.isArray(roadmap) ? roadmap : []);
+        } catch (roadmapErr) {
+          console.warn('Failed to load reward roadmap:', roadmapErr);
         }
       }
       return fetchedLogs;
@@ -349,6 +374,14 @@ export default function DashboardPage() {
                   />
                 )}
 
+                {/* Streak Decay Imminent Risk Warning Banner */}
+                {stats?.streakWarningEvent?.is_at_risk && (
+                  <StreakRiskWarningBanner
+                    event={stats.streakWarningEvent}
+                    onLogWorkoutClick={() => setShowDailyCheckIn(true)}
+                  />
+                )}
+
                 {/* Active Buffs / Effects HUD Bar */}
                 <ActiveEffectsBar
                   key={activeEffects.map((e) => `${e.item_id}-${e.remaining_seconds}`).join(',') || 'empty'}
@@ -377,6 +410,20 @@ export default function DashboardPage() {
                 {/* Monthly Attendance Bar Chart */}
                 {stats?.monthlyData && (
                   <PowerLevelChart monthlyData={stats.monthlyData} logs={logs} />
+                )}
+
+                {/* Phase 5 — Streak Reward Roadmap */}
+                {roadmapMilestones.length > 0 && (
+                  <RewardRoadmap
+                    milestones={roadmapMilestones}
+                    longestStreak={stats?.longestStreak ?? 0}
+                    planId={user?.weeklyPlan?.id}
+                    onClaimSuccess={async (details) => {
+                      setCelebrationDetails(details);
+                      // Refresh inventory and roadmap to reflect the newly claimed item
+                      await refreshData();
+                    }}
+                  />
                 )}
               </>
             )}
@@ -428,6 +475,30 @@ export default function DashboardPage() {
             availableTokens={availableFreezeTokens}
             onSuccess={async () => {
               await refreshData();
+            }}
+          />
+
+          {/* Phase 5 — Claim Celebration Modal */}
+          <ClaimCelebrationModal
+            isOpen={!!celebrationDetails}
+            rewardDetails={celebrationDetails}
+            onClose={() => setCelebrationDetails(null)}
+          />
+
+          {/* Phase 6 — Streak Broken Recovery Modal */}
+          <StreakBrokenModal
+            isOpen={!!stats?.streakBrokenEvent && !hasSeenBrokenModal}
+            event={stats?.streakBrokenEvent || null}
+            onClose={() => setHasSeenBrokenModal(true)}
+            onRestoreSuccess={async () => {
+              await refreshData();
+            }}
+            onOpenRoadmap={() => {
+              setHasSeenBrokenModal(true);
+              const roadmapEl = document.getElementById('reward-roadmap');
+              if (roadmapEl) {
+                roadmapEl.scrollIntoView({ behavior: 'smooth' });
+              }
             }}
           />
         </div>

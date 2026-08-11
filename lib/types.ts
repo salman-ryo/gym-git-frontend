@@ -265,3 +265,22 @@ export const PREBUILT_PLANS: WeeklyPlan[] = [
     categories: ['Full Body', 'Cardio', 'Mobility', 'Custom'],
   },
 ];
+
+export type MilestoneStatus = 'LOCKED' | 'CLAIMABLE' | 'CLAIMED';
+
+export interface RoadmapMilestone {
+  milestone_id: string;
+  plan_id: string;
+  streak_target: number;
+  item_id: string;
+  item_name: string;
+  item_icon: string;
+  rarity: string;
+  quantity: number;
+  title: string;
+  description: string;
+  badge_slug: string;
+  status: MilestoneStatus;
+  claimed_at?: string;
+}
+

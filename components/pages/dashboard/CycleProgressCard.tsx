@@ -20,17 +20,19 @@ function formatDate(dateStr: string): string {
 }
 
 export default function CycleProgressCard({ stats, user }: CycleProgressCardProps) {
+  console.log("🚀 ~ CycleProgressCard ~ user:", user)
+  console.log("🚀 ~ CycleProgressCard ~ stats:", stats)
   const cycle = stats.cycleInfo;
-  
+
   // Render nothing if cycle info is missing (fallback to preserve dashboard integrity)
   if (!cycle) return null;
 
   const completed = cycle.workouts_completed_in_cycle;
   const target = cycle.workouts_target_in_cycle;
   const progressPct = target > 0 ? Math.min(100, Math.round((completed / target) * 100)) : 0;
-  
+
   const accuracy = stats.accuracyScore ?? 0;
-  
+
   // SVG Circle parameters for the accuracy gauge
   const radius = 28;
   const strokeWidth = 5;
@@ -69,7 +71,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
 
         {/* Grid: Left column (Workout & Rest Tokens), Right column (Accuracy Gauge) */}
         <div className="grid grid-cols-3 gap-4 items-center">
-          
+
           {/* Workouts & Rest Tokens (Spans 2 columns) */}
           <div className="col-span-2 space-y-4">
             {/* Workouts Completed */}
@@ -101,11 +103,10 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
                   return (
                     <div
                       key={idx}
-                      className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${
-                        isActive
-                          ? 'bg-neon-cyan/10 border-neon-cyan/40 shadow-[0_0_8px_rgba(34,211,238,0.15)] text-neon-cyan'
-                          : 'bg-zinc-900/40 border-zinc-800/80 text-zinc-600'
-                      }`}
+                      className={`relative flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 ${isActive
+                        ? 'bg-neon-cyan/10 border-neon-cyan/40 shadow-[0_0_8px_rgba(34,211,238,0.15)] text-neon-cyan'
+                        : 'bg-zinc-900/40 border-zinc-800/80 text-zinc-600'
+                        }`}
                     >
                       <Shield className={`w-4 h-4 ${isActive ? 'fill-neon-cyan/10' : ''}`} />
                       {!isActive && (

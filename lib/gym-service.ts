@@ -67,8 +67,9 @@ export async function deleteGymLog(date: string): Promise<void> {
 }
 
 export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats> {
-  const [rawStats, logs] = await Promise.all([
+  const [rawStats, rawStreak, logs] = await Promise.all([
     api.get<RawStatsResponse>('/stats').catch(() => null),
+    api.get<RawStreakResponse>('/streak').catch(() => null),
     fetchGymLogs().catch(() => []),
   ]);
 
@@ -136,7 +137,12 @@ export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats
     });
   }
 
-  const streakObj = rawStats?.streak || rawStats || {};
+  // Prefer /streak response (full StreakResponse with cycle_info) over the
+  // lightweight StreakStats embedded in /stats, which lacks cycle_info.
+  const streakFull = rawStreak?.streak || rawStreak || {};
+  const streakStats = rawStats?.streak || {};
+  const streakObj = Object.keys(streakFull).length > 0 ? streakFull : streakStats;
+
   const currentStreak = streakObj.current_streak ?? streakObj.currentStreak ?? 0;
   const longestStreak = streakObj.longest_streak ?? streakObj.longestStreak ?? currentStreak;
   const totalDays = rawStats?.total_sessions ?? rawStats?.totalDays ?? logs.length;
