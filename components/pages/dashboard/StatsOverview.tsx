@@ -5,6 +5,8 @@ import React from 'react';
 import { ShieldCheck, CheckCircle2, Flame, Trophy, CheckSquare, Clock } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import Image from 'next/image';
+import { useAuth } from '@/lib/auth-context';
+import CycleProgressCard from './CycleProgressCard';
 
 interface StatsOverviewProps {
   stats: Stats | null;
@@ -96,6 +98,8 @@ function StatCard({
 }
 
 export default function StatsOverview({ stats }: StatsOverviewProps) {
+  const { user } = useAuth();
+
   if (!stats) return null;
 
   const streak = stats.scientificStreak;
@@ -225,11 +229,17 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
           <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-neon-green/30 to-neon-cyan/60" />
         </div>
 
-        {/* Stats Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {statCardsData.map((card, index) => (
-            <StatCard key={index} {...card} />
-          ))}
+        {/* Main Stats Layout: Left is CycleProgressCard, Right is 2x2 grid of StatCards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="lg:col-span-1">
+            {user && <CycleProgressCard stats={stats} user={user} />}
+          </div>
+
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {statCardsData.map((card, index) => (
+              <StatCard key={index} {...card} />
+            ))}
+          </div>
         </div>
       </div>
     </TooltipProvider>

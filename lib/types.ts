@@ -24,6 +24,7 @@ export interface User {
   avatarUrl?: string;
   provider: 'email' | 'google';
   weeklyPlan?: WeeklyPlan;
+  queuedWeeklyPlanId?: string | null;
   streak?: UserStreak;
 }
 

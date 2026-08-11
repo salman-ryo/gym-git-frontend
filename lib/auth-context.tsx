@@ -77,6 +77,7 @@ function mapBackendUser(data: RawAuthMeResponse): User {
           categories: p.categories || [],
         }
       : undefined,
+    queuedWeeklyPlanId: u.queued_weekly_plan_id || u.queuedWeeklyPlanId || null,
     streak: streakObj,
   };
 }
