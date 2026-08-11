@@ -164,6 +164,49 @@ export interface RawStreakResponse {
   streak?: RawStreakResponse;
 }
 
+export interface RawStatsResponse {
+  total_sessions?: number;
+  totalDays?: number;
+  total_hours?: number;
+  totalHours?: number;
+  avg_session_duration?: number;
+  averageHoursPerSession?: number;
+  streak?: RawStreakResponse;
+  current_streak?: number;
+  currentStreak?: number;
+  longest_streak?: number;
+  longestStreak?: number;
+  compliance_rate?: number;
+  complianceRate?: number;
+  cycle_info?: {
+    cycle_start_date: string;
+    cycle_end_date: string;
+    workouts_completed_in_cycle: number;
+    workouts_target_in_cycle: number;
+    rest_tokens_total: number;
+    rest_tokens_used: number;
+    rest_tokens_remaining: number;
+    days_remaining_in_cycle: number;
+  };
+  accuracy_score?: number;
+  accuracyScore?: number;
+  is_frozen?: boolean;
+  isFrozen?: boolean;
+  streak_broken_event?: {
+    previous_streak: number;
+    broken_on: string;
+    restore_shield_available: boolean;
+    restore_shields_count: number;
+    can_restore_until: string;
+  };
+  streak_warning_event?: {
+    is_at_risk: boolean;
+    hours_remaining: number;
+    rest_tokens_left: number;
+    message: string;
+  };
+}
+
 export interface RawAuthMeResponse {
   user?: {
     email?: string;
@@ -174,6 +217,7 @@ export interface RawAuthMeResponse {
     weeklyPlan?: WeeklyPlan;
     weekly_plan_id?: string;
     queued_weekly_plan_id?: string | null;
+    queuedWeeklyPlanId?: string | null;
     timezone?: string;
   };
   plan?: WeeklyPlan;
@@ -184,6 +228,9 @@ export interface RawAuthMeResponse {
   avatarUrl?: string;
   provider?: 'email' | 'google';
   weeklyPlan?: WeeklyPlan;
+  weekly_plan_id?: string;
+  queued_weekly_plan_id?: string | null;
+  queuedWeeklyPlanId?: string | null;
 }
 
 export interface FilterOptions {

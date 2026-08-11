@@ -1,7 +1,7 @@
 import { api } from '@/utils/api';
 import { animePowerLevels } from '@/assets/anime';
 import { calculateScientificPowerScore, PowerScoreBreakdown } from './scientific-power';
-import { GymLog, MonthlyStat, Stats, WeeklyPlan, UserStreak, RawStreakResponse } from './types';
+import { GymLog, MonthlyStat, Stats, WeeklyPlan, UserStreak, RawStreakResponse, RawStatsResponse } from './types';
 
 /**
  * Service wrapper for Gym Logs & Analytics.
@@ -68,7 +68,7 @@ export async function deleteGymLog(date: string): Promise<void> {
 
 export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats> {
   const [rawStats, logs] = await Promise.all([
-    api.get<RawStreakResponse>('/stats').catch(() => null),
+    api.get<RawStatsResponse>('/stats').catch(() => null),
     fetchGymLogs().catch(() => []),
   ]);
 

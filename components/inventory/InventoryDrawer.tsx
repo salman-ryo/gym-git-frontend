@@ -11,6 +11,7 @@ interface InventoryDrawerProps {
   inventoryItems: UserInventoryItem[];
   onUseItem: (itemId: string, payload?: Record<string, unknown>) => Promise<void>;
   loading?: boolean;
+  onRequestFreeze?: (availableTokens: number) => void;
 }
 
 export default function InventoryDrawer({
@@ -19,6 +20,7 @@ export default function InventoryDrawer({
   inventoryItems,
   onUseItem,
   loading = false,
+  onRequestFreeze,
 }: InventoryDrawerProps) {
   const [selectedItem, setSelectedItem] = useState<UserInventoryItem | null>(null);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -40,11 +42,12 @@ export default function InventoryDrawer({
 
   const handleUseRequest = () => {
     if (!selectedItem) return;
-    // Streak freeze and restore shield trigger confirmation due to high value
-    if (
-      selectedItem.item_details.item_id === 'STREAK_FREEZE_TOKEN' ||
-      selectedItem.item_details.item_id === 'RESTORE_SHIELD'
-    ) {
+    // Intercept streak freeze to show duration selection modal
+    if (selectedItem.item_details.item_id === 'STREAK_FREEZE_TOKEN') {
+      if (onRequestFreeze) {
+        onRequestFreeze(selectedItem.quantity);
+      }
+    } else if (selectedItem.item_details.item_id === 'RESTORE_SHIELD') {
       setShowConfirm(true);
     } else {
       executeUse();

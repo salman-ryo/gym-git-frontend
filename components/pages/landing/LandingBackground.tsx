@@ -13,10 +13,12 @@ interface Particle {
   color: 'green' | 'cyan' | 'purple';
 }
 
-export default function LandingBackground() {
+export default function LandingBackground({ isFrozen = false }: { isFrozen?: boolean }) {
   // Generate 24 floating particles distributed across the page
   const particles = useMemo<Particle[]>(() => {
-    const colors: ('green' | 'cyan' | 'purple')[] = ['green', 'cyan', 'purple', 'green', 'green', 'cyan'];
+    const colors: ('green' | 'cyan' | 'purple')[] = isFrozen
+      ? ['cyan', 'cyan', 'cyan']
+      : ['green', 'cyan', 'purple', 'green', 'green', 'cyan'];
     return Array.from({ length: 24 }, (_, i) => ({
       id: i,
       x: (i * 4.2 + (i % 5) * 7) % 96 + 2, // Percentage left (2% to 98%)
@@ -26,10 +28,10 @@ export default function LandingBackground() {
       duration: 4 + (i % 5) * 1.2,
       color: colors[i % colors.length],
     }));
-  }, []);
+  }, [isFrozen]);
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#060a0e]" aria-hidden="true">
+    <div className={`fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#060a0e] ${isFrozen ? 'is-frozen' : ''}`} aria-hidden="true">
       {/* ── Animated Cyberpunk Grid Background ── */}
       <div className="landing-bg-layer__grid" />
 

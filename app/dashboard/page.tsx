@@ -31,7 +31,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import Footer from '@/components/layout/Footer';
 import { LandingBackground } from '@/components/pages/landing';
-import { Sparkles, Database, RotateCcw, Check, Loader2 } from 'lucide-react';
+import { Sparkles, Database, RotateCcw, Check, Loader2, Snowflake } from 'lucide-react';
+import FreezeModal from '@/components/pages/dashboard/FreezeModal';
+import FrozenStateBanner from '@/components/pages/dashboard/FrozenStateBanner';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
@@ -40,6 +42,11 @@ export default function DashboardPage() {
   const [inventoryItems, setInventoryItems] = useState<UserInventoryItem[]>([]);
   const [activeEffects, setActiveEffects] = useState<ActiveItemEffect[]>([]);
   const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
+
+  const availableFreezeTokens = useMemo(() => {
+    const item = inventoryItems.find((i) => i.item_details.item_id === 'STREAK_FREEZE_TOKEN');
+    return item ? item.quantity : 0;
+  }, [inventoryItems]);
 
   const [logs, setLogs] = useState<GymLog[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -54,6 +61,7 @@ export default function DashboardPage() {
   // Modals state
   const [showDailyCheckIn, setShowDailyCheckIn] = useState<boolean>(false);
   const [showPlanModal, setShowPlanModal] = useState<boolean>(false);
+  const [isFreezeModalOpen, setIsFreezeModalOpen] = useState<boolean>(false);
   const [todayDateStr, setTodayDateStr] = useState<string>('');
 
   // Historical Tile Edit Modal state
@@ -162,9 +170,13 @@ export default function DashboardPage() {
         setShowPlanModal(true);
         setShowDailyCheckIn(false);
       } else {
+        // Only prompt daily check-in if streak is NOT currently frozen
+        const fetchedStats = await fetchDashboardStats(user?.weeklyPlan);
+        const isFrozenToday = fetchedStats?.isFrozen;
+
         const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
 
-        if (!hasTodayLog) {
+        if (!hasTodayLog && !isFrozenToday) {
           setShowDailyCheckIn(true);
         }
       }
@@ -225,7 +237,7 @@ export default function DashboardPage() {
     <AuthGuard>
       <div className="min-h-screen bg-[#060a0e] text-[#fafafa] flex flex-col font-sans relative overflow-hidden selection:bg-neon-green/20 selection:text-neon-green">
         {/* ── Animated Cyberpunk Background from Landing Page ── */}
-        <LandingBackground />
+        <LandingBackground isFrozen={stats?.isFrozen} />
 
         <div className="relative z-10 flex flex-col min-h-screen">
           {/* Navigation Header */}
@@ -272,14 +284,31 @@ export default function DashboardPage() {
                       <span>Fill 365-Day Graph (&lt;2h)</span>
                     </button>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={resetToRealData}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
-                      <span>Reset Real Data</span>
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={resetToRealData}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
+                        <span>Reset Real Data</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (stats) {
+                            setStats({
+                              ...stats,
+                              isFrozen: !stats.isFrozen,
+                            });
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-cyan-400 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
+                      >
+                        <Snowflake className="w-3.5 h-3.5 shrink-0" />
+                        <span>{stats?.isFrozen ? 'Unfreeze Mock' : 'Freeze Mock'}</span>
+                      </button>
+                    </>
                   )}
 
                   <button
@@ -309,6 +338,17 @@ export default function DashboardPage() {
               <CyberpunkLoader text="Summoning your stats" />
             ) : (
               <>
+                {/* Frozen State Banner */}
+                {stats?.isFrozen && (
+                  <FrozenStateBanner
+                    isFrozen={stats.isFrozen}
+                    activeEffects={activeEffects}
+                    onUnfreezeSuccess={async () => {
+                      await refreshData();
+                    }}
+                  />
+                )}
+
                 {/* Active Buffs / Effects HUD Bar */}
                 <ActiveEffectsBar
                   key={activeEffects.map((e) => `${e.item_id}-${e.remaining_seconds}`).join(',') || 'empty'}
@@ -376,6 +416,19 @@ export default function DashboardPage() {
             onClose={() => setIsInventoryOpen(false)}
             inventoryItems={inventoryItems}
             onUseItem={handleUseInventoryItem}
+            onRequestFreeze={(availableTokens) => {
+              setIsInventoryOpen(false);
+              setIsFreezeModalOpen(true);
+            }}
+          />
+
+          <FreezeModal
+            isOpen={isFreezeModalOpen}
+            onClose={() => setIsFreezeModalOpen(false)}
+            availableTokens={availableFreezeTokens}
+            onSuccess={async () => {
+              await refreshData();
+            }}
           />
         </div>
       </div>

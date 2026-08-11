@@ -2,7 +2,7 @@
 
 import { Stats } from '@/lib/types';
 import React from 'react';
-import { ShieldCheck, CheckCircle2, Flame, Trophy, CheckSquare, Clock } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Flame, Trophy, CheckSquare, Clock, Snowflake } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import Image from 'next/image';
 import { useAuth } from '@/lib/auth-context';
@@ -23,6 +23,7 @@ type StatTheme = {
   accentBar: string;
   glowOrb: string;
   imgShadow: string;
+  imageFilter?: string;
 };
 
 interface StatCardProps {
@@ -91,6 +92,7 @@ function StatCard({
           height={82}
           unoptimized
           className="object-contain"
+          style={theme.imageFilter ? { filter: theme.imageFilter } : undefined}
         />
       </div>
     </div>
@@ -108,9 +110,21 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
   const statCardsData: StatCardProps[] = [
     {
       title: 'Current Streak',
-      value: stats.currentStreak,
+      value: stats.isFrozen ? (
+        <span className="flex items-center gap-1">
+          {stats.currentStreak}
+          <Snowflake className="w-5 h-5 text-neon-cyan shrink-0 animate-pulse" />
+        </span>
+      ) : (
+        stats.currentStreak
+      ),
       unit: 'Days',
-      subtext: (
+      subtext: stats.isFrozen ? (
+        <>
+          <Snowflake className="w-3.5 h-3.5 shrink-0 text-neon-cyan animate-pulse" />
+          <span className="text-neon-cyan font-bold">Ice Pause Active</span>
+        </>
+      ) : (
         <>
           <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-neon-green" />
           <span>Rest days protected</span>
@@ -118,18 +132,36 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
       ),
       imageSrc: '/images/icons/fire.svg',
       imageAlt: 'Streak',
-      theme: {
-        border: 'border-neon-green/15 hover:border-neon-green/60',
-        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-        hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
-        diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
-        diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
-        textUnit: 'text-neon-green',
-        textSub: 'text-zinc-400 group-hover:text-zinc-300',
-        accentBar: 'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
-        glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
-        imgShadow: 'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
-      },
+      theme: stats.isFrozen
+        ? {
+            border: 'border-neon-cyan/25 hover:border-neon-cyan/60',
+            shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+            hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
+            diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
+            diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
+            textUnit: 'text-neon-cyan',
+            textSub: 'text-zinc-400 group-hover:text-zinc-300',
+            accentBar:
+              'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
+            glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
+            imgShadow:
+              'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
+            imageFilter: 'hue-rotate(140deg) brightness(1.2) drop-shadow(0 0 10px rgba(34,211,238,0.5))',
+          }
+        : {
+            border: 'border-neon-green/15 hover:border-neon-green/60',
+            shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+            hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
+            diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
+            diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
+            textUnit: 'text-neon-green',
+            textSub: 'text-zinc-400 group-hover:text-zinc-300',
+            accentBar:
+              'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
+            glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
+            imgShadow:
+              'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
+          },
     },
     {
       title: 'Longest Streak',
