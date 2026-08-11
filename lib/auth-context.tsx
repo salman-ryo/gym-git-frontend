@@ -3,10 +3,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient as createBrowserClient } from '@/utils/supabase/client';
 import { api } from '@/utils/api';
-import { User, WeeklyPlan } from './types';
+import { User, WeeklyPlan, UserStreak, RawAuthMeResponse } from './types';
 
 interface AuthContextType {
   user: User | null;
+  streak: UserStreak | null;
   loading: boolean;
   login: (email: string, pass: string, plan?: WeeklyPlan) => Promise<void>;
   signup: (email: string, pass: string, name?: string, plan?: WeeklyPlan) => Promise<void>;
@@ -16,7 +17,7 @@ interface AuthContextType {
   bootstrapBackend: (selectedPlan?: WeeklyPlan, accessToken?: string) => Promise<User | null>;
 }
 
-function mapBackendUser(data: any): User {
+function mapBackendUser(data: RawAuthMeResponse): User {
   if (!data) {
     return {
       email: '',
@@ -27,6 +28,41 @@ function mapBackendUser(data: any): User {
 
   const u = data.user || data;
   const p = data.plan || u.weeklyPlan;
+  
+  let streakObj: UserStreak | undefined;
+  if (data.streak) {
+    const s = data.streak;
+    streakObj = {
+      currentStreak: s.current_streak ?? s.currentStreak ?? 0,
+      longestStreak: s.longest_streak ?? s.longestStreak ?? 0,
+      complianceRate: s.compliance_rate ?? s.complianceRate ?? 0,
+      cycleInfo: s.cycle_info ? {
+        cycle_start_date: s.cycle_info.cycle_start_date,
+        cycle_end_date: s.cycle_info.cycle_end_date,
+        workouts_completed_in_cycle: s.cycle_info.workouts_completed_in_cycle,
+        workouts_target_in_cycle: s.cycle_info.workouts_target_in_cycle,
+        rest_tokens_total: s.cycle_info.rest_tokens_total,
+        rest_tokens_used: s.cycle_info.rest_tokens_used,
+        rest_tokens_remaining: s.cycle_info.rest_tokens_remaining,
+        days_remaining_in_cycle: s.cycle_info.days_remaining_in_cycle,
+      } : undefined,
+      accuracyScore: s.accuracy_score ?? s.accuracyScore ?? 0,
+      isFrozen: s.is_frozen ?? s.isFrozen ?? false,
+      streakBrokenEvent: s.streak_broken_event ? {
+        previous_streak: s.streak_broken_event.previous_streak,
+        broken_on: s.streak_broken_event.broken_on,
+        restore_shield_available: s.streak_broken_event.restore_shield_available,
+        restore_shields_count: s.streak_broken_event.restore_shields_count,
+        can_restore_until: s.streak_broken_event.can_restore_until,
+      } : null,
+      streakWarningEvent: s.streak_warning_event ? {
+        is_at_risk: s.streak_warning_event.is_at_risk,
+        hours_remaining: s.streak_warning_event.hours_remaining,
+        rest_tokens_left: s.streak_warning_event.rest_tokens_left,
+        message: s.streak_warning_event.message,
+      } : null,
+    };
+  }
 
   return {
     email: u.email || '',
@@ -41,6 +77,7 @@ function mapBackendUser(data: any): User {
           categories: p.categories || [],
         }
       : undefined,
+    streak: streakObj,
   };
 }
 
@@ -48,6 +85,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [streak, setStreak] = useState<UserStreak | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   /**
@@ -74,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!token) {
       console.warn('[Bootstrap] No access token available yet for bootstrap call.');
       setUser(null);
+      setStreak(null);
       return null;
     }
 
@@ -82,13 +121,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await api.post('/auth/bootstrap', { selectedPlanId: planId }, { token });
 
       // 2. Fetch complete user profile & active weekly plan from Go backend
-      const rawProfileData = await api.get<any>('/auth/me', { token });
+      const rawProfileData = await api.get<RawAuthMeResponse>('/auth/me', { token });
       const mappedUser = mapBackendUser(rawProfileData);
       setUser(mappedUser);
+      setStreak(mappedUser.streak || null);
       return mappedUser;
     } catch (err) {
       console.error('Backend bootstrap/me call failed:', err);
       setUser(null);
+      setStreak(null);
       if (shouldThrow) {
         throw err;
       }
@@ -108,15 +149,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await bootstrapBackend(undefined, session.access_token);
         } else {
           setUser(null);
+          setStreak(null);
         }
 
         const {
           data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event: string, currentSession: any) => {
+        } = supabase.auth.onAuthStateChange(async (event: string, currentSession: { access_token?: string } | null) => {
           if (event === 'SIGNED_IN' && currentSession?.access_token) {
             await bootstrapBackend(undefined, currentSession.access_token);
           } else if (event === 'SIGNED_OUT') {
             setUser(null);
+            setStreak(null);
           }
         });
 
@@ -217,13 +260,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Ignore backend logout error if backend is unavailable
       }
       setUser(null);
+      setStreak(null);
     } finally {
       setLoading(false);
     }
   };
 
   const handleUpdatePlan = async (plan: WeeklyPlan) => {
-    const payload: any = { plan_id: plan.id };
+    const payload: Record<string, unknown> = { plan_id: plan.id };
     if (plan.id === 'custom-plan') {
       payload.name = plan.name;
       payload.description = plan.description;
@@ -239,6 +283,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        streak,
         loading,
         login: handleLogin,
         signup: handleSignup,

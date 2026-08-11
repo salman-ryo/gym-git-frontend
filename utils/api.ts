@@ -95,6 +95,18 @@ export async function apiFetch<T = any>(
     headers.set('Content-Type', 'application/json');
   }
 
+  // Inject X-Timezone header if running in the client
+  if (!headers.has('X-Timezone') && typeof window !== 'undefined') {
+    try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timezone) {
+        headers.set('X-Timezone', timezone);
+      }
+    } catch (e) {
+      console.warn('[API Client] Failed to resolve timezone:', e);
+    }
+  }
+
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }

@@ -1,7 +1,7 @@
 import { api } from '@/utils/api';
 import { animePowerLevels } from '@/assets/anime';
 import { calculateScientificPowerScore, PowerScoreBreakdown } from './scientific-power';
-import { GymLog, MonthlyStat, Stats, WeeklyPlan } from './types';
+import { GymLog, MonthlyStat, Stats, WeeklyPlan, UserStreak, RawStreakResponse } from './types';
 
 /**
  * Service wrapper for Gym Logs & Analytics.
@@ -68,7 +68,7 @@ export async function deleteGymLog(date: string): Promise<void> {
 
 export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats> {
   const [rawStats, logs] = await Promise.all([
-    api.get<any>('/stats').catch(() => null),
+    api.get<RawStreakResponse>('/stats').catch(() => null),
     fetchGymLogs().catch(() => []),
   ]);
 
@@ -136,19 +136,89 @@ export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats
     });
   }
 
-  const streakObj = rawStats?.streak || {};
+  const streakObj = rawStats?.streak || rawStats || {};
   const currentStreak = streakObj.current_streak ?? streakObj.currentStreak ?? 0;
+  const longestStreak = streakObj.longest_streak ?? streakObj.longestStreak ?? currentStreak;
   const totalDays = rawStats?.total_sessions ?? rawStats?.totalDays ?? logs.length;
   const totalHours = rawStats?.total_hours ?? rawStats?.totalHours ?? 0;
   const averageHoursPerSession = rawStats?.avg_session_duration ?? rawStats?.averageHoursPerSession ?? 0;
 
+  const cycleInfo = streakObj.cycle_info ? {
+    cycle_start_date: streakObj.cycle_info.cycle_start_date,
+    cycle_end_date: streakObj.cycle_info.cycle_end_date,
+    workouts_completed_in_cycle: streakObj.cycle_info.workouts_completed_in_cycle,
+    workouts_target_in_cycle: streakObj.cycle_info.workouts_target_in_cycle,
+    rest_tokens_total: streakObj.cycle_info.rest_tokens_total,
+    rest_tokens_used: streakObj.cycle_info.rest_tokens_used,
+    rest_tokens_remaining: streakObj.cycle_info.rest_tokens_remaining,
+    days_remaining_in_cycle: streakObj.cycle_info.days_remaining_in_cycle,
+  } : undefined;
+
+  const accuracyScore = streakObj.accuracy_score ?? streakObj.accuracyScore ?? undefined;
+  const isFrozen = streakObj.is_frozen ?? streakObj.isFrozen ?? undefined;
+
+  const streakBrokenEvent = streakObj.streak_broken_event ? {
+    previous_streak: streakObj.streak_broken_event.previous_streak,
+    broken_on: streakObj.streak_broken_event.broken_on,
+    restore_shield_available: streakObj.streak_broken_event.restore_shield_available,
+    restore_shields_count: streakObj.streak_broken_event.restore_shields_count,
+    can_restore_until: streakObj.streak_broken_event.can_restore_until,
+  } : null;
+
+  const streakWarningEvent = streakObj.streak_warning_event ? {
+    is_at_risk: streakObj.streak_warning_event.is_at_risk,
+    hours_remaining: streakObj.streak_warning_event.hours_remaining,
+    rest_tokens_left: streakObj.streak_warning_event.rest_tokens_left,
+    message: streakObj.streak_warning_event.message,
+  } : null;
+
   return {
     currentStreak,
-    longestStreak: currentStreak,
+    longestStreak,
     totalDays,
     totalHours: Math.round(totalHours * 10) / 10,
     averageHoursPerSession: Math.round(averageHoursPerSession * 10) / 10,
     monthlyData,
+    cycleInfo,
+    accuracyScore,
+    isFrozen,
+    streakBrokenEvent,
+    streakWarningEvent,
+  };
+}
+
+export async function fetchStreakLifecycle(): Promise<UserStreak> {
+  const data = await api.get<RawStreakResponse>('/streak');
+  const s = data?.streak || data || {};
+  return {
+    currentStreak: s.current_streak ?? s.currentStreak ?? 0,
+    longestStreak: s.longest_streak ?? s.longestStreak ?? 0,
+    complianceRate: s.compliance_rate ?? s.complianceRate ?? 0,
+    cycleInfo: s.cycle_info ? {
+      cycle_start_date: s.cycle_info.cycle_start_date,
+      cycle_end_date: s.cycle_info.cycle_end_date,
+      workouts_completed_in_cycle: s.cycle_info.workouts_completed_in_cycle,
+      workouts_target_in_cycle: s.cycle_info.workouts_target_in_cycle,
+      rest_tokens_total: s.cycle_info.rest_tokens_total,
+      rest_tokens_used: s.cycle_info.rest_tokens_used,
+      rest_tokens_remaining: s.cycle_info.rest_tokens_remaining,
+      days_remaining_in_cycle: s.cycle_info.days_remaining_in_cycle,
+    } : undefined,
+    accuracyScore: s.accuracy_score ?? s.accuracyScore ?? 0,
+    isFrozen: s.is_frozen ?? s.isFrozen ?? false,
+    streakBrokenEvent: s.streak_broken_event ? {
+      previous_streak: s.streak_broken_event.previous_streak,
+      broken_on: s.streak_broken_event.broken_on,
+      restore_shield_available: s.streak_broken_event.restore_shield_available,
+      restore_shields_count: s.streak_broken_event.restore_shields_count,
+      can_restore_until: s.streak_broken_event.can_restore_until,
+    } : null,
+    streakWarningEvent: s.streak_warning_event ? {
+      is_at_risk: s.streak_warning_event.is_at_risk,
+      hours_remaining: s.streak_warning_event.hours_remaining,
+      rest_tokens_left: s.streak_warning_event.rest_tokens_left,
+      message: s.streak_warning_event.message,
+    } : null,
   };
 }
 

@@ -24,6 +24,7 @@ export interface User {
   avatarUrl?: string;
   provider: 'email' | 'google';
   weeklyPlan?: WeeklyPlan;
+  streak?: UserStreak;
 }
 
 export interface MonthlyStat {
@@ -42,6 +43,146 @@ export interface Stats {
   averageHoursPerSession: number;
   monthlyData: MonthlyStat[];
   scientificStreak?: StreakAnalysis;
+  cycleInfo?: CycleInfo;
+  accuracyScore?: number;
+  isFrozen?: boolean;
+  streakBrokenEvent?: StreakBrokenEvent | null;
+  streakWarningEvent?: StreakWarningEvent | null;
+}
+
+export interface CycleInfo {
+  cycle_start_date: string;
+  cycle_end_date: string;
+  workouts_completed_in_cycle: number;
+  workouts_target_in_cycle: number;
+  rest_tokens_total: number;
+  rest_tokens_used: number;
+  rest_tokens_remaining: number;
+  days_remaining_in_cycle: number;
+}
+
+export interface StreakBrokenEvent {
+  previous_streak: number;
+  broken_on: string;
+  restore_shield_available: boolean;
+  restore_shields_count: number;
+  can_restore_until: string;
+}
+
+export interface StreakWarningEvent {
+  is_at_risk: boolean;
+  hours_remaining: number;
+  rest_tokens_left: number;
+  message: string;
+}
+
+export interface ItemCatalogItem {
+  item_id: 'RESTORE_SHIELD' | 'STREAK_FREEZE_TOKEN' | 'XP_BOOST' | 'ACCURACY_CHARM';
+  name: string;
+  effect_type: 'INSTANT_USE' | 'TIME_BASED';
+  duration_seconds: number;
+  description: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  icon: string;
+}
+
+export interface UserInventoryItem {
+  item_id: string;
+  quantity: number;
+  item_details: ItemCatalogItem;
+}
+
+export interface ActiveItemEffect {
+  item_id: string;
+  activated_at: string;
+  expires_at: string;
+  remaining_seconds: number;
+}
+
+export interface RoadmapMilestone {
+  milestone_id: string;
+  plan_id: string;
+  streak_target: number;
+  item_id: string;
+  item_name: string;
+  item_icon: string;
+  rarity: string;
+  quantity: number;
+  title: string;
+  description: string;
+  badge_slug: string;
+  status: 'LOCKED' | 'CLAIMABLE' | 'CLAIMED';
+  claimed_at?: string;
+}
+
+export interface UserStreak {
+  currentStreak: number;
+  longestStreak: number;
+  complianceRate: number;
+  cycleInfo?: CycleInfo;
+  accuracyScore: number;
+  isFrozen: boolean;
+  streakBrokenEvent?: StreakBrokenEvent | null;
+  streakWarningEvent?: StreakWarningEvent | null;
+}
+
+export interface RawStreakResponse {
+  current_streak?: number;
+  currentStreak?: number;
+  longest_streak?: number;
+  longestStreak?: number;
+  compliance_rate?: number;
+  complianceRate?: number;
+  cycle_info?: {
+    cycle_start_date: string;
+    cycle_end_date: string;
+    workouts_completed_in_cycle: number;
+    workouts_target_in_cycle: number;
+    rest_tokens_total: number;
+    rest_tokens_used: number;
+    rest_tokens_remaining: number;
+    days_remaining_in_cycle: number;
+  };
+  accuracy_score?: number;
+  accuracyScore?: number;
+  is_frozen?: boolean;
+  isFrozen?: boolean;
+  streak_broken_event?: {
+    previous_streak: number;
+    broken_on: string;
+    restore_shield_available: boolean;
+    restore_shields_count: number;
+    can_restore_until: string;
+  };
+  streak_warning_event?: {
+    is_at_risk: boolean;
+    hours_remaining: number;
+    rest_tokens_left: number;
+    message: string;
+  };
+  streak?: RawStreakResponse;
+}
+
+export interface RawAuthMeResponse {
+  user?: {
+    email?: string;
+    name?: string;
+    avatar_url?: string;
+    avatarUrl?: string;
+    provider?: 'email' | 'google';
+    weeklyPlan?: WeeklyPlan;
+    weekly_plan_id?: string;
+    queued_weekly_plan_id?: string | null;
+    timezone?: string;
+  };
+  plan?: WeeklyPlan;
+  streak?: RawStreakResponse;
+  email?: string;
+  name?: string;
+  avatar_url?: string;
+  avatarUrl?: string;
+  provider?: 'email' | 'google';
+  weeklyPlan?: WeeklyPlan;
 }
 
 export interface FilterOptions {
