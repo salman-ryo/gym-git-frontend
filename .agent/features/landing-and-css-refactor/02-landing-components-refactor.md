@@ -9,7 +9,6 @@
 
 * **Context Bundle:**
   1. [.agent/rules/02-code-style.md](file:///.agent/rules/02-code-style.md)
-  2. [refactor_css.md](file:///refactor_css.md)
 * **Owns:**
   - `components/pages/landing/LandingNavbar.tsx` & `.css`
   - `components/pages/landing/HeroSection.tsx` & `.css`
