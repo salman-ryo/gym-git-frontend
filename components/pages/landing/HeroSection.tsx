@@ -178,8 +178,8 @@ export default function HeroSection() {
         </div>
 
         {/* ── Right Column ── */}
-        <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[65dvh] md:w-auto shadow-md shadow-cyan-400">
-          <Image src="/images/landing/dashboardsection.webp" priority unoptimized width={1080} height={1920} quality={100} alt="Dashboard Mockup" />
+        <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[50dvh] md:w-auto shadow-md shadow-cyan-400">
+          <Image src="/images/landing/dashboardsection.webp" priority unoptimized width={1080} height={1920} quality={100} alt="Dashboard Mockup" className='object-contain' />
         </div>
       </div>
     </section>
