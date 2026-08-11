@@ -31,7 +31,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import Footer from '@/components/layout/Footer';
 import { LandingBackground } from '@/components/pages/landing';
-import { Sparkles, Database, RotateCcw, Check, Loader2, Snowflake } from 'lucide-react';
+import { Sparkles, Database, RotateCcw, Check, Loader2, Snowflake, AlertTriangle, ShieldAlert } from 'lucide-react';
 import FreezeModal from '@/components/pages/dashboard/FreezeModal';
 import FrozenStateBanner from '@/components/pages/dashboard/FrozenStateBanner';
 import RewardRoadmap from '@/components/rewards/RewardRoadmap';
@@ -139,12 +139,18 @@ export default function DashboardPage() {
     }
   };
 
-  // Activate 365-day mock data with workout durations < 2 hours
   const activateMockData = useCallback(() => {
     const mockLogs = generate365MockLogs(365);
-    const mockStats = generateMockStats(mockLogs, user?.weeklyPlan);
+    const mockStats = generateMockStats(mockLogs, user?.weeklyPlan) as Stats & {
+      mockMilestones?: RoadmapMilestone[];
+      mockInventory?: UserInventoryItem[];
+      mockActiveEffects?: ActiveItemEffect[];
+    };
     setLogs(mockLogs);
     setStats(mockStats);
+    setRoadmapMilestones(mockStats.mockMilestones || []);
+    setInventoryItems(mockStats.mockInventory || []);
+    setActiveEffects(mockStats.mockActiveEffects || []);
     setIsMockActive(true);
     setLoading(false);
   }, [user?.weeklyPlan]);
@@ -332,6 +338,54 @@ export default function DashboardPage() {
                       >
                         <Snowflake className="w-3.5 h-3.5 shrink-0" />
                         <span>{stats?.isFrozen ? 'Unfreeze Mock' : 'Freeze Mock'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (stats) {
+                            setStats({
+                              ...stats,
+                              streakWarningEvent: stats.streakWarningEvent 
+                                ? null 
+                                : {
+                                    is_at_risk: true,
+                                    hours_remaining: 5,
+                                    rest_tokens_left: 0,
+                                    message: 'Streak decay imminent! Log a workout before midnight.'
+                                  }
+                            });
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-400 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
+                      >
+                        <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                        <span>{stats?.streakWarningEvent ? 'Clear Warning' : 'Trigger Warning'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (stats) {
+                            if (!stats.streakBrokenEvent) {
+                              setHasSeenBrokenModal(false);
+                            }
+                            setStats({
+                              ...stats,
+                              streakBrokenEvent: stats.streakBrokenEvent 
+                                ? null 
+                                : {
+                                    previous_streak: 15,
+                                    broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
+                                    restore_shield_available: true,
+                                    restore_shields_count: 2,
+                                    can_restore_until: new Date().toISOString().split('T')[0]
+                                  }
+                            });
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-red-400 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-red-400" />
+                        <span>{stats?.streakBrokenEvent ? 'Clear Broken' : 'Trigger Broken'}</span>
                       </button>
                     </>
                   )}

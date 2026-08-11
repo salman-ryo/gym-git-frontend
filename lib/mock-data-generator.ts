@@ -1,4 +1,4 @@
-import { GymLog, MonthlyStat, Stats, WeeklyPlan, WorkoutType } from './types';
+import { GymLog, MonthlyStat, Stats, WeeklyPlan, WorkoutType, UserInventoryItem, ActiveItemEffect, RoadmapMilestone } from './types';
 import { formatDateKey } from './scientific-streak';
 import { calculateScientificPowerScore } from './scientific-power';
 import { saveGymLog } from './gym-service';
@@ -145,10 +145,9 @@ export function generateMockStats(logs: GymLog[], userPlan?: WeeklyPlan): Stats 
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const today = new Date();
   const currentYear = today.getFullYear();
-  const currentMonthIdx = today.getMonth();
 
   // Oldest date
-  let oldestDate = new Date();
+  const oldestDate = new Date();
   oldestDate.setDate(today.getDate() - 365);
 
   const startYear = oldestDate.getFullYear();
@@ -200,6 +199,131 @@ export function generateMockStats(logs: GymLog[], userPlan?: WeeklyPlan): Stats 
   const currentStreak = Math.min(64, Math.max(28, Math.round(totalDays * 0.18)));
   const longestStreak = Math.min(120, Math.max(currentStreak, Math.round(totalDays * 0.32)));
 
+  // Mock structures
+  const mockMilestones: RoadmapMilestone[] = [
+    {
+      milestone_id: 'ms-1',
+      plan_id: userPlan?.id || 'default',
+      streak_target: 7,
+      item_id: 'ACCURACY_CHARM',
+      item_name: 'Accuracy Charm',
+      quantity: 1,
+      rarity: 'common',
+      status: 'CLAIMED'
+    },
+    {
+      milestone_id: 'ms-2',
+      plan_id: userPlan?.id || 'default',
+      streak_target: 14,
+      item_id: 'STREAK_FREEZE_TOKEN',
+      item_name: 'Streak Freeze Token',
+      quantity: 1,
+      rarity: 'rare',
+      status: 'CLAIMED'
+    },
+    {
+      milestone_id: 'ms-3',
+      plan_id: userPlan?.id || 'default',
+      streak_target: 30,
+      item_id: 'RESTORE_SHIELD',
+      item_name: 'Restore Shield',
+      quantity: 1,
+      rarity: 'epic',
+      status: 'CLAIMED'
+    },
+    {
+      milestone_id: 'ms-4',
+      plan_id: userPlan?.id || 'default',
+      streak_target: 60,
+      item_id: 'STREAK_FREEZE_TOKEN',
+      item_name: 'Streak Freeze Token',
+      quantity: 2,
+      rarity: 'rare',
+      status: 'CLAIMABLE'
+    },
+    {
+      milestone_id: 'ms-5',
+      plan_id: userPlan?.id || 'default',
+      streak_target: 90,
+      item_id: 'RESTORE_SHIELD',
+      item_name: 'Restore Shield',
+      quantity: 5,
+      rarity: 'legendary',
+      status: 'LOCKED'
+    }
+  ];
+
+  const mockInventory: UserInventoryItem[] = [
+    {
+      item_id: 'RESTORE_SHIELD',
+      name: 'Restore Shield',
+      quantity: 2,
+      effect_type: 'INSTANT_USE',
+      duration_seconds: 0,
+      description: 'Protects and restores a broken streak if used within 3 days of decay.',
+      rarity: 'epic',
+      icon_slug: 'shield'
+    },
+    {
+      item_id: 'STREAK_FREEZE_TOKEN',
+      name: 'Streak Freeze Token',
+      quantity: 3,
+      effect_type: 'TIME_BASED',
+      duration_seconds: 86400,
+      description: 'Freezes your streak for 1 day, pausing target expectations during sickness.',
+      rarity: 'rare',
+      icon_slug: 'snowflake'
+    },
+    {
+      item_id: 'XP_BOOST',
+      name: 'XP Boost',
+      quantity: 1,
+      effect_type: 'TIME_BASED',
+      duration_seconds: 7200,
+      description: 'Increases all points gained by 50% for 2 hours.',
+      rarity: 'common',
+      icon_slug: 'bolt'
+    }
+  ];
+
+  const mockActiveEffects: ActiveItemEffect[] = [
+    {
+      item_id: 'XP_BOOST',
+      name: 'XP Boost',
+      remaining_seconds: 4500,
+      expires_at: new Date(Date.now() + 4500 * 1000).toISOString(),
+      effect_type: 'TIME_BASED',
+      description: '50% XP Boost Active'
+    }
+  ];
+
+  const mockWarningEvent = {
+    is_at_risk: true,
+    hours_remaining: 5,
+    rest_tokens_left: 0,
+    message: 'Streak decay imminent! Log a workout before midnight.'
+  };
+
+  const mockBrokenEvent = {
+    previous_streak: 15,
+    broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
+    restore_shield_available: true,
+    restore_shields_count: 2,
+    can_restore_until: new Date().toISOString().split('T')[0]
+  };
+
+  // Build CycleInfo
+  const cycleInfo = {
+    cycle_start_date: new Date(Date.now() - 3 * 86400 * 1000).toISOString().split('T')[0],
+    cycle_end_date: new Date(Date.now() + 3 * 86400 * 1000).toISOString().split('T')[0],
+    workouts_completed_in_cycle: 2,
+    workouts_target_in_cycle: 4,
+    rest_tokens_total: 3,
+    rest_tokens_used: 1,
+    rest_tokens_remaining: 2,
+    days_remaining_in_cycle: 4
+  };
+
   return {
     currentStreak,
     longestStreak,
@@ -207,7 +331,16 @@ export function generateMockStats(logs: GymLog[], userPlan?: WeeklyPlan): Stats 
     totalHours: Math.round(totalHours * 10) / 10,
     averageHoursPerSession: Math.round(averageHoursPerSession * 10) / 10,
     monthlyData,
-  };
+    isFrozen: false,
+    accuracyScore: 92,
+    cycleInfo,
+    streakWarningEvent: mockWarningEvent,
+    streakBrokenEvent: mockBrokenEvent,
+    // Attach these as properties for activation state overrides
+    mockMilestones,
+    mockInventory,
+    mockActiveEffects,
+  } as unknown as Stats;
 }
 
 /**
