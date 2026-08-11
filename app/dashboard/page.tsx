@@ -23,7 +23,10 @@ import {
   seedMockLogsToBackend,
 } from '@/lib/mock-data-generator';
 import { enable_mock_data, auto_load_mock_on_startup } from '@/lib/flags';
-import { GymLog, Stats, WeeklyPlan, WorkoutType } from '@/lib/types';
+import { GymLog, Stats, WeeklyPlan, WorkoutType, UserInventoryItem, ActiveItemEffect } from '@/lib/types';
+import { fetchUserInventory, consumeInventoryItem } from '@/lib/inventory-service';
+import InventoryDrawer from '@/components/inventory/InventoryDrawer';
+import ActiveEffectsBar from '@/components/inventory/ActiveEffectsBar';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import Footer from '@/components/layout/Footer';
@@ -32,6 +35,11 @@ import { Sparkles, Database, RotateCcw, Check, Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
+
+  // Inventory states
+  const [inventoryItems, setInventoryItems] = useState<UserInventoryItem[]>([]);
+  const [activeEffects, setActiveEffects] = useState<ActiveItemEffect[]>([]);
+  const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
 
   const [logs, setLogs] = useState<GymLog[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -68,6 +76,16 @@ export default function DashboardPage() {
       const fetchedStats = await fetchDashboardStats(user?.weeklyPlan);
       setLogs(fetchedLogs);
       setStats(fetchedStats);
+
+      if (user) {
+        try {
+          const invData = await fetchUserInventory();
+          setInventoryItems(invData.inventory || []);
+          setActiveEffects(invData.active_effects || []);
+        } catch (invErr) {
+          console.warn('Failed to load inventory:', invErr);
+        }
+      }
       return fetchedLogs;
     } catch (err) {
       console.error('Failed to load dashboard data', err);
@@ -75,7 +93,18 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.weeklyPlan]);
+  }, [user]);
+
+  const handleUseInventoryItem = async (itemId: string, payload?: Record<string, unknown>) => {
+    try {
+      const invData = await consumeInventoryItem(itemId, 1, payload);
+      setInventoryItems(invData.inventory || []);
+      setActiveEffects(invData.active_effects || []);
+      await refreshData();
+    } catch (err) {
+      console.error('Failed to use inventory item:', err);
+    }
+  };
 
   // Activate 365-day mock data with workout durations < 2 hours
   const activateMockData = useCallback(() => {
@@ -200,7 +229,11 @@ export default function DashboardPage() {
 
         <div className="relative z-10 flex flex-col min-h-screen">
           {/* Navigation Header */}
-          <Header currentStreak={stats?.currentStreak || 0} />
+          <Header
+            currentStreak={stats?.currentStreak || 0}
+            onOpenInventory={() => setIsInventoryOpen(true)}
+            inventoryCount={inventoryItems.reduce((acc, curr) => acc + curr.quantity, 0)}
+          />
 
           {/* Dashboard Main Content */}
           <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
@@ -276,6 +309,12 @@ export default function DashboardPage() {
               <CyberpunkLoader text="Summoning your stats" />
             ) : (
               <>
+                {/* Active Buffs / Effects HUD Bar */}
+                <ActiveEffectsBar
+                  key={activeEffects.map((e) => `${e.item_id}-${e.remaining_seconds}`).join(',') || 'empty'}
+                  activeEffects={activeEffects}
+                />
+
                 {/* Analytics & Streaks Overview */}
                 <StatsOverview stats={stats} />
 
@@ -330,6 +369,13 @@ export default function DashboardPage() {
             onClose={() => setShowPlanModal(false)}
             onSavePlan={handleSavePlan}
             preventClose={needsPlanSelection}
+          />
+
+          <InventoryDrawer
+            isOpen={isInventoryOpen}
+            onClose={() => setIsInventoryOpen(false)}
+            inventoryItems={inventoryItems}
+            onUseItem={handleUseInventoryItem}
           />
         </div>
       </div>

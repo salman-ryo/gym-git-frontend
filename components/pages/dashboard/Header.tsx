@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { Dumbbell, Flame, LogOut, User as UserIcon } from 'lucide-react';
+import { Dumbbell, Flame, LogOut, User as UserIcon, Package } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -9,9 +9,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 interface HeaderProps {
   currentStreak?: number;
+  onOpenInventory?: () => void;
+  inventoryCount?: number;
 }
 
-export default function Header({ currentStreak = 0 }: HeaderProps) {
+export default function Header({ currentStreak = 0, onOpenInventory, inventoryCount = 0 }: HeaderProps) {
   const { user, logout } = useAuth();
 
   return (
@@ -40,6 +42,32 @@ export default function Header({ currentStreak = 0 }: HeaderProps) {
 
         {/* User Navigation & Actions */}
         <div className="flex items-center gap-3">
+          {/* Inventory Access Button */}
+          {user && onOpenInventory && (
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={onOpenInventory}
+                    aria-label="Open Inventory"
+                    className="relative w-9 h-9 p-0 bg-zinc-950/80 hover:bg-neon-cyan/15 text-zinc-400 hover:text-neon-cyan border border-zinc-800 hover:border-neon-cyan/40 rounded-xl transition-all duration-200 shadow-sm hover:shadow-[0_0_15px_rgba(34,211,238,0.25)] cursor-pointer flex items-center justify-center group/inv"
+                  >
+                    <Package className="w-4 h-4 transition-transform duration-200 group-hover/inv:scale-110" />
+                    {inventoryCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-neon-cyan px-1 text-[9px] font-black text-zinc-950 shadow-[0_0_8px_rgba(34,211,238,0.6)] animate-pulse">
+                        {inventoryCount}
+                      </span>
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-[#05080c] border border-neon-cyan/30 text-neon-cyan text-[11px] font-bold shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                  Open Inventory
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
           {/* User Profile Info */}
           {user && (
             <div className="flex items-center gap-2.5 bg-zinc-950/80 border border-zinc-800/90 hover:border-neon-green/40 hover:shadow-[0_0_15px_rgba(0,255,136,0.12)] rounded-xl p-1.5 pl-3 transition-all duration-200 group/user">
