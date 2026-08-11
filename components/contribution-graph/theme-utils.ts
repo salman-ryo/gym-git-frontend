@@ -226,12 +226,83 @@ export const getThemeForWorkout = (type?: string, weeklyPlan?: WeeklyPlan): Work
 };
 
 export const getTileBgColor = (hours: number): string => {
-  if (hours <= 0) return 'bg-zinc-800/70 border-zinc-800/40 hover:border-zinc-500';
-  if (hours < 0.5) return 'bg-green-950 border-green-800 text-zinc-100';
-  if (hours < 1.0) return 'bg-green-800 border-green-700 text-zinc-100';
-  if (hours < 1.5) return 'bg-green-600 border-green-600 text-zinc-100';
-  if (hours < 2.0) return 'bg-green-400 border-green-400 text-zinc-100';
-  if (hours < 2.6) return 'bg-purple-400 border-purple-400 text-zinc-100';
-  if (hours >= 3.0) return 'bg-amber-400 border-orange-400 text-zinc-100 animate-pulse';
-  return 'bg-green-400 border-green-500 text-zinc-950';
+  if (hours <= 0) return 'bg-[#0d1117] border-zinc-900/60 hover:border-zinc-700';
+  return 'bg-gradient-to-br from-[#166534] to-[#22c55e] border-emerald-500/50 text-white';
 };
+
+export interface DayStyleInfo {
+  tileClass: string;
+  glowClass?: string;
+  ringClass?: string;
+  badgeContent?: string;
+  tooltipType: 'active' | 'rest' | 'freeze' | 'missed' | 'future';
+}
+
+export const getDayStyleInfo = (
+  day: DayTile,
+  activeFilter: string = 'All',
+  weeklyPlan?: WeeklyPlan
+): DayStyleInfo => {
+  if (day.isFuture) {
+    return {
+      tileClass: 'bg-zinc-950/40 border-zinc-800/40 opacity-40 cursor-not-allowed',
+      tooltipType: 'future',
+    };
+  }
+
+  const isRest = day.workoutType?.toLowerCase() === 'rest' || day.log?.workoutType?.toLowerCase() === 'rest';
+  const isFreeze = day.workoutType?.toLowerCase() === 'freeze' || day.log?.workoutType?.toLowerCase() === 'freeze';
+  const isActiveWorkout = day.hours > 0 && !isRest && !isFreeze;
+
+  if (isActiveWorkout) {
+    const isFilteredOut = activeFilter !== 'All' && day.workoutType !== activeFilter;
+    
+    // Active Workout Day: Dark to vibrant green gradient (#166534 to #22c55e)
+    const baseTile = 'bg-gradient-to-br from-[#166534] to-[#22c55e] border-emerald-500/30 text-white';
+    
+    return {
+      tileClass: isFilteredOut ? 'opacity-20 ' + baseTile : baseTile,
+      glowClass: 'shadow-[0_0_12px_rgba(34,197,94,0.3)]',
+      ringClass: day.isToday 
+        ? 'ring-2 ring-emerald-400 ring-offset-1 ring-offset-zinc-950 shadow-[0_0_15px_#22c55e]'
+        : '',
+      tooltipType: 'active',
+    };
+  }
+
+  if (isFreeze) {
+    // Frozen Day ("Ice Pause"): Distinct icy blue frost tile (#38bdf8 with subtle snowflake overlay / frost glow)
+    const baseTile = 'bg-[#38bdf8] border-[#38bdf8]/60 text-zinc-950 font-bold';
+    return {
+      tileClass: baseTile,
+      glowClass: 'shadow-[0_0_15px_rgba(56,189,248,0.35)]',
+      ringClass: day.isToday 
+        ? 'ring-2 ring-sky-300 ring-offset-1 ring-offset-zinc-950 shadow-[0_0_15px_#38bdf8]'
+        : '',
+      badgeContent: '❄️',
+      tooltipType: 'freeze',
+    };
+  }
+
+  if (isRest) {
+    // Rest Token Day: Neutral slate indicator (#334155)
+    return {
+      tileClass: 'bg-[#334155] border-slate-500/50 text-slate-200',
+      ringClass: day.isToday 
+        ? 'ring-2 ring-slate-400 ring-offset-1 ring-offset-zinc-950'
+        : '',
+      badgeContent: '🛡️',
+      tooltipType: 'rest',
+    };
+  }
+
+  // Missed Day: Default dark tile (#0d1117)
+  return {
+    tileClass: 'bg-[#0d1117] border-zinc-900/60 hover:border-zinc-700 text-zinc-550',
+    ringClass: day.isToday 
+      ? 'ring-2 ring-zinc-500 ring-offset-1 ring-offset-zinc-950'
+      : '',
+    tooltipType: 'missed',
+  };
+};
+

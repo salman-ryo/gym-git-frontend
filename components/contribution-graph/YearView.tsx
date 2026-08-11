@@ -3,7 +3,7 @@
 import React from 'react';
 import { GymLog, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
-import { DayTile, WeekColumn, getThemeForWorkout, getTileBgColor } from './theme-utils';
+import { DayTile, WeekColumn, getThemeForWorkout, getTileBgColor, getDayStyleInfo } from './theme-utils';
 
 interface YearViewProps {
   weeks: WeekColumn[];
@@ -45,19 +45,14 @@ export default function YearView({
               {weeks.map((week) => (
                 <div key={week.weekIndex} className="flex flex-col gap-1">
                   {week.days.map((day) => {
+                    const styleInfo = getDayStyleInfo(day, activeFilter);
                     const isFilteredOut = activeFilter !== 'All' && day.hours > 0 && day.workoutType !== activeFilter;
-                    const isMatchFilter = activeFilter !== 'All' && day.hours > 0 && day.workoutType === activeFilter;
-                    const activeTheme = isMatchFilter ? getThemeForWorkout(activeFilter) : null;
 
-                    let tileColorClass = getTileBgColor(day.hours);
-                    if (isMatchFilter && activeTheme) tileColorClass = activeTheme.tile;
+                    let tileColorClass = styleInfo.tileClass;
+                    let ringClass = styleInfo.ringClass || '';
 
-                    let ringClass = '';
                     if (day.isToday && !isFilteredOut) {
-                      // Force a glowing white ring strictly for "Today" in the 365 view
                       ringClass = 'ring ring-white ring-offset-1 ring-offset-zinc-950 z-10 shadow-[0_0_10px_rgba(255,255,255,0.8)]';
-                    } else if (isMatchFilter && activeTheme) {
-                      ringClass = activeTheme.ring;
                     }
 
                     const formattedDate = day.dateObj.toLocaleDateString('en-US', {
@@ -76,18 +71,31 @@ export default function YearView({
                           day.isFuture ? (
                             <div className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">Future Date Locked</div>
                           ) : (
-                            <div className="text-left">
-                              <div className="font-bold text-indigo-400 text-xs">
-                                {day.hours > 0 ? `${day.hours} hrs spent` : 'No gym session'}
+                            <div className="text-left space-y-1">
+                              <div className="font-bold text-xs">
+                                {styleInfo.tooltipType === 'freeze' ? (
+                                  <span className="text-sky-400">❄️ Ice Pause Active</span>
+                                ) : styleInfo.tooltipType === 'rest' ? (
+                                  <span className="text-slate-300">🛡️ Rest Token Applied</span>
+                                ) : day.hours > 0 ? (
+                                  <span className="text-emerald-450">{day.hours} hrs spent</span>
+                                ) : (
+                                  <span className="text-red-400">⚠️ Missed Day</span>
+                                )}
                               </div>
-                              <div className="text-[11px] text-zinc-300 mt-0.5">
+                              <div className="text-[11px] text-zinc-400 mt-0.5">
                                 {displayDate}
                                 {day.workoutType && (
-                                  <span className="ml-1.5 font-bold text-amber-400">
+                                  <span className="ml-1.5 font-bold text-zinc-300">
                                     • {day.workoutType}
                                   </span>
                                 )}
                               </div>
+                              {day.log?.notes && (
+                                <div className="text-[10px] text-zinc-550 border-t border-zinc-900 pt-1 mt-1 max-w-[200px] italic">
+                                  &ldquo;{day.log.notes}&rdquo;
+                                </div>
+                              )}
                             </div>
                           )
                         }
@@ -96,13 +104,18 @@ export default function YearView({
                           type="button"
                           disabled={day.isFuture}
                           onClick={() => !day.isFuture && onTileClick(day.dateStr, day.log)}
-                          className={`w-3 h-3 rounded-[4px] transition-all duration-150 border transform 
+                          className={`w-3 h-3 rounded-[4px] transition-all duration-150 border transform relative overflow-hidden
                             ${tileColorClass} 
                             ${day.isFuture ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer hover:scale-125 hover:z-20'} 
-                            ${isFilteredOut && !day.isFuture ? 'opacity-20 hover:opacity-100' : ''} 
                             ${ringClass}
                           `}
-                        />
+                        >
+                          {styleInfo.badgeContent && (
+                            <span className="absolute inset-0 flex items-center justify-center text-[6px] select-none pointer-events-none">
+                              {styleInfo.badgeContent}
+                            </span>
+                          )}
+                        </button>
                       </CustomTooltip>
                     );
                   })}

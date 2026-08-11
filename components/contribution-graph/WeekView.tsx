@@ -3,7 +3,7 @@
 import React from 'react';
 import { GymLog, WeeklyPlan, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
-import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout } from './theme-utils';
+import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout, getDayStyleInfo } from './theme-utils';
 
 interface WeekViewProps {
   days: DayTile[];
@@ -21,6 +21,7 @@ export default function WeekView({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-7 gap-3 animate-in fade-in duration-300">
       {days.map((day) => {
+        const styleInfo = getDayStyleInfo(day, activeFilter, weeklyPlan);
         const dayName = day.dateObj.toLocaleDateString('en-US', { weekday: 'short' });
         const isRestOrNoSession = day.hours <= 0 || day.workoutType?.toLowerCase() === 'rest';
         const isFilteredOut = activeFilter !== 'All' && !isRestOrNoSession && day.workoutType !== activeFilter;
@@ -45,18 +46,31 @@ export default function WeekView({
               day.isFuture ? (
                 <div className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">Future Date Locked</div>
               ) : (
-                <div className="text-left">
-                  <div className={`font-bold text-xs ${!isRestOrNoSession ? theme.text : 'text-zinc-200'}`}>
-                    {!isRestOrNoSession ? `${day.hours} hrs spent` : 'No gym session'}
+                <div className="text-left space-y-1">
+                  <div className="font-bold text-xs">
+                    {styleInfo.tooltipType === 'freeze' ? (
+                      <span className="text-sky-400">❄️ Ice Pause Active</span>
+                    ) : styleInfo.tooltipType === 'rest' ? (
+                      <span className="text-slate-350">🛡️ Rest Token Applied</span>
+                    ) : day.hours > 0 ? (
+                      <span className="text-emerald-450">{day.hours} hrs spent</span>
+                    ) : (
+                      <span className="text-red-400">⚠️ Missed Day</span>
+                    )}
                   </div>
-                  <div className="text-[11px] text-zinc-300 mt-0.5">
+                  <div className="text-[11px] text-zinc-400 mt-0.5">
                     {displayDate}
-                    {!isRestOrNoSession && day.workoutType && (
-                      <span className={`ml-1.5 font-bold ${theme.text}`}>
+                    {day.workoutType && (
+                      <span className="ml-1.5 font-bold text-zinc-300">
                         • {day.workoutType}
                       </span>
                     )}
                   </div>
+                  {day.log?.notes && (
+                    <div className="text-[10px] text-zinc-550 border-t border-zinc-900 pt-1 mt-1 max-w-[200px] italic">
+                      &ldquo;{day.log.notes}&rdquo;
+                    </div>
+                  )}
                 </div>
               )
             }
@@ -65,36 +79,48 @@ export default function WeekView({
               type="button"
               disabled={day.isFuture}
               onClick={() => !day.isFuture && onTileClick(day.dateStr, day.log)}
-              className={`p-4 rounded-2xl border text-left flex flex-col justify-between h-36 transition-all relative overflow-hidden 
-                ${day.isFuture
-                  ? 'bg-zinc-950/40 border-zinc-800/40 opacity-40 cursor-not-allowed'
-                  : 'cursor-pointer ' + (!isRestOrNoSession
-                    ? theme.cardGlow
-                    : 'bg-zinc-950/80 border-zinc-800/80 hover:border-zinc-700 hover:shadow-[0_0_15px_rgba(255,255,255,0.03)]')
-                } 
+              className={`p-4 rounded-2xl border text-left flex flex-col justify-between h-36 transition-all relative overflow-hidden group 
+                ${styleInfo.tileClass} 
                 ${isFilteredOut && !day.isFuture ? 'opacity-20' : ''} 
-                ${day.isToday ? theme.todayRingWeek : ''}
+                ${styleInfo.ringClass || ''}
               `}
             >
-              <div>
+              <div className="relative z-10 w-full">
                 <div className="flex items-center justify-between mb-1 text-[10px] uppercase font-black tracking-widest">
-                  <span className={`${day.isToday ? theme.text : day.isFuture ? 'text-zinc-700' : 'text-zinc-500'}`}>{dayName}</span>
-                  <span className={day.isFuture ? 'text-zinc-700' : 'text-zinc-600'}>{day.dateStr.slice(5)}</span>
+                  <span className={`${day.isToday ? 'text-white' : day.isFuture ? 'text-zinc-700' : 'text-zinc-500'}`}>{dayName}</span>
+                  <span className={day.isFuture ? 'text-zinc-700' : 'text-zinc-500'}>{day.dateStr.slice(5)}</span>
                 </div>
 
-                <p className={`text-2xl mt-2 font-black tracking-tighter transition-colors ${!isRestOrNoSession ? 'text-white' : 'text-transparent select-none'}`}>
-                  {!isRestOrNoSession ? `${day.hours}h` : '0h'}
+                <p className={`text-2xl mt-2 font-black tracking-tighter transition-colors ${
+                  styleInfo.tooltipType === 'freeze' ? 'text-sky-950' : styleInfo.tooltipType === 'rest' ? 'text-zinc-200' : 'text-white'
+                }`}>
+                  {day.hours > 0 ? `${day.hours}h` : '0h'}
                 </p>
               </div>
 
-              {!isRestOrNoSession && day.workoutType ? (
-                <div className="mt-2">
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full inline-block uppercase tracking-wider ${theme.pillWeek}`}>
-                    {day.workoutType}
-                  </span>
-                </div>
-              ) : (
-                <div className="h-4" />
+              <div className="relative z-10">
+                {day.workoutType ? (
+                  <div className="mt-2">
+                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full inline-block uppercase tracking-wider ${
+                      styleInfo.tooltipType === 'freeze' 
+                        ? 'bg-sky-950/20 border border-sky-950/30 text-sky-950' 
+                        : styleInfo.tooltipType === 'rest' 
+                        ? 'bg-slate-700/30 border border-slate-700/40 text-slate-300' 
+                        : theme.pillWeek
+                    }`}>
+                      {day.workoutType}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="h-4" />
+                )}
+              </div>
+
+              {/* Large background decorative icon/badge */}
+              {styleInfo.badgeContent && (
+                <span className="absolute bottom-2 right-4 text-4xl select-none pointer-events-none opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all">
+                  {styleInfo.badgeContent}
+                </span>
               )}
 
               {!isRestOrNoSession && day.hours > 0 && (

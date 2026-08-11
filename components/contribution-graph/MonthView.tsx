@@ -3,7 +3,7 @@
 import React from 'react';
 import { GymLog, WeeklyPlan, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
-import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout } from './theme-utils';
+import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout, getDayStyleInfo } from './theme-utils';
 
 interface MonthViewProps {
   startPadding: number;
@@ -32,6 +32,7 @@ export default function MonthView({
         ))}
 
         {days.map((day) => {
+          const styleInfo = getDayStyleInfo(day, activeFilter, weeklyPlan);
           const isRestOrNoSession = day.hours <= 0 || day.workoutType?.toLowerCase() === 'rest';
           const isFilteredOut = activeFilter !== 'All' && !isRestOrNoSession && day.workoutType !== activeFilter;
 
@@ -55,18 +56,31 @@ export default function MonthView({
                 day.isFuture ? (
                   <div className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">Future Date Locked</div>
                 ) : (
-                  <div className="text-left">
-                    <div className={`font-bold text-xs ${!isRestOrNoSession ? theme.text : 'text-zinc-200'}`}>
-                      {!isRestOrNoSession ? `${day.hours} hrs spent` : 'No gym session'}
+                  <div className="text-left space-y-1">
+                    <div className="font-bold text-xs">
+                      {styleInfo.tooltipType === 'freeze' ? (
+                        <span className="text-sky-400">❄️ Ice Pause Active</span>
+                      ) : styleInfo.tooltipType === 'rest' ? (
+                        <span className="text-slate-350">🛡️ Rest Token Applied</span>
+                      ) : day.hours > 0 ? (
+                        <span className="text-emerald-450">{day.hours} hrs spent</span>
+                      ) : (
+                        <span className="text-red-400">⚠️ Missed Day</span>
+                      )}
                     </div>
-                    <div className="text-[11px] text-zinc-300 mt-0.5">
+                    <div className="text-[11px] text-zinc-400 mt-0.5">
                       {displayDate}
-                      {!isRestOrNoSession && day.workoutType && (
-                        <span className={`ml-1.5 font-bold ${theme.text}`}>
+                      {day.workoutType && (
+                        <span className="ml-1.5 font-bold text-zinc-300">
                           • {day.workoutType}
                         </span>
                       )}
                     </div>
+                    {day.log?.notes && (
+                      <div className="text-[10px] text-zinc-550 border-t border-zinc-900 pt-1 mt-1 max-w-[200px] italic">
+                        &ldquo;{day.log.notes}&rdquo;
+                      </div>
+                    )}
                   </div>
                 )
               }
@@ -76,18 +90,13 @@ export default function MonthView({
                 disabled={day.isFuture}
                 onClick={() => !day.isFuture && onTileClick(day.dateStr, day.log)}
                 className={`h-16 rounded-xl p-2 flex flex-col justify-between text-left transition-all border relative overflow-hidden group 
-                  ${day.isFuture
-                    ? 'bg-zinc-950/40 border-zinc-800/40 opacity-40 cursor-not-allowed'
-                    : 'cursor-pointer ' + (!isRestOrNoSession
-                      ? theme.cardGlow
-                      : 'bg-zinc-950/80 border-zinc-800/60 hover:border-zinc-700')
-                  } 
+                  ${styleInfo.tileClass} 
                   ${isFilteredOut && !day.isFuture ? 'opacity-20' : ''} 
-                  ${day.isToday ? theme.todayRingMonth : ''}
+                  ${styleInfo.ringClass || ''}
                 `}
               >
-                <div className="flex items-center justify-between w-full">
-                  <span className={`text-xs font-black transition-colors ${day.isToday ? theme.text : day.isFuture ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                <div className="flex items-center justify-between w-full relative z-10">
+                  <span className={`text-xs font-black transition-colors ${day.isToday ? 'text-white' : day.isFuture ? 'text-zinc-700' : 'text-zinc-400'}`}>
                     {day.dayOfMonth}
                   </span>
                   {!isRestOrNoSession && day.hours > 0 && (
@@ -97,14 +106,25 @@ export default function MonthView({
                   )}
                 </div>
 
-                {!isRestOrNoSession && day.workoutType && (
-                  <span className={`text-[9px] font-bold truncate w-full uppercase tracking-wide transition-colors ${theme.text}`}>
-                    {day.workoutType}
+                <div className="relative z-10 w-full">
+                  {day.workoutType && (
+                    <span className={`text-[9px] font-black truncate block uppercase tracking-wide transition-colors ${
+                      styleInfo.tooltipType === 'freeze' ? 'text-sky-950' : styleInfo.tooltipType === 'rest' ? 'text-slate-400' : theme.text
+                    }`}>
+                      {day.workoutType}
+                    </span>
+                  )}
+                </div>
+
+                {/* Badge Overlay for special states */}
+                {styleInfo.badgeContent && (
+                  <span className="absolute bottom-1.5 right-1.5 text-base select-none pointer-events-none opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                    {styleInfo.badgeContent}
                   </span>
                 )}
 
                 {/* Neon dot indicator for Today */}
-                {day.isToday && (
+                {day.isToday && !styleInfo.badgeContent && (
                   <div className={`absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full animate-pulse ${theme.todayDot}`} />
                 )}
               </button>
