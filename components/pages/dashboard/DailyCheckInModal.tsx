@@ -144,12 +144,14 @@ export default function DailyCheckInModal({
     }
   };
 
-  const formattedDate = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const formattedDate = dateStr && !isNaN(Date.parse(dateStr + 'T00:00:00'))
+    ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : '';
 
   const activeYesHero = yesAnimeRoster[yesCharIndex] || yesAnimeRoster[0];
   const activeNoHero = noAnimeRoster[noCharIndex] || noAnimeRoster[0];
