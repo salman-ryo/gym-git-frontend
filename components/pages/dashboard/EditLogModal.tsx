@@ -1,8 +1,8 @@
 'use client';
 
 import { GymLog, WorkoutType } from '@/lib/types';
-import React, { useEffect, useState } from 'react';
-import { Calendar, Clock, Trash2, X, Check, Save, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, Trash2, X, Check, Save, Plus } from 'lucide-react';
 import { getThemeForWorkout } from '../../contribution-graph/theme-utils';
 import Image from 'next/image';
 
@@ -27,42 +27,27 @@ export default function EditLogModal({
   onDelete,
   availableWorkoutTypes = DEFAULT_WORKOUT_TYPES,
 }: EditLogModalProps) {
-  const [hours, setHours] = useState<number>(1.0);
-  const [isCustomHours, setIsCustomHours] = useState<boolean>(false);
-  const [customHoursInput, setCustomHoursInput] = useState<string>('3.0');
-  const [workoutType, setWorkoutType] = useState<WorkoutType>('Push');
-  const [notes, setNotes] = useState<string>('');
+  const [hours, setHours] = useState<number>(() => existingLog ? existingLog.hours : 1.0);
+  const [isCustomHours, setIsCustomHours] = useState<boolean>(() => existingLog ? existingLog.hours > 2.5 : false);
+  const [customHoursInput, setCustomHoursInput] = useState<string>(() => existingLog ? existingLog.hours.toString() : '3.0');
+  const [workoutType, setWorkoutType] = useState<WorkoutType>(() => existingLog ? existingLog.workoutType : 'Push');
+  const [notes, setNotes] = useState<string>(() => existingLog ? existingLog.notes || '' : '');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    if (existingLog) {
-      const h = existingLog.hours;
-      setHours(h);
-      if (h > 2.5) {
-        setIsCustomHours(true);
-        setCustomHoursInput(h.toString());
-      } else {
-        setIsCustomHours(false);
-      }
-      setWorkoutType(existingLog.workoutType);
-      setNotes(existingLog.notes || '');
-    } else {
-      setHours(1.0);
-      setIsCustomHours(false);
-      setWorkoutType('Push');
-      setNotes('');
-    }
-  }, [existingLog, dateStr]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen || !dateStr) return null;
 
   const handleSave = async () => {
     setSaving(true);
+    setErrorMsg(null);
     try {
       const finalHours = isCustomHours ? Math.max(0, parseFloat(customHoursInput) || 0) : hours;
       await onSave(dateStr, finalHours, workoutType, notes);
       onClose();
+    } catch (err: unknown) {
+      console.error(err);
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to save workout log');
     } finally {
       setSaving(false);
     }
@@ -71,9 +56,13 @@ export default function EditLogModal({
   const handleDelete = async () => {
     if (confirm(`Clear gym record for ${dateStr}?`)) {
       setDeleting(true);
+      setErrorMsg(null);
       try {
         await onDelete(dateStr);
         onClose();
+      } catch (err: unknown) {
+        console.error(err);
+        setErrorMsg(err instanceof Error ? err.message : 'Failed to delete workout log');
       } finally {
         setDeleting(false);
       }
@@ -113,6 +102,14 @@ export default function EditLogModal({
             <p className="text-xs text-zinc-400 font-medium mt-0.5">{formattedDate}</p>
           </div>
         </div>
+
+        {/* Error Message */}
+        {errorMsg && (
+          <div className="mb-5 p-3.5 bg-red-950/20 border border-red-500/30 rounded-2xl text-red-400 text-xs font-bold text-left flex gap-2.5 items-start animate-in fade-in duration-200">
+            <span className="mt-0.5 text-base leading-none">⚠️</span>
+            <span className="leading-relaxed">{errorMsg}</span>
+          </div>
+        )}
 
         {/* Form Controls */}
         <div className="space-y-5">

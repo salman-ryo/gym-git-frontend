@@ -494,15 +494,17 @@ export default function DashboardPage() {
             availableWorkoutTypes={user?.weeklyPlan?.categories}
           />
 
-          <EditLogModal
-            dateStr={editTileDate}
-            existingLog={editTileLog}
-            isOpen={!!editTileDate}
-            onClose={() => setEditTileDate(null)}
-            onSave={handleSaveEdit}
-            onDelete={handleDeleteEdit}
-            availableWorkoutTypes={user?.weeklyPlan?.categories}
-          />
+          {editTileDate && (
+            <EditLogModal
+              dateStr={editTileDate}
+              existingLog={editTileLog}
+              isOpen={!!editTileDate}
+              onClose={() => setEditTileDate(null)}
+              onSave={handleSaveEdit}
+              onDelete={handleDeleteEdit}
+              availableWorkoutTypes={user?.weeklyPlan?.categories}
+            />
+          )}
 
           <WeeklyPlanModal
             currentPlan={user?.weeklyPlan}
