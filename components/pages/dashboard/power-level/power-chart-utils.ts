@@ -1,5 +1,6 @@
 import React from 'react';
 import { PowerScoreBreakdown } from '@/lib/scientific-power';
+import { animePowerLevels, AnimePower } from '@/assets/anime';
 
 export interface MonthlyPowerStat {
   month: string;
@@ -105,6 +106,134 @@ export function useInView(threshold: number = 0.15) {
   }, [threshold]);
 
   return { ref, inView };
+}
+
+interface UseTieredBarAnimationOptions {
+  targetScore: number;
+  inView: boolean;
+  delay?: number;
+  stepDuration?: number;
+}
+
+export function useTieredBarAnimation({
+  targetScore,
+  inView,
+  delay = 0,
+  stepDuration = 380,
+}: UseTieredBarAnimationOptions) {
+  const [currentScore, setCurrentScore] = React.useState<number>(0);
+  const [continuousScore, setContinuousScore] = React.useState<number>(0);
+  const [isCompleted, setIsCompleted] = React.useState<boolean>(false);
+  const [tierJustChanged, setTierJustChanged] = React.useState<boolean>(false);
+  const lastTierIdRef = React.useRef<string>('aqua');
+
+  // Sorted list of tier thresholds
+  const sortedTiers = React.useMemo(
+    () => [...animePowerLevels].sort((a, b) => a.minPower - b.minPower),
+    []
+  );
+
+  // Active character based on current animated score
+  const currentCharacter: AnimePower = React.useMemo(() => {
+    const rev = [...sortedTiers].reverse();
+    return rev.find((t) => currentScore >= t.minPower) || sortedTiers[0];
+  }, [currentScore, sortedTiers]);
+
+  // Flash / pulse effect when unlocking a new character tier
+  React.useEffect(() => {
+    if (currentCharacter.id !== lastTierIdRef.current) {
+      lastTierIdRef.current = currentCharacter.id;
+      setTierJustChanged(true);
+      const timer = setTimeout(() => setTierJustChanged(false), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [currentCharacter.id]);
+
+  React.useEffect(() => {
+    if (!inView) {
+      setCurrentScore(0);
+      setContinuousScore(0);
+      setIsCompleted(false);
+      lastTierIdRef.current = 'aqua';
+      return;
+    }
+
+    if (targetScore <= 0) {
+      setCurrentScore(0);
+      setContinuousScore(0);
+      setIsCompleted(true);
+      return;
+    }
+
+    // Build milestone checkpoints: [0, ...intermediate tiers < targetScore, targetScore]
+    const milestones: number[] = [0];
+    sortedTiers
+      .map((t) => t.minPower)
+      .filter((p) => p > 0 && p < targetScore)
+      .forEach((p) => {
+        if (!milestones.includes(p)) milestones.push(p);
+      });
+    if (!milestones.includes(targetScore)) {
+      milestones.push(targetScore);
+    }
+
+    const numSegments = milestones.length - 1;
+    const totalDuration = numSegments * stepDuration;
+
+    let animFrame: number;
+    let timeoutId: NodeJS.Timeout;
+
+    timeoutId = setTimeout(() => {
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+
+        if (elapsed >= totalDuration) {
+          setCurrentScore(targetScore);
+          setContinuousScore(targetScore);
+          setIsCompleted(true);
+          return;
+        }
+
+        // Continuous progress from 0 to 1 across all segments
+        const progress = Math.min(1, elapsed / totalDuration);
+        const segmentFloat = progress * numSegments;
+        const segmentIdx = Math.min(numSegments - 1, Math.floor(segmentFloat));
+        const u = segmentFloat - segmentIdx; // 0 to 1 inside current segment
+
+        const startVal = milestones[segmentIdx];
+        const endVal = milestones[segmentIdx + 1];
+
+        // Smooth continuous sinusoidal speed wave:
+        // Decelerates (slows down gracefully) near tier checkpoints (u ≈ 0 and u ≈ 1),
+        // accelerates (speeds up smoothly) in the mid-segment (u ≈ 0.5),
+        // with strictly positive velocity (no hard stops or pauses anywhere).
+        const alpha = 0.72;
+        const waveProgress = u - (alpha / (2 * Math.PI)) * Math.sin(2 * Math.PI * u);
+        const scoreFloat = startVal + (endVal - startVal) * waveProgress;
+
+        setCurrentScore(Math.round(scoreFloat));
+        setContinuousScore(scoreFloat);
+        animFrame = requestAnimationFrame(animate);
+      };
+
+      animFrame = requestAnimationFrame(animate);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeoutId);
+      cancelAnimationFrame(animFrame);
+    };
+  }, [inView, targetScore, delay, stepDuration, sortedTiers]);
+
+  return {
+    currentScore,
+    continuousScore,
+    currentCharacter,
+    isCompleted,
+    tierJustChanged,
+  };
 }
 
 interface AnimatedScoreCounterProps {

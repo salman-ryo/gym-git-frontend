@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { animePowerLevels, AnimePower } from '@/assets/anime';
+import { AnimePower } from '@/assets/anime';
 import { PowerScoreBreakdown } from '@/lib/scientific-power';
-import { getPowerColorTheme } from './power-chart-utils';
+import { getPowerColorTheme, useTieredBarAnimation } from './power-chart-utils';
 import { Sparkles, Trophy, Zap, X, Target, Timer, Puzzle, Flame } from 'lucide-react';
 
 interface PowerLevelCelebrationModalProps {
@@ -19,91 +19,43 @@ export default function PowerLevelCelebrationModal({
   onClose,
   targetScore,
   scoreData,
-  autoCloseDelay = 1800,
+  autoCloseDelay = 2200,
 }: PowerLevelCelebrationModalProps) {
-  const [currentScore, setCurrentScore] = useState<number>(0);
-  const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
-  const [tierUpFlash, setTierUpFlash] = useState<boolean>(false);
-  
-  const lastTierRef = useRef<string>('aqua');
-  const animFrameRef = useRef<number | null>(null);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sorted tiers from lowest to highest
-  const sortedTiers = [...animePowerLevels].sort((a, b) => a.minPower - b.minPower);
-
-  // Determine current active character tier based on current animated score
-  const currentCharacter: AnimePower =
-    [...sortedTiers].reverse().find((tier) => currentScore >= tier.minPower) || sortedTiers[0];
-
-  // Detect Tier Up transition to play flash/pulse
-  useEffect(() => {
-    if (currentCharacter.id !== lastTierRef.current) {
-      lastTierRef.current = currentCharacter.id;
-      setTierUpFlash(true);
-      const t = setTimeout(() => setTierUpFlash(false), 500);
-      return () => clearTimeout(t);
-    }
-  }, [currentCharacter.id]);
+  const { currentScore, continuousScore, currentCharacter, isCompleted, tierJustChanged } = useTieredBarAnimation({
+    targetScore,
+    inView: isOpen,
+    delay: 200,
+    stepDuration: 440,
+  });
 
   useEffect(() => {
     if (!isOpen) {
-      setCurrentScore(0);
-      setIsCompleted(false);
       setIsFadingOut(false);
-      lastTierRef.current = 'aqua';
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
       return;
     }
 
-    const duration = 2600; // 2.6 seconds animation climb
-    const startTime = performance.now();
-    const finalScore = Math.max(0, Math.min(100, targetScore));
-
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(1, elapsed / duration);
-
-      // Smooth cubic ease-out
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const nextScore = Math.round(finalScore * easeOut);
-
-      setCurrentScore(nextScore);
-
-      if (progress < 1) {
-        animFrameRef.current = requestAnimationFrame(animate);
-      } else {
-        setCurrentScore(finalScore);
-        setIsCompleted(true);
-
-        // Auto close after brief celebration hold
-        closeTimerRef.current = setTimeout(() => {
-          setIsFadingOut(true);
-          setTimeout(() => {
-            onClose();
-          }, 400);
-        }, autoCloseDelay);
-      }
-    };
-
-    // Small delay before starting climb so modal renders at 0 (Aqua) first
-    const startDelay = setTimeout(() => {
-      animFrameRef.current = requestAnimationFrame(animate);
-    }, 200);
+    if (isCompleted) {
+      closeTimerRef.current = setTimeout(() => {
+        setIsFadingOut(true);
+        setTimeout(() => {
+          onClose();
+        }, 400);
+      }, autoCloseDelay);
+    }
 
     return () => {
-      clearTimeout(startDelay);
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     };
-  }, [isOpen, targetScore, autoCloseDelay, onClose]);
+  }, [isOpen, isCompleted, autoCloseDelay, onClose]);
 
   if (!isOpen) return null;
 
   const theme = getPowerColorTheme(currentScore, true);
-  const heightPercent = Math.max(8, currentScore);
+  const heightPercent = Math.max(8, continuousScore);
 
   return (
     <div
@@ -149,7 +101,7 @@ export default function PowerLevelCelebrationModal({
         {/* Main Character Avatar & Rising Bar Display */}
         <div className="relative my-4 flex items-center justify-center gap-6 py-4 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-4 overflow-hidden">
           {/* Tier Up Flash Background */}
-          {tierUpFlash && (
+          {tierJustChanged && (
             <div className="absolute inset-0 bg-cyan-400/15 animate-ping pointer-events-none" />
           )}
 
@@ -177,12 +129,12 @@ export default function PowerLevelCelebrationModal({
                 src={currentCharacter.image}
                 alt={currentCharacter.name}
                 className={`w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.25)] relative z-10 transition-all duration-300 ${
-                  tierUpFlash ? 'scale-110' : 'scale-100'
+                  tierJustChanged ? 'scale-110' : 'scale-100'
                 }`}
               />
 
               {/* Sparkle badge on Tier Up */}
-              {tierUpFlash && (
+              {tierJustChanged && (
                 <div className="absolute -top-1 -right-1 bg-amber-400 text-zinc-950 font-black text-[9px] px-1.5 py-0.5 rounded-md uppercase shadow-lg animate-bounce z-20">
                   Level Up!
                 </div>
