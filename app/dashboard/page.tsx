@@ -345,14 +345,14 @@ export default function DashboardPage() {
                           if (stats) {
                             setStats({
                               ...stats,
-                              streakWarningEvent: stats.streakWarningEvent 
-                                ? null 
+                              streakWarningEvent: stats.streakWarningEvent
+                                ? null
                                 : {
-                                    is_at_risk: true,
-                                    hours_remaining: 5,
-                                    rest_tokens_left: 0,
-                                    message: 'Streak decay imminent! Log a workout before midnight.'
-                                  }
+                                  is_at_risk: true,
+                                  hours_remaining: 5,
+                                  rest_tokens_left: 0,
+                                  message: 'Streak decay imminent! Log a workout before midnight.'
+                                }
                             });
                           }
                         }}
@@ -370,15 +370,15 @@ export default function DashboardPage() {
                             }
                             setStats({
                               ...stats,
-                              streakBrokenEvent: stats.streakBrokenEvent 
-                                ? null 
+                              streakBrokenEvent: stats.streakBrokenEvent
+                                ? null
                                 : {
-                                    previous_streak: 15,
-                                    broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
-                                    restore_shield_available: true,
-                                    restore_shields_count: 2,
-                                    can_restore_until: new Date().toISOString().split('T')[0]
-                                  }
+                                  previous_streak: 15,
+                                  broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
+                                  restore_shield_available: true,
+                                  restore_shields_count: 2,
+                                  can_restore_until: new Date().toISOString().split('T')[0]
+                                }
                             });
                           }
                         }}
@@ -488,7 +488,7 @@ export default function DashboardPage() {
           {/* Modals */}
           <DailyCheckInModal
             dateStr={todayDateStr}
-            isOpen={showDailyCheckIn}
+            isOpen={false}
             onCheckInYes={handleDailyCheckInYes}
             onCheckInNo={handleDailyCheckInNo}
             availableWorkoutTypes={user?.weeklyPlan?.categories}

@@ -2,6 +2,7 @@
 
 import { WorkoutType } from '@/lib/types';
 import React, { useState, useEffect, useRef } from 'react';
+import WorkoutLogForm from './WorkoutLogForm';
 import {
   Check,
   X,
@@ -445,124 +446,22 @@ export default function DailyCheckInModal({
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-neon-green" /> Time Spent (Hours)
-                </label>
-                <span className="text-neon-green font-black text-sm drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">
-                  {isCustomHours ? `${customHoursInput || '0'} hrs` : `${hours} hrs`}
-                </span>
-              </div>
-
-              {/* Preset Buttons */}
-              <div className="flex items-center gap-1.5 mb-2">
-                {[0.5, 1.0, 1.5, 2.0, 2.5].map((h) => (
-                  <button
-                    key={h}
-                    type="button"
-                    onClick={() => {
-                      setHours(h);
-                      setIsCustomHours(false);
-                    }}
-                    className={`flex-1 py-2 text-xs font-black rounded-xl transition-all border cursor-pointer ${!isCustomHours && hours === h
-                      ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                      : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
-                      }`}
-                  >
-                    {h}h
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setIsCustomHours(true)}
-                  className={`py-2 px-2.5 text-xs font-black rounded-xl transition-all border flex items-center gap-1 cursor-pointer ${isCustomHours
-                    ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                    : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
-                    }`}
-                >
-                  <Plus className="w-3 h-3" />
-                  <span>Custom</span>
-                </button>
-              </div>
-
-              {/* Custom Hours Numeric Field */}
-              {isCustomHours && (
-                <div className="flex items-center gap-2.5 p-2 bg-[#05080c] border border-neon-green/30 focus-within:border-neon-green/60 rounded-xl transition-all duration-200 animate-in fade-in">
-                  <span className="text-xs font-bold text-zinc-400 pl-1.5">Custom Duration:</span>
-                  <input
-                    type="number"
-                    min="0.1"
-                    max="12"
-                    step="0.25"
-                    value={customHoursInput}
-                    onChange={(e) => setCustomHoursInput(e.target.value)}
-                    placeholder="e.g. 3.5"
-                    className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-neon-green focus:shadow-[0_0_8px_rgba(0,255,136,0.2)] rounded-lg px-2 py-1 text-xs text-neon-green font-black outline-none transition-all duration-200"
-                  />
-                  <span className="text-xs font-bold text-zinc-400 pr-1.5">hours</span>
-                </div>
-              )}
-            </div>
-
-            {/* Workout Type Selector */}
-            <div>
-              <label className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest mb-2">
-                Select Workout Type:
-              </label>
-              <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto pr-1">
-                {categories.map((cat) => {
-                  const isSelected = workoutType === cat;
-                  const catTheme = getThemeForWorkout(cat);
-
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setWorkoutType(cat)}
-                      className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${isSelected
-                        ? catTheme.filterActive
-                        : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                        }`}
-                    >
-                      <span className="truncate">{cat}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Notes */}
-            <div>
-              <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5">
-                Session Notes? (Optional)
-              </label>
-              <input
-                type="text"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="How did it go? e.g. New bench press PR!"
-                className="w-full bg-[#05080c] border border-zinc-800 focus:border-neon-green focus:shadow-[0_0_10px_rgba(0,255,136,0.25)] hover:border-zinc-700 rounded-xl py-2 px-3.5 text-xs text-zinc-100 placeholder-zinc-600 outline-none transition-all duration-200"
-              />
-            </div>
-
-            {/* Submit */}
-            <button
-              type="button"
-              onClick={handleSaveDetails}
-              disabled={saving}
-              className="w-full bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,136,0.45)] hover:scale-[1.01] active:scale-100 text-[#060a0e] font-black py-3 px-4 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer disabled:opacity-50"
-            >
-              {saving ? (
-                <div className="w-5 h-5 border-2 border-[#060a0e] border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <Check className="w-4 h-4 text-[#060a0e]" />
-                  <span>Log This Session</span>
-                </>
-              )}
-            </button>
+            <WorkoutLogForm
+              hours={hours}
+              setHours={setHours}
+              isCustomHours={isCustomHours}
+              setIsCustomHours={setIsCustomHours}
+              customHoursInput={customHoursInput}
+              setCustomHoursInput={setCustomHoursInput}
+              workoutType={workoutType}
+              setWorkoutType={setWorkoutType}
+              notes={notes}
+              setNotes={setNotes}
+              categories={categories}
+              onSubmit={handleSaveDetails}
+              saving={saving}
+              submitButtonText="Log This Session"
+            />
           </div>
         )}
       </div>
