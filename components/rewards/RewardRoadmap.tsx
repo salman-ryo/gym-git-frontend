@@ -61,43 +61,43 @@ export default function RewardRoadmap({
   if (sortedMilestones.length === 0) return null;
 
   return (
-    <div id="reward-roadmap" className="w-full bg-zinc-950/80 border border-zinc-850 hover:border-zinc-800 backdrop-blur-2xl rounded-3xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.55)] group transition-all duration-300 relative overflow-hidden">
-      
-      {/* Top neon border accent */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-neon-cyan/20 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/40" />
+    <div id="reward-roadmap" className="w-full bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/50 rounded-2xl p-5 sm:p-6 shadow-sm group transition-all duration-500 relative overflow-hidden">
+
+      {/* Subtle Top Ambient Glow (Replacing harsh neon lines) */}
+      <div className="absolute top-0 inset-x-1/4 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/20 to-transparent blur-[2px]" />
 
       {/* Header */}
-      <div className="flex justify-between items-center mb-6 border-b border-zinc-900 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-zinc-800/60 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center shadow-[0_0_12px_rgba(34,211,238,0.15)]">
-            <Gift className="w-4 h-4 text-neon-cyan" />
+          <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+            <Gift className="w-5 h-5 text-neon-cyan" />
           </div>
           <div>
-            <h3 className="text-sm font-black uppercase tracking-[0.15em] text-white">
+            <h3 className="text-base font-bold text-zinc-100 tracking-wide">
               Streak Reward Roadmap
             </h3>
-            <p className="text-[10px] text-zinc-550 font-semibold uppercase mt-0.5">
+            <p className="text-xs text-zinc-500 font-medium mt-0.5">
               Unlock RPG power items as your streak grows
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-850 font-semibold text-[10.5px] text-zinc-400">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/60 border border-zinc-800/80 font-medium text-xs text-zinc-400 self-start sm:self-auto">
           <Award className="w-4 h-4 text-amber-400 shrink-0" />
           <span>Longest Streak: </span>
-          <span className="font-mono font-black text-neon-cyan">{longestStreak}d</span>
+          <span className="font-bold text-zinc-200">{longestStreak}d</span>
         </div>
       </div>
 
       {/* Interactive Horizontal Scroll Timeline Track Container */}
       <div className="w-full overflow-x-auto custom-scrollbar pb-4 relative">
         <div className="min-w-[1050px] relative px-8 pt-10 pb-4 flex justify-between gap-10">
-          
+
           {/* Main Progression Line Background */}
-          <div className="absolute top-[48px] left-[100px] right-[100px] h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+          <div className="absolute top-[48px] left-[100px] right-[100px] h-1.5 bg-zinc-800/50 rounded-full overflow-hidden">
             {/* Highlights Completed Progress Segment */}
             <div
-              className="h-full bg-gradient-to-r from-neon-cyan to-[#00f3ff] rounded-full shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-750 ease-out"
+              className="h-full bg-neon-cyan rounded-full shadow-[0_0_10px_rgba(34,211,238,0.3)] transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -123,11 +123,11 @@ export default function RewardRoadmap({
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #1f2937;
+          background-color: #27272a;
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: #374151;
+          background-color: #3f3f46;
         }
       `}</style>
     </div>

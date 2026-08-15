@@ -22,60 +22,55 @@ export default function RoadmapMilestoneNode({
   const { status, streak_target, item_id, item_name, quantity, title, description, rarity } =
     milestone;
 
+  // We now retain the rarity theme even when locked, just heavily muted
   const getRarityStyles = (rarityName: string, activeStatus: string) => {
     const isLocked = activeStatus === 'LOCKED';
-    const isClaimable = activeStatus === 'CLAIMABLE';
-
-    if (isLocked) {
-      return {
-        border: 'border-zinc-800/80 bg-zinc-950/20 text-zinc-550',
-        glow: '',
-        title: 'text-zinc-500',
-        badge: 'bg-zinc-900 border-zinc-850 text-zinc-500',
-      };
-    }
 
     switch (rarityName.toLowerCase()) {
       case 'common':
         return {
-          border: 'border-zinc-700 bg-zinc-950/60 hover:border-zinc-500',
+          border: isLocked ? 'border-zinc-800/50 bg-zinc-900/20' : 'border-zinc-700 bg-zinc-900/40 hover:border-zinc-600',
           glow: '',
-          title: 'text-zinc-200',
-          badge: 'bg-zinc-900 border-zinc-800 text-zinc-400',
+          title: isLocked ? 'text-zinc-600' : 'text-zinc-200',
+          badge: isLocked ? 'bg-zinc-900/50 border-zinc-800/50 text-zinc-600' : 'bg-zinc-800 border-zinc-700 text-zinc-300',
+          iconBg: isLocked ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-zinc-900 border-zinc-800',
+          lockedText: 'text-zinc-600',
         };
       case 'rare':
         return {
-          border: `border-neon-cyan/30 bg-zinc-950/80 hover:border-neon-cyan ${
-            isClaimable ? 'animate-[pulse_2.5s_infinite]' : ''
-          }`,
-          glow: 'shadow-[0_0_15px_rgba(34,211,238,0.12)]',
-          title: 'text-neon-cyan font-bold',
-          badge: 'bg-neon-cyan/5 border-neon-cyan/20 text-neon-cyan',
+          border: isLocked ? 'border-neon-cyan/10 bg-neon-cyan/[0.02]' : 'border-neon-cyan/30 bg-neon-cyan/10 hover:border-neon-cyan/50',
+          glow: isLocked ? '' : 'hover:shadow-[0_0_15px_rgba(34,211,238,0.12)]',
+          title: isLocked ? 'text-neon-cyan/40' : 'text-neon-cyan',
+          badge: isLocked ? 'bg-neon-cyan/5 border-neon-cyan/10 text-neon-cyan/40' : 'bg-neon-cyan/10 border-neon-cyan/20 text-neon-cyan',
+          iconBg: isLocked ? 'bg-zinc-900/50 border-neon-cyan/10' : 'bg-zinc-900 border-neon-cyan/30',
+          lockedText: 'text-neon-cyan/40',
         };
       case 'epic':
         return {
-          border: `border-neon-purple/30 bg-zinc-950/90 hover:border-neon-purple ${
-            isClaimable ? 'animate-[pulse_2.5s_infinite]' : ''
-          }`,
-          glow: 'shadow-[0_0_18px_rgba(168,85,247,0.15)]',
-          title: 'text-neon-purple font-black',
-          badge: 'bg-neon-purple/5 border-neon-purple/20 text-neon-purple',
+          border: isLocked ? 'border-neon-purple/10 bg-neon-purple/[0.02]' : 'border-neon-purple/30 bg-neon-purple/10 hover:border-neon-purple/50',
+          glow: isLocked ? '' : 'hover:shadow-[0_0_15px_rgba(168,85,247,0.12)]',
+          title: isLocked ? 'text-neon-purple/40' : 'text-neon-purple',
+          badge: isLocked ? 'bg-neon-purple/5 border-neon-purple/10 text-neon-purple/40' : 'bg-neon-purple/10 border-neon-purple/20 text-neon-purple',
+          iconBg: isLocked ? 'bg-zinc-900/50 border-neon-purple/10' : 'bg-zinc-900 border-neon-purple/30',
+          lockedText: 'text-neon-purple/40',
         };
       case 'legendary':
         return {
-          border: `border-amber-400/40 bg-zinc-950/95 hover:border-amber-400 ${
-            isClaimable ? 'animate-[pulse_2.5s_infinite]' : ''
-          }`,
-          glow: 'shadow-[0_0_22px_rgba(251,191,36,0.2)]',
-          title: 'text-amber-400 font-black',
-          badge: 'bg-amber-400/5 border-amber-400/20 text-amber-400',
+          border: isLocked ? 'border-amber-400/10 bg-amber-400/[0.02]' : 'border-amber-400/30 bg-amber-400/10 hover:border-amber-400/50',
+          glow: isLocked ? '' : 'hover:shadow-[0_0_15px_rgba(251,191,36,0.12)]',
+          title: isLocked ? 'text-amber-500/40' : 'text-amber-400',
+          badge: isLocked ? 'bg-amber-400/5 border-amber-400/10 text-amber-500/40' : 'bg-amber-400/10 border-amber-400/20 text-amber-400',
+          iconBg: isLocked ? 'bg-zinc-900/50 border-amber-400/10' : 'bg-zinc-900 border-amber-400/30',
+          lockedText: 'text-amber-500/40',
         };
       default:
         return {
-          border: 'border-zinc-850 bg-zinc-950/20',
+          border: isLocked ? 'border-zinc-800/50 bg-zinc-900/20' : 'border-zinc-800 bg-zinc-900/40',
           glow: '',
-          title: 'text-zinc-300',
-          badge: 'bg-zinc-900 border-zinc-800 text-zinc-400',
+          title: isLocked ? 'text-zinc-500' : 'text-zinc-300',
+          badge: isLocked ? 'bg-zinc-900/50 border-zinc-800/50 text-zinc-500' : 'bg-zinc-800 border-zinc-700 text-zinc-400',
+          iconBg: isLocked ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-zinc-900 border-zinc-800',
+          lockedText: 'text-zinc-600',
         };
     }
   };
@@ -84,69 +79,73 @@ export default function RoadmapMilestoneNode({
 
   return (
     <div
-      className="flex-shrink-0 w-[200px] relative flex flex-col items-center select-none"
+      className="flex-shrink-0 w-[200px] relative flex flex-col items-center select-none group opacity-100"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       {/* Node Connector Anchor Dot */}
       <div className="absolute top-[39px] w-6 h-6 flex items-center justify-center z-20">
         <div
-          className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${
-            status === 'CLAIMED'
-              ? 'bg-neon-green border-neon-green shadow-[0_0_8px_#00ff88]'
-              : status === 'CLAIMABLE'
-              ? 'bg-neon-cyan border-white shadow-[0_0_10px_#22d3ee] animate-ping'
-              : 'bg-[#080c10] border-zinc-800'
-          }`}
+          className={`rounded-full transition-all duration-300 ${status === 'CLAIMED'
+            ? 'w-3.5 h-3.5 bg-emerald-400 border-2 border-emerald-400/30 shadow-[0_0_10px_rgba(52,211,153,0.4)]'
+            : status === 'CLAIMABLE'
+              ? 'w-4 h-4 bg-neon-cyan border-[3px] border-neon-cyan/30 shadow-[0_0_15px_rgba(34,211,238,0.5)] animate-pulse'
+              : 'w-3.5 h-3.5 bg-[#05080c] border-2 border-zinc-700'
+            }`}
         />
-        {status === 'CLAIMABLE' && (
-          <div className="absolute w-3.5 h-3.5 rounded-full bg-neon-cyan border-2 border-white shadow-[0_0_8px_#22d3ee] z-10" />
-        )}
       </div>
 
       {/* Target Days Indicator */}
-      <div className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mb-9 text-center h-4 flex items-center">
+      <div className="text-[11px] font-bold tracking-wide mb-9 text-center h-4 flex items-center justify-center w-full">
         {status === 'CLAIMED' ? (
-          <span className="text-neon-green font-bold">✓ Day {streak_target}</span>
+          <span className="text-emerald-400">✓ Day {streak_target}</span>
         ) : status === 'CLAIMABLE' ? (
-          <span className="text-neon-cyan font-extrabold animate-pulse">Claim Day {streak_target}</span>
+          <span className="text-neon-cyan">Day {streak_target}</span>
         ) : (
-          <span>Day {streak_target}</span>
+          <span className="text-zinc-500">Day {streak_target}</span>
         )}
       </div>
 
       {/* Milestone Card */}
       <div
-        className={`w-full p-4 rounded-2xl border flex flex-col justify-between items-center text-center gap-3 transition-all duration-300 min-h-[165px] ${
-          styles.border} ${styles.glow} ${status === 'LOCKED' ? 'opacity-55' : 'hover:scale-102 hover:shadow-[0_0_20px_rgba(0,0,0,0.4)]'}`}
+        className={`w-full p-4 rounded-2xl border flex flex-col justify-between items-center text-center gap-3 transition-all duration-300 min-h-[165px] ${styles.border
+          } ${styles.glow} ${status === 'LOCKED' ? 'opacity-85' : 'hover:-translate-y-1'
+          }`}
       >
         {/* Item Icon Frame */}
         <div className="relative">
-          <div className={`w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-[inset_0_0_10px_rgba(0,0,0,0.6)] ${status === 'LOCKED' ? 'opacity-40' : ''}`}>
+          <div
+            className={`w-12 h-12 rounded-xl border flex items-center justify-center shadow-inner ${styles.iconBg} ${status === 'LOCKED' ? 'opacity-60' : ''
+              }`}
+          >
             <ItemIcon itemId={item_id} size={24} />
           </div>
           {status === 'LOCKED' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 rounded-md bg-zinc-950 border border-zinc-800 flex items-center justify-center shadow-md">
-              <Lock className="w-2.5 h-2.5 text-zinc-500" />
+            <div className="absolute -top-1 -right-1 w-5 h-5 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-md">
+              <Lock className="w-3 h-3 text-zinc-500" />
             </div>
           )}
         </div>
 
         {/* Title */}
-        <div className="space-y-0.5">
-          <h4 className={`text-[11px] font-black uppercase tracking-wide truncate max-w-[160px] ${styles.title}`}>
+        <div className="space-y-1 w-full">
+          <h4
+            className={`text-xs font-bold tracking-wide truncate px-1 w-full ${styles.title}`}
+          >
             {title}
           </h4>
-          <span className={`inline-block px-1.5 py-0.5 rounded text-[8px] font-black uppercase border ${styles.badge}`}>
+          <span
+            className={`inline-block px-2 py-0.5 rounded-md text-[9px] font-semibold uppercase border ${styles.badge}`}
+          >
             {quantity}x {item_name}
           </span>
         </div>
 
-        {/* Claim / locked actions */}
-        <div className="w-full pt-2 border-t border-zinc-900">
+        {/* Claim / Locked Actions */}
+        <div className={`w-full pt-3 border-t ${status === 'LOCKED' ? 'border-zinc-800/30' : 'border-zinc-800/50'}`}>
           {status === 'CLAIMED' ? (
-            <div className="flex items-center justify-center gap-1 text-[9.5px] font-bold text-neon-green">
-              <Check className="w-3.5 h-3.5" />
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-400">
+              <Check className="w-4 h-4" />
               <span>Claimed</span>
             </div>
           ) : status === 'CLAIMABLE' ? (
@@ -154,19 +153,19 @@ export default function RoadmapMilestoneNode({
               type="button"
               onClick={() => onClaim(milestone)}
               disabled={isClaiming}
-              className="w-full py-1.5 rounded-lg bg-gradient-to-r from-neon-cyan to-[#00f3ff] hover:shadow-[0_0_15px_rgba(34,211,238,0.35)] text-zinc-950 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1"
+              className="w-full py-2 rounded-xl bg-neon-cyan hover:bg-neon-cyan/90 text-[#05080c] text-[11px] font-bold uppercase tracking-wide transition-all shadow-[0_0_10px_rgba(34,211,238,0.2)] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] cursor-pointer flex items-center justify-center gap-1.5"
             >
               {isClaiming ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
                 <>
-                  <Gift className="w-3 h-3" />
-                  <span>Claim</span>
+                  <Gift className="w-3.5 h-3.5" />
+                  <span>Claim Reward</span>
                 </>
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-center gap-1 text-[9.5px] font-semibold text-zinc-500">
+            <div className={`flex items-center justify-center gap-1.5 text-[11px] font-medium ${styles.lockedText}`}>
               <Lock className="w-3 h-3 shrink-0" />
               <span>Locked</span>
             </div>
@@ -176,12 +175,16 @@ export default function RoadmapMilestoneNode({
 
       {/* Rarity Tooltip Popover */}
       {showTooltip && description && (
-        <div className="absolute top-[80px] z-50 w-[180px] p-3 rounded-xl border border-zinc-800 bg-zinc-950/95 backdrop-blur-md shadow-lg pointer-events-none text-left space-y-1 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between border-b border-zinc-900 pb-1">
-            <span className="text-[9px] font-black text-white uppercase tracking-wider">{item_name}</span>
-            <span className="text-[7.5px] uppercase font-bold text-neon-cyan">{rarity}</span>
+        <div className="absolute top-[80px] z-50 w-[180px] p-3 rounded-xl border border-zinc-800/80 bg-zinc-900/95 shadow-xl pointer-events-none text-left space-y-1.5 animate-in fade-in duration-200">
+          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-1.5">
+            <span className="text-[10px] font-bold text-zinc-100 uppercase tracking-wide">
+              {item_name}
+            </span>
+            <span className={`text-[9px] uppercase font-bold ${styles.title}`}>
+              {rarity}
+            </span>
           </div>
-          <p className="text-[9px] text-zinc-400 leading-normal">{description}</p>
+          <p className="text-[10px] text-zinc-400 leading-relaxed">{description}</p>
         </div>
       )}
     </div>
