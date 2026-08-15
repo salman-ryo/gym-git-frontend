@@ -38,6 +38,7 @@ import RewardRoadmap from '@/components/rewards/RewardRoadmap';
 import ClaimCelebrationModal from '@/components/rewards/ClaimCelebrationModal';
 import { fetchRewardRoadmap } from '@/lib/rewards-service';
 import StreakBrokenModal from '@/components/pages/dashboard/StreakBrokenModal';
+import { restoreStreak } from '@/lib/streak-service';
 import StreakRiskWarningBanner from '@/components/pages/dashboard/StreakRiskWarningBanner';
 
 export default function DashboardPage() {
@@ -248,6 +249,23 @@ export default function DashboardPage() {
     workoutType: WorkoutType,
     notes?: string
   ) => {
+    const today = new Date();
+    const todayStr = formatDateKey(today);
+
+    if (dateStr < todayStr) {
+      const targetDate = new Date(dateStr + 'T00:00:00');
+      const todayDate = new Date(todayStr + 'T00:00:00');
+      const diffTime = todayDate.getTime() - targetDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      // If it's a past date within the 3-day lookback window
+      if (diffDays >= 1 && diffDays <= 3) {
+        await restoreStreak(dateStr, workoutType, hours);
+        await refreshData();
+        return;
+      }
+    }
+
     await saveGymLog(dateStr, hours, workoutType, notes);
     await refreshData();
   };
