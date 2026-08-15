@@ -24,7 +24,7 @@ export default function AnimeTierCard({
         const percent = Math.min(100, Math.max(0, (current / max) * 100));
         return (
             <div className="w-full h-1 bg-zinc-800 rounded-full mt-1.5 overflow-hidden">
-                <div className={`h-full rounded-full ${colorClass}`} style={{ width: `${percent}%` }} />
+                <div className={`h-full rounded-full transition-all duration-700 ease-out ${colorClass}`} style={{ width: `${percent}%` }} />
             </div>
         );
     };

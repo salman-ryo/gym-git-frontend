@@ -40,6 +40,8 @@ import { fetchRewardRoadmap } from '@/lib/rewards-service';
 import StreakBrokenModal from '@/components/pages/dashboard/StreakBrokenModal';
 import { restoreStreak } from '@/lib/streak-service';
 import StreakRiskWarningBanner from '@/components/pages/dashboard/StreakRiskWarningBanner';
+import PowerLevelCelebrationModal from '@/components/pages/dashboard/power-level/PowerLevelCelebrationModal';
+import { calculateScientificPowerScore, PowerScoreBreakdown } from '@/lib/scientific-power';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
@@ -83,6 +85,12 @@ export default function DashboardPage() {
     rarity: string;
   } | null>(null);
 
+  // Power Level Animation state
+  const [powerCelebrationData, setPowerCelebrationData] = useState<{
+    targetScore: number;
+    scoreData?: PowerScoreBreakdown;
+  } | null>(null);
+
   // Phase 6 — Streak Lifecycle state
   const [hasSeenBrokenModal, setHasSeenBrokenModal] = useState<boolean>(false);
 
@@ -94,6 +102,26 @@ export default function DashboardPage() {
     });
     return Array.from(types);
   }, [logs]);
+
+  // Calculate Current Week Power Score for animation
+  const calculateCurrentWeekScore = useCallback((allLogs: GymLog[]) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const currentDay = today.getDay();
+    const diffToMonday = today.getDate() - (currentDay === 0 ? 6 : currentDay - 1);
+    const monday = new Date(today);
+    monday.setDate(diffToMonday);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const monStr = formatDateKey(monday);
+    const sunStr = formatDateKey(sunday);
+
+    const weekLogs = allLogs.filter(
+      (l) => l.date >= monStr && l.date <= sunStr && l.hours > 0
+    );
+    return calculateScientificPowerScore(weekLogs, 7, 4);
+  }, []);
 
   // Fetch all logs & stats from Go backend API
   const refreshData = useCallback(async () => {
@@ -226,7 +254,15 @@ export default function DashboardPage() {
   ) => {
     await saveGymLog(todayDateStr, hours, workoutType, notes);
     setShowDailyCheckIn(false);
-    await refreshData();
+    const updatedLogs = await refreshData();
+
+    if (hours > 0 && Array.isArray(updatedLogs)) {
+      const weekScoreData = calculateCurrentWeekScore(updatedLogs);
+      setPowerCelebrationData({
+        targetScore: weekScoreData.totalScore,
+        scoreData: weekScoreData,
+      });
+    }
   };
 
   // Handle Daily Check-in No (Rest day)
@@ -267,7 +303,15 @@ export default function DashboardPage() {
     }
 
     await saveGymLog(dateStr, hours, workoutType, notes);
-    await refreshData();
+    const updatedLogs = await refreshData();
+
+    if (dateStr === todayStr && hours > 0 && Array.isArray(updatedLogs)) {
+      const weekScoreData = calculateCurrentWeekScore(updatedLogs);
+      setPowerCelebrationData({
+        targetScore: weekScoreData.totalScore,
+        scoreData: weekScoreData,
+      });
+    }
   };
 
   // Delete Tile Entry
@@ -575,6 +619,16 @@ export default function DashboardPage() {
               }
             }}
           />
+
+          {/* Today's Log Power Level Calibration Animation */}
+          {powerCelebrationData && (
+            <PowerLevelCelebrationModal
+              isOpen={!!powerCelebrationData}
+              targetScore={powerCelebrationData.targetScore}
+              scoreData={powerCelebrationData.scoreData}
+              onClose={() => setPowerCelebrationData(null)}
+            />
+          )}
         </div>
       </div>
     </AuthGuard>

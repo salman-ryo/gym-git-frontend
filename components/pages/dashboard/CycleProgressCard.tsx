@@ -4,6 +4,7 @@ import React from 'react';
 import { Stats, User } from '@/lib/types';
 import { AlertTriangle, Cpu, Zap, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useInView, AnimatedScoreCounter } from './power-level/power-chart-utils';
 
 interface CycleProgressCardProps {
   stats: Stats;
@@ -22,6 +23,7 @@ function formatDate(dateStr: string): string {
 }
 
 export default function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
+  const { ref: containerRef, inView } = useInView(0.15);
   const cycle = stats.cycleInfo;
 
   if (!cycle) return null;
@@ -33,10 +35,12 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
   const radius = 34;
   const strokeWidth = 6;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (accuracy / 100) * circumference;
+  const strokeDashoffset = inView
+    ? circumference - (accuracy / 100) * circumference
+    : circumference;
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div ref={containerRef} className={cn("relative w-full", className)}>
 
       {/* Subtle Top Ambient Glow */}
       <div className="absolute top-0 inset-x-1/4 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent blur-[2px]" />
@@ -84,20 +88,25 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
                   Workout Progress
                 </span>
                 <span className="text-xs font-medium text-zinc-400">
-                  <span className="text-neon-cyan font-bold text-sm">{completed}</span> / {target}
+                  <span className="text-neon-cyan font-bold text-sm">
+                    <AnimatedScoreCounter value={completed} inView={inView} duration={800} />
+                  </span> / {target}
                 </span>
               </div>
 
               {/* Clean Segmented Progress Bar */}
               <div className="flex items-center gap-1.5 w-full h-5">
                 {Array.from({ length: Math.max(1, target) }).map((_, idx) => {
-                  const isActive = idx < completed;
+                  const isActive = inView && idx < completed;
                   return (
                     <div
                       key={idx}
-                      className={`flex-1 h-full rounded-md transition-all duration-300 ${isActive
-                        ? 'bg-gradient-to-b from-green-600 to-teal-400 shadow-[0_0_12px_rgba(34,211,238,0.3)]'
-                        : 'bg-zinc-800/50'
+                      style={{
+                        transitionDelay: `${idx * 70}ms`,
+                      }}
+                      className={`flex-1 h-full rounded-md transition-all duration-500 ${isActive
+                        ? 'bg-gradient-to-b from-green-600 to-teal-400 shadow-[0_0_12px_rgba(34,211,238,0.3)] opacity-100 scale-100'
+                        : 'bg-zinc-800/50 opacity-60'
                         }`}
                     />
                   );
@@ -112,18 +121,21 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
                   Rest Tokens
                 </span>
                 <span className="text-[11px] font-medium text-zinc-400">
-                  {cycle.rest_tokens_remaining} Available
+                  <AnimatedScoreCounter value={cycle.rest_tokens_remaining} inView={inView} duration={800} /> Available
                 </span>
               </div>
 
               {/* Rounded Hardware Battery Pods */}
               <div className="flex items-center gap-2.5 h-6">
                 {Array.from({ length: cycle.rest_tokens_total }).map((_, idx) => {
-                  const isActive = idx < cycle.rest_tokens_remaining;
+                  const isActive = inView && idx < cycle.rest_tokens_remaining;
                   return (
                     <div
                       key={idx}
-                      className={`relative flex-1 h-full rounded-md border transition-all duration-300 flex items-center justify-center overflow-hidden ${isActive
+                      style={{
+                        transitionDelay: `${idx * 70}ms`,
+                      }}
+                      className={`relative flex-1 h-full rounded-md border transition-all duration-500 flex items-center justify-center overflow-hidden ${isActive
                         ? 'border-neon-cyan bg-teal-400/10 shadow-[0_0_10px_rgba(34,211,238,0.15)]'
                         : 'border-zinc-800 bg-zinc-900/40 opacity-50'
                         }`}
@@ -174,7 +186,7 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
                 cx="48"
                 cy="48"
                 r={radius}
-                className="stroke-neon-cyan fill-none transition-all duration-700 ease-out"
+                className="stroke-neon-cyan fill-none transition-all duration-1000 ease-out"
                 strokeWidth={strokeWidth}
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
@@ -188,7 +200,8 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
             {/* Center Readout */}
             <div className="absolute flex flex-col items-center justify-center bg-[#05080c] w-14 h-14 rounded-full border border-zinc-800 shadow-inner">
               <span className="text-lg font-black text-white tracking-tighter leading-none mt-1">
-                {accuracy}<span className="text-xs text-neon-cyan font-semibold ml-0.5">%</span>
+                <AnimatedScoreCounter value={accuracy} inView={inView} duration={1000} />
+                <span className="text-xs text-neon-cyan font-semibold ml-0.5">%</span>
               </span>
               <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-wider mt-1">
                 Accuracy

@@ -1,3 +1,4 @@
+import React from 'react';
 import { PowerScoreBreakdown } from '@/lib/scientific-power';
 
 export interface MonthlyPowerStat {
@@ -75,3 +76,88 @@ export const getPowerColorTheme = (score: number, isCurrent: boolean) => {
     scoreText: 'text-[10px] font-black text-zinc-500 mb-1 group-hover:text-amber-400 group-hover:drop-shadow-[0_0_5px_rgba(245,158,11,0.8)] transition-all'
   };
 };
+
+export function useInView(threshold: number = 0.15) {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, inView };
+}
+
+interface AnimatedScoreCounterProps {
+  value: number;
+  inView: boolean;
+  duration?: number;
+  delay?: number;
+  className?: string;
+}
+
+export function AnimatedScoreCounter({
+  value,
+  inView,
+  duration = 900,
+  delay = 0,
+  className,
+}: AnimatedScoreCounterProps) {
+  const [displayValue, setDisplayValue] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!inView) {
+      setDisplayValue(0);
+      return;
+    }
+
+    let startTimeout: NodeJS.Timeout;
+    let animFrame: number;
+
+    startTimeout = setTimeout(() => {
+      const startTime = performance.now();
+      const endValue = value;
+
+      const step = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        setDisplayValue(Math.round(endValue * easeOut));
+
+        if (progress < 1) {
+          animFrame = requestAnimationFrame(step);
+        } else {
+          setDisplayValue(endValue);
+        }
+      };
+
+      animFrame = requestAnimationFrame(step);
+    }, delay);
+
+    return () => {
+      clearTimeout(startTimeout);
+      cancelAnimationFrame(animFrame);
+    };
+  }, [inView, value, duration, delay]);
+
+  return React.createElement('span', { className }, displayValue);
+}

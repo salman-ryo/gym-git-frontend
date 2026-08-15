@@ -6,6 +6,8 @@ import { RoadmapMilestone } from '@/lib/types';
 import { claimReward } from '@/lib/rewards-service';
 import RoadmapMilestoneNode from './RoadmapMilestoneNode';
 
+import { useInView } from '../pages/dashboard/power-level/power-chart-utils';
+
 interface RewardRoadmapProps {
   milestones: RoadmapMilestone[];
   longestStreak: number;
@@ -25,6 +27,7 @@ export default function RewardRoadmap({
   planId = 'ppl-standard',
 }: RewardRoadmapProps) {
   const [claimLoadingId, setClaimLoadingId] = useState<string | null>(null);
+  const { ref: containerRef, inView } = useInView(0.15);
 
   // Sort milestones by target days so they display in progression order
   const sortedMilestones = useMemo(() => {
@@ -61,7 +64,7 @@ export default function RewardRoadmap({
   if (sortedMilestones.length === 0) return null;
 
   return (
-    <div id="reward-roadmap" className="w-full bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/50 rounded-2xl p-5 sm:p-6 shadow-sm group transition-all duration-500 relative overflow-hidden">
+    <div ref={containerRef} id="reward-roadmap" className="w-full bg-zinc-950/80 border border-zinc-800 hover:border-zinc-700/50 rounded-2xl p-5 sm:p-6 shadow-sm group transition-all duration-500 relative overflow-hidden">
 
       {/* Subtle Top Ambient Glow (Replacing harsh neon lines) */}
       <div className="absolute top-0 inset-x-1/4 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/20 to-transparent blur-[2px]" />
@@ -97,8 +100,8 @@ export default function RewardRoadmap({
           <div className="absolute top-[48px] left-[100px] right-[100px] h-1.5 bg-zinc-800/50 rounded-full overflow-hidden">
             {/* Highlights Completed Progress Segment */}
             <div
-              className="h-full bg-neon-cyan rounded-full shadow-[0_0_10px_rgba(34,211,238,0.3)] transition-all duration-700 ease-out"
-              style={{ width: `${progressPercent}%` }}
+              className="h-full bg-neon-cyan rounded-full shadow-[0_0_10px_rgba(34,211,238,0.3)] transition-all duration-1000 ease-out"
+              style={{ width: inView ? `${progressPercent}%` : '0%' }}
             />
           </div>
 

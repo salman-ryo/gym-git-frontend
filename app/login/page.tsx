@@ -142,7 +142,7 @@ export default function LoginPage() {
         </Link>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neon-green/15 bg-neon-green/5 backdrop-blur-md">
           <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
-          <span className="text-[10.5px] font-bold tracking-wider text-neon-green uppercase">CYBER-AUTH</span>
+          <span className="text-[10.5px] font-bold tracking-wider text-neon-green uppercase">Riyou Kaishi</span>
         </div>
       </div>
 
@@ -192,11 +192,10 @@ export default function LoginPage() {
               setMode('signin');
               setError('');
             }}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
-              mode === 'signin'
-                ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
-            }`}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${mode === 'signin'
+              ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+              }`}
           >
             <LogIn className="w-3.5 h-3.5" />
             Sign In
@@ -207,11 +206,10 @@ export default function LoginPage() {
               setMode('signup');
               setError('');
             }}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
-              mode === 'signup'
-                ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
-            }`}
+            className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${mode === 'signup'
+              ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+              }`}
           >
             <UserPlus className="w-3.5 h-3.5" />
             Create Account
