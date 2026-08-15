@@ -74,6 +74,7 @@ export default function DailyCheckInModal({
   useEffect(() => {
     if (isOpen) {
       setQuestionMascot(getWeightedQuestionMascot());
+      setAnsweredYes(false);
     }
   }, [isOpen]);
 

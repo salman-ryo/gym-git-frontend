@@ -35,16 +35,17 @@ export default function ContributionGraph({
   // 1. YEAR VIEW DATA
   const yearData = useMemo(() => {
     const todayObj = new Date();
-    const todayStr = formatDateKey(todayObj);
     todayObj.setHours(0, 0, 0, 0);
+    const todayStr = formatDateKey(todayObj);
 
     const resultWeeks: WeekColumn[] = [];
     const months: { name: string; weekIndex: number }[] = [];
 
-    const todayDayOfWeek = new Date().getDay();
-    const endDate = new Date();
-    const startDate = new Date();
+    const todayDayOfWeek = todayObj.getDay();
+    const endDate = new Date(todayObj); // Starts at midnight today
+    const startDate = new Date(todayObj);
     startDate.setDate(startDate.getDate() - 364 - todayDayOfWeek);
+    startDate.setHours(0, 0, 0, 0); // Ensure midnight boundary
 
     let currentDate = new Date(startDate);
     let currentWeekIndex = 0;
