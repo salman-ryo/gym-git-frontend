@@ -42,7 +42,7 @@ export default function RewardRoadmap({
   const handleClaim = async (milestone: RoadmapMilestone) => {
     setClaimLoadingId(milestone.milestone_id);
     try {
-      const result = await claimReward(planId, milestone.streak_target, milestone.item_id);
+      const result = await claimReward(milestone.plan_id || planId, milestone.streak_target, milestone.item_id);
       if (result.success) {
         await onClaimSuccess({
           itemName: milestone.item_name,

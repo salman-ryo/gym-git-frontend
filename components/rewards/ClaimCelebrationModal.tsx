@@ -109,6 +109,9 @@ export default function ClaimCelebrationModal({
               <h4 className="text-sm font-black text-white leading-tight mt-1.5">
                 {itemName}
               </h4>
+              <p className="text-[10px] text-neon-green font-bold uppercase mt-2">
+                Added directly to inventory
+              </p>
             </div>
 
           </div>
@@ -121,7 +124,7 @@ export default function ClaimCelebrationModal({
           className="w-full mt-8 bg-gradient-to-r from-neon-green via-neon-cyan to-neon-purple hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] text-zinc-950 font-black py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all duration-200 hover:scale-[1.03] active:scale-100 uppercase tracking-wider cursor-pointer"
         >
           <Check className="w-4 h-4 stroke-[3]" />
-          <span>Add to Inventory</span>
+          <span>Awesome!</span>
         </button>
 
       </div>

@@ -9,7 +9,16 @@ export interface UserInventoryResponse {
 interface RawInventoryItem {
   item_id: string;
   quantity: number;
-  item_details: ItemCatalogItem;
+  item_details?: ItemCatalogItem;
+  item?: {
+    id: string;
+    name: string;
+    description?: string;
+    effect_type: string;
+    duration_seconds: number;
+    rarity: string;
+    icon_slug?: string;
+  };
 }
 
 interface RawActiveEffect {
@@ -24,6 +33,23 @@ interface RawInventoryResponse {
   active_effects?: RawActiveEffect[];
 }
 
+function mapRawInventoryItem(item: RawInventoryItem): UserInventoryItem {
+  const rawDetails = item.item_details || item.item;
+  return {
+    item_id: item.item_id,
+    quantity: item.quantity,
+    item_details: {
+      item_id: (rawDetails && ('item_id' in rawDetails ? rawDetails.item_id : rawDetails.id)) || item.item_id || '',
+      name: rawDetails?.name || '',
+      effect_type: (rawDetails?.effect_type || 'INSTANT_USE') as any,
+      duration_seconds: rawDetails?.duration_seconds || 0,
+      description: rawDetails?.description || '',
+      rarity: (rawDetails?.rarity || 'common') as any,
+      icon: (rawDetails && ('icon' in rawDetails ? rawDetails.icon : rawDetails.icon_slug)) || '',
+    } as any,
+  };
+}
+
 export async function fetchItemCatalog(): Promise<ItemCatalogItem[]> {
   return api.get<ItemCatalogItem[]>('/items');
 }
@@ -31,11 +57,7 @@ export async function fetchItemCatalog(): Promise<ItemCatalogItem[]> {
 export async function fetchUserInventory(): Promise<UserInventoryResponse> {
   const data = await api.get<RawInventoryResponse>('/inventory');
   return {
-    inventory: (data?.inventory || []).map((item) => ({
-      item_id: item.item_id,
-      quantity: item.quantity,
-      item_details: item.item_details,
-    })),
+    inventory: (data?.inventory || []).map(mapRawInventoryItem),
     active_effects: (data?.active_effects || []).map((effect) => ({
       item_id: effect.item_id,
       activated_at: effect.activated_at,
@@ -56,11 +78,7 @@ export async function consumeInventoryItem(
     payload,
   });
   return {
-    inventory: (data?.inventory || []).map((item) => ({
-      item_id: item.item_id,
-      quantity: item.quantity,
-      item_details: item.item_details,
-    })),
+    inventory: (data?.inventory || []).map(mapRawInventoryItem),
     active_effects: (data?.active_effects || []).map((effect) => ({
       item_id: effect.item_id,
       activated_at: effect.activated_at,

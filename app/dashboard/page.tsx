@@ -488,7 +488,7 @@ export default function DashboardPage() {
           {/* Modals */}
           <DailyCheckInModal
             dateStr={todayDateStr}
-            isOpen={false}
+            isOpen={showDailyCheckIn}
             onCheckInYes={handleDailyCheckInYes}
             onCheckInNo={handleDailyCheckInNo}
             availableWorkoutTypes={user?.weeklyPlan?.categories}
