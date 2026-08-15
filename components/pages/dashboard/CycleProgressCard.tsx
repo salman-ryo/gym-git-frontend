@@ -3,10 +3,12 @@
 import React from 'react';
 import { Stats, User } from '@/lib/types';
 import { AlertTriangle, Cpu, Zap, Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CycleProgressCardProps {
   stats: Stats;
   user: User;
+  className?: string;
 }
 
 function formatDate(dateStr: string): string {
@@ -19,7 +21,7 @@ function formatDate(dateStr: string): string {
   return `${monthNames[monthIdx]} ${day}`;
 }
 
-export default function CycleProgressCard({ stats, user }: CycleProgressCardProps) {
+export default function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
   const cycle = stats.cycleInfo;
 
   if (!cycle) return null;
@@ -34,7 +36,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
   const strokeDashoffset = circumference - (accuracy / 100) * circumference;
 
   return (
-    <div className="relative w-full bg-[#05080c] border border-zinc-800 p-2 sm:p-3 rounded-xl transition-all hover:border-neon-cyan/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.05)] overflow-hidden group">
+    <div className={cn("relative w-full", className)}>
 
       {/* Subtle Top Ambient Glow */}
       <div className="absolute top-0 inset-x-1/4 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent blur-[2px]" />
@@ -45,7 +47,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
         <div className="lg:col-span-8 flex flex-col gap-2 sm:gap-3">
 
           {/* PANEL 1: Cycle Readout */}
-          <div className="bg-[#0a0f16] border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
+          <div className="bg-zinc-950/80 border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-teal-400/80" />
 
             <div className="flex flex-wrap items-center justify-between gap-3 pl-2 w-full">
@@ -76,7 +78,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 flex-1">
 
             {/* PANEL 2: Workout Progress */}
-            <div className="bg-[#0a0f16] border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-col justify-center">
+            <div className="bg-zinc-950/80 border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-col justify-center">
               <div className="flex justify-between items-end mb-3">
                 <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                   Workout Progress
@@ -87,7 +89,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
               </div>
 
               {/* Clean Segmented Progress Bar */}
-              <div className="flex items-center gap-1.5 w-full h-6">
+              <div className="flex items-center gap-1.5 w-full h-5">
                 {Array.from({ length: Math.max(1, target) }).map((_, idx) => {
                   const isActive = idx < completed;
                   return (
@@ -104,7 +106,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
             </div>
 
             {/* PANEL 3: Rest Tokens */}
-            <div className="bg-[#0a0f16] border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-col justify-center">
+            <div className="bg-zinc-950/80 border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-col justify-center">
               <div className="flex justify-between items-end mb-3">
                 <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                   Rest Tokens
@@ -140,7 +142,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
         </div>
 
         {/* RIGHT COLUMN: 4 Spans - Diagnostics Accuracy Radar */}
-        <div className="lg:col-span-4 bg-[#0a0f16] border border-zinc-800 min-h-[140px] rounded-xl relative flex flex-col items-center justify-center p-4">
+        <div className="lg:col-span-4 bg-zinc-950/80 border border-zinc-800 min-h-[140px] rounded-xl relative flex flex-col items-center justify-center p-4">
 
           <span className="absolute top-4 inset-x-0 text-center text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
             Diagnostics
@@ -207,7 +209,7 @@ export default function CycleProgressCard({ stats, user }: CycleProgressCardProp
               Update:
             </span>
             <span className="text-[11px] text-zinc-300 font-medium tracking-wide">
-              New plan queued [ <span className="text-white font-bold">{user.queuedWeeklyPlanId}</span> ] Executing next cycle.
+              Your new plan: [ <span className="text-white font-bold">{user.queuedWeeklyPlanId}</span> ] will start from next week.
             </span>
           </div>
         </div>

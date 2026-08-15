@@ -147,11 +147,11 @@ export default function DailyCheckInModal({
 
   const formattedDate = dateStr && !isNaN(Date.parse(dateStr + 'T00:00:00'))
     ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
     : '';
 
   const activeYesHero = yesAnimeRoster[yesCharIndex] || yesAnimeRoster[0];
@@ -466,8 +466,8 @@ export default function DailyCheckInModal({
                       setIsCustomHours(false);
                     }}
                     className={`flex-1 py-2 text-xs font-black rounded-xl transition-all border cursor-pointer ${!isCustomHours && hours === h
-                        ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                        : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                      ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+                      : 'bg-[#05080c] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                   >
                     {h}h
@@ -477,8 +477,8 @@ export default function DailyCheckInModal({
                   type="button"
                   onClick={() => setIsCustomHours(true)}
                   className={`py-2 px-2.5 text-xs font-black rounded-xl transition-all border flex items-center gap-1 cursor-pointer ${isCustomHours
-                      ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
-                      : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
+                    ? 'bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] border-neon-green shadow-[0_0_15px_rgba(0,255,136,0.35)]'
+                    : 'bg-[#05080c] text-neon-cyan border-neon-cyan/40 hover:border-neon-cyan'
                     }`}
                 >
                   <Plus className="w-3 h-3" />
@@ -521,8 +521,8 @@ export default function DailyCheckInModal({
                       type="button"
                       onClick={() => setWorkoutType(cat)}
                       className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border flex items-center justify-between cursor-pointer ${isSelected
-                          ? catTheme.filterActive
-                          : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                        ? catTheme.filterActive
+                        : 'bg-[#05080c] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                         }`}
                     >
                       <span className="truncate">{cat}</span>

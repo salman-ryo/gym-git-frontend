@@ -269,7 +269,7 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
         </div>
 
         {/* Row 2: Cycle Progress Card — full width */}
-        {user && <CycleProgressCard stats={stats} user={user} />}
+        {user && <CycleProgressCard className='mt-10' stats={stats} user={user} />}
       </div>
     </TooltipProvider>
   );

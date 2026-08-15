@@ -2,7 +2,7 @@
 
 import { WorkoutType, WeeklyPlan } from '@/lib/types';
 import React from 'react';
-import { SlidersHorizontal, Settings2, Sparkles } from 'lucide-react';
+import { SlidersHorizontal, Settings2, Sparkles, Check, Calendar } from 'lucide-react';
 import { getThemeForWorkout } from '@/components/contribution-graph/theme-utils';
 
 interface FilterBarProps {
@@ -43,8 +43,8 @@ export default function FilterBar({
         </div>
 
         {weeklyPlan && (
-          <span className="hidden sm:inline-flex items-center gap-1.5 text-[10.5px] font-extrabold text-neon-green border border-neon-green/30 rounded-full px-3 py-1 bg-neon-green/10 shadow-[0_0_12px_rgba(0,255,136,0.12)]">
-            <Sparkles className="w-3 h-3 text-neon-green" /> {weeklyPlan.name}
+          <span className="hidden sm:inline-flex items-center gap-1.5 text-[10.5px] font-extrabold text-cyan-400 border border-cyan-400/30 rounded-full px-3 py-1 bg-black shadow-[0_0_12px_rgba(34,211,238,0.25)]" title='Your Current Weekly Plan'>
+            <Calendar className="w-3 h-3 text-purple-400" /> {weeklyPlan.name}
           </span>
         )}
       </div>
@@ -59,9 +59,8 @@ export default function FilterBar({
               key={category}
               type="button"
               onClick={() => onFilterChange(category)}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                isActive ? theme.filterActive : theme.filterInactive
-              }`}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${isActive ? theme.filterActive : theme.filterInactive
+                }`}
             >
               <span>{category}</span>
             </button>
