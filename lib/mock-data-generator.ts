@@ -361,8 +361,8 @@ export function generateMockStats(logs: GymLog[], userPlan?: WeeklyPlan): Stats 
     isFrozen: false,
     accuracyScore: 92,
     cycleInfo,
-    streakWarningEvent: mockWarningEvent,
-    streakBrokenEvent: mockBrokenEvent,
+    streakWarningEvent: currentStreak > 0 ? mockWarningEvent : null,
+    streakBrokenEvent: currentStreak === 0 && longestStreak > 0 ? mockBrokenEvent : null,
     // Attach these as properties for activation state overrides
     mockMilestones,
     mockInventory,

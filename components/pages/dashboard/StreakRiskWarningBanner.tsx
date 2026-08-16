@@ -6,11 +6,13 @@ import { StreakWarningEvent } from '@/lib/types';
 
 interface StreakRiskWarningBannerProps {
   event: StreakWarningEvent | null;
+  currentStreak?: number;
   onLogWorkoutClick: () => void;
 }
 
 export default function StreakRiskWarningBanner({
   event,
+  currentStreak,
   onLogWorkoutClick,
 }: StreakRiskWarningBannerProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
@@ -48,7 +50,8 @@ export default function StreakRiskWarningBanner({
     return () => clearInterval(interval);
   }, [event]);
 
-  if (!event || !event.is_at_risk) return null;
+  // When streak is already 0, do not display warning banner
+  if (!event || !event.is_at_risk || (currentStreak !== undefined && currentStreak <= 0)) return null;
 
   // Collapsed notification pill view
   if (isCollapsed) {

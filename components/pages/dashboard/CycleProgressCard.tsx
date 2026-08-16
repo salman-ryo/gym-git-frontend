@@ -143,7 +143,7 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
                       {isActive ? (
                         <Zap className="w-3.5 h-3.5 text-neon-cyan drop-shadow-[0_0_5px_#22d3ee]" />
                       ) : (
-                        <Cpu className="w-3 h-3 text-zinc-600" />
+                        <Zap className="w-3 h-3 text-zinc-600" />
                       )}
                     </div>
                   );

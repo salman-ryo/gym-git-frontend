@@ -6,7 +6,7 @@ import { RoadmapMilestone } from '@/lib/types';
 import { claimReward } from '@/lib/rewards-service';
 import RoadmapMilestoneNode from './RoadmapMilestoneNode';
 
-import { useInView } from '../pages/dashboard/power-level/power-chart-utils';
+import { useInView } from '../power-level/power-chart-utils';
 
 interface RewardRoadmapProps {
   milestones: RoadmapMilestone[];

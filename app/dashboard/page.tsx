@@ -34,8 +34,8 @@ import { LandingBackground } from '@/components/pages/landing';
 import { Sparkles, Database, RotateCcw, Check, Loader2, Snowflake, AlertTriangle, ShieldAlert } from 'lucide-react';
 import FreezeModal from '@/components/pages/dashboard/FreezeModal';
 import FrozenStateBanner from '@/components/pages/dashboard/FrozenStateBanner';
-import RewardRoadmap from '@/components/rewards/RewardRoadmap';
-import ClaimCelebrationModal from '@/components/rewards/ClaimCelebrationModal';
+import RewardRoadmap from '@/components/pages/dashboard/rewards/RewardRoadmap';
+import ClaimCelebrationModal from '@/components/pages/dashboard/rewards/ClaimCelebrationModal';
 import { fetchRewardRoadmap } from '@/lib/rewards-service';
 import StreakBrokenModal from '@/components/pages/dashboard/StreakBrokenModal';
 import { restoreStreak } from '@/lib/streak-service';
@@ -555,9 +555,10 @@ export default function DashboardPage() {
                 )}
 
                 {/* Streak Decay Imminent Risk Warning Banner */}
-                {stats?.streakWarningEvent?.is_at_risk && (
+                {stats?.streakWarningEvent?.is_at_risk && (stats?.currentStreak ?? 0) > 0 && (
                   <StreakRiskWarningBanner
                     event={stats.streakWarningEvent}
+                    currentStreak={stats.currentStreak}
                     onLogWorkoutClick={() => setShowDailyCheckIn(true)}
                   />
                 )}

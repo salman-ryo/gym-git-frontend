@@ -55,7 +55,7 @@ export default function WeekView({
                     ) : day.hours > 0 ? (
                       <span className="text-emerald-450">{day.hours} hrs spent</span>
                     ) : (
-                      <span className="text-red-400">⚠️ Missed Day</span>
+                      <span className="text-zinc-400">No workout logged</span>
                     )}
                   </div>
                   <div className="text-[11px] text-zinc-400 mt-0.5">
