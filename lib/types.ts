@@ -20,6 +20,13 @@ export interface GymLog {
   updatedAt?: string;
 }
 
+export interface CheckinSnoozeStatus {
+  date?: string;
+  snoozed_at?: string;
+  is_snoozed: boolean;
+  remaining_seconds: number;
+}
+
 export interface User {
   email: string;
   name: string;
@@ -28,6 +35,7 @@ export interface User {
   weeklyPlan?: WeeklyPlan;
   queuedWeeklyPlanId?: string | null;
   streak?: UserStreak;
+  checkinSnooze?: CheckinSnoozeStatus;
 }
 
 export interface MonthlyStat {
@@ -224,6 +232,7 @@ export interface RawAuthMeResponse {
   };
   plan?: WeeklyPlan;
   streak?: RawStreakResponse;
+  checkin_snooze?: CheckinSnoozeStatus;
   email?: string;
   name?: string;
   avatar_url?: string;

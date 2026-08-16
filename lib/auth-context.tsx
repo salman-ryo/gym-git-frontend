@@ -79,6 +79,12 @@ function mapBackendUser(data: RawAuthMeResponse): User {
       : undefined,
     queuedWeeklyPlanId: u.queued_weekly_plan_id || u.queuedWeeklyPlanId || null,
     streak: streakObj,
+    checkinSnooze: data.checkin_snooze ? {
+      date: data.checkin_snooze.date,
+      snoozed_at: data.checkin_snooze.snoozed_at,
+      is_snoozed: data.checkin_snooze.is_snoozed,
+      remaining_seconds: data.checkin_snooze.remaining_seconds,
+    } : undefined,
   };
 }
 

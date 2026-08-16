@@ -27,7 +27,7 @@ import { GymLog, Stats, WeeklyPlan, WorkoutType, UserInventoryItem, ActiveItemEf
 import { fetchUserInventory, consumeInventoryItem } from '@/lib/inventory-service';
 import InventoryDrawer from '@/components/inventory/InventoryDrawer';
 import ActiveEffectsBar from '@/components/inventory/ActiveEffectsBar';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import Footer from '@/components/layout/Footer';
 import { LandingBackground } from '@/components/pages/landing';
@@ -42,6 +42,11 @@ import { restoreStreak } from '@/lib/streak-service';
 import StreakRiskWarningBanner from '@/components/pages/dashboard/StreakRiskWarningBanner';
 import PowerLevelCelebrationModal from '@/components/pages/dashboard/power-level/PowerLevelCelebrationModal';
 import { calculateScientificPowerScore, PowerScoreBreakdown } from '@/lib/scientific-power';
+import {
+  snoozeCheckIn,
+  clearCheckInSnooze,
+  SNOOZE_DURATION_MS,
+} from '@/lib/checkin-snooze';
 
 export default function DashboardPage() {
   const { user, updateUserPlan } = useAuth();
@@ -211,6 +216,36 @@ export default function DashboardPage() {
     }
   };
 
+  // Check-in Snooze Timer Ref
+  const snoozeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clean up snooze timer on unmount
+  useEffect(() => {
+    return () => {
+      if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
+    };
+  }, []);
+
+  // Schedule a client-side reminder to re-prompt daily check-in after snooze duration
+  const scheduleSnoozeReminder = useCallback((delayMs: number, dateKey: string) => {
+    if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
+    snoozeTimerRef.current = setTimeout(async () => {
+      const today = formatDateKey(new Date());
+      if (today === dateKey) {
+        // Re-verify that user has not logged today's session in the interim
+        const fetchedLogs = await fetchGymLogs();
+        const hasLog = fetchedLogs.some((l) => l.date === today);
+        const fetchedStats = await fetchDashboardStats(user?.weeklyPlan);
+        const isFrozen = fetchedStats?.isFrozen;
+
+        if (!hasLog && !isFrozen) {
+          setShowDailyCheckIn(true);
+        }
+        await clearCheckInSnooze();
+      }
+    }, delayMs);
+  }, [user?.weeklyPlan]);
+
   // Check if we need to force plan selection (onboarding)
   const needsPlanSelection = !!(user && !user.weeklyPlan);
 
@@ -235,16 +270,30 @@ export default function DashboardPage() {
         const isFrozenToday = fetchedStats?.isFrozen;
 
         const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
+        const snoozeStatus = user?.checkinSnooze;
+        const isSnoozed = !!(
+          snoozeStatus?.is_snoozed &&
+          snoozeStatus.date === todayStr &&
+          snoozeStatus.remaining_seconds > 0
+        );
 
         if (!hasTodayLog && !isFrozenToday) {
-          setShowDailyCheckIn(true);
+          if (!isSnoozed) {
+            setShowDailyCheckIn(true);
+          } else {
+            // Already snoozed dynamically on backend: schedule remaining timer
+            const remainingMs = (snoozeStatus?.remaining_seconds ?? 0) * 1000;
+            if (remainingMs > 0) {
+              scheduleSnoozeReminder(remainingMs, todayStr);
+            }
+          }
         }
       }
     }
     if (user) {
       initDashboard();
     }
-  }, [refreshData, user, needsPlanSelection, activateMockData]);
+  }, [refreshData, user, needsPlanSelection, activateMockData, scheduleSnoozeReminder]);
 
   // Handle Daily Check-in Yes
   const handleDailyCheckInYes = async (
@@ -252,6 +301,8 @@ export default function DashboardPage() {
     workoutType: WorkoutType,
     notes?: string
   ) => {
+    await clearCheckInSnooze();
+    if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
     await saveGymLog(todayDateStr, hours, workoutType, notes);
     setShowDailyCheckIn(false);
     const updatedLogs = await refreshData();
@@ -267,9 +318,22 @@ export default function DashboardPage() {
 
   // Handle Daily Check-in No (Rest day)
   const handleDailyCheckInNo = async () => {
+    await clearCheckInSnooze();
+    if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
     await saveGymLog(todayDateStr, 0, 'Rest');
     setShowDailyCheckIn(false);
     await refreshData();
+  };
+
+  // Handle Daily Check-in Later (Snooze 30 minutes dynamically via backend)
+  const handleDailyCheckInLater = async () => {
+    setShowDailyCheckIn(false);
+    try {
+      await snoozeCheckIn(todayDateStr);
+    } catch (err) {
+      console.error('Failed to save checkin snooze to backend', err);
+    }
+    scheduleSnoozeReminder(SNOOZE_DURATION_MS, todayDateStr);
   };
 
   // Tile Click from Contribution Graph
@@ -553,6 +617,7 @@ export default function DashboardPage() {
             isOpen={showDailyCheckIn}
             onCheckInYes={handleDailyCheckInYes}
             onCheckInNo={handleDailyCheckInNo}
+            onCheckInLater={handleDailyCheckInLater}
             availableWorkoutTypes={user?.weeklyPlan?.categories}
           />
 

@@ -16,9 +16,11 @@ import {
   Moon,
   BatteryCharging,
   Trophy,
+  AlertTriangle,
 } from 'lucide-react';
 import Image from 'next/image';
 import { getThemeForWorkout } from '../../contribution-graph/theme-utils';
+import { isLateNightStreakRisk, getMinutesUntilMidnight } from '@/lib/checkin-snooze';
 import {
   animeImages,
   animeQuestionImages,
@@ -35,6 +37,7 @@ interface DailyCheckInModalProps {
   isOpen: boolean;
   onCheckInYes: (hours: number, workoutType: WorkoutType, notes?: string) => Promise<void>;
   onCheckInNo: () => void;
+  onCheckInLater?: () => void;
   availableWorkoutTypes?: string[];
 }
 
@@ -45,6 +48,7 @@ export default function DailyCheckInModal({
   isOpen,
   onCheckInYes,
   onCheckInNo,
+  onCheckInLater,
   availableWorkoutTypes = DEFAULT_WORKOUT_TYPES,
 }: DailyCheckInModalProps) {
   // Random Mascot for Step 1 Greeting (preference for question folder, Aqua excluded)
@@ -58,6 +62,7 @@ export default function DailyCheckInModal({
   const [noCharIndex, setNoCharIndex] = useState<number>(0);
 
   const [answeredYes, setAnsweredYes] = useState(false);
+  const [showLateNightWarning, setShowLateNightWarning] = useState(false);
   const [hours, setHours] = useState<number>(1.0);
   const [isCustomHours, setIsCustomHours] = useState<boolean>(false);
   const [customHoursInput, setCustomHoursInput] = useState<string>('3.0');
@@ -76,6 +81,7 @@ export default function DailyCheckInModal({
     if (isOpen) {
       setQuestionMascot(getWeightedQuestionMascot());
       setAnsweredYes(false);
+      setShowLateNightWarning(false);
     }
   }, [isOpen]);
 
@@ -96,6 +102,7 @@ export default function DailyCheckInModal({
 
   // Trigger Anime "YES" sequence with enhanced duration (2.8 seconds)
   const handleTriggerYes = () => {
+    setShowLateNightWarning(false);
     const nextIdx = Math.floor(Math.random() * yesAnimeRoster.length);
     setYesCharIndex(nextIdx);
     setAnimState('yes_anim');
@@ -116,6 +123,7 @@ export default function DailyCheckInModal({
 
   // Trigger Anime "NO / REST DAY" sequence (Aqua & any recovery characters shown)
   const handleTriggerNo = () => {
+    setShowLateNightWarning(false);
     const nextIdx = Math.floor(Math.random() * noAnimeRoster.length);
     setNoCharIndex(nextIdx);
     setAnimState('no_anim');
@@ -132,6 +140,26 @@ export default function DailyCheckInModal({
     if (timerRef.current) clearTimeout(timerRef.current);
     setAnimState('idle');
     onCheckInNo();
+  };
+
+  // Handle "Later" snooze trigger with late-night edge case validation
+  const handleTriggerLater = () => {
+    if (isLateNightStreakRisk()) {
+      setShowLateNightWarning(true);
+      return;
+    }
+
+    if (onCheckInLater) {
+      onCheckInLater();
+    }
+  };
+
+  // User decides to postpone anyway after seeing late-night warning
+  const handleConfirmPostponeAnyway = () => {
+    setShowLateNightWarning(false);
+    if (onCheckInLater) {
+      onCheckInLater();
+    }
   };
 
   const handleSaveDetails = async () => {
@@ -351,9 +379,75 @@ export default function DailyCheckInModal({
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            STEP 1: Did you hit the gym today? (Initial Modal State)
+            TOP-RIGHT CLOSE / SNOOZE BUTTON
            ═══════════════════════════════════════════════════════════════ */}
-        {!answeredYes ? (
+        {animState === 'idle' && !showLateNightWarning && (
+          <button
+            type="button"
+            onClick={handleTriggerLater}
+            title="Remind me later (30m)"
+            className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 p-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 transition-all cursor-pointer z-30"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════
+            LATE-NIGHT WARNING CONFIRMATION (>= 11:30 PM Edge Case)
+           ═══════════════════════════════════════════════════════════════ */}
+        {showLateNightWarning ? (
+          <div className="text-center py-4 relative z-10 animate-in fade-in zoom-in-95 duration-200">
+            {/* Warning Icon with Pulse */}
+            <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shadow-[0_0_25px_rgba(245,158,11,0.25)] animate-pulse">
+              <AlertTriangle className="w-7 h-7 text-amber-400" />
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2">
+              <span>Midnight Streak Risk</span>
+            </div>
+
+            <h2 className="text-xl font-black text-zinc-100 tracking-tight mb-2">
+              Streak May Decay at Midnight!
+            </h2>
+
+            <p className="text-zinc-350 text-xs font-medium leading-relaxed mb-6 max-w-sm mx-auto">
+              It is past <span className="text-amber-400 font-bold">11:30 PM</span> ({getMinutesUntilMidnight()} minutes until midnight). If you postpone now, your next reminder will arrive <span className="text-rose-400 font-bold">after midnight</span>, causing you to miss today&apos;s check-in and potentially break your streak!
+            </p>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-2.5">
+              <button
+                type="button"
+                onClick={handleTriggerYes}
+                className="w-full bg-gradient-to-r from-neon-green via-[#00e077] to-teal-400 text-[#060a0e] font-extrabold py-2.5 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/15 cursor-pointer"
+              >
+                <Check className="w-4 h-4 stroke-[3.5]" />
+                <span>Log Workout Now</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleTriggerNo}
+                className="w-full bg-zinc-900/80 hover:bg-sky-500/15 hover:text-sky-300 text-zinc-300 font-bold py-2.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 transition-all duration-200 border border-zinc-800 hover:border-sky-500/40 cursor-pointer"
+              >
+                <Moon className="w-3.5 h-3.5 text-sky-400" />
+                <span>Log Rest Day (Protect Streak)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmPostponeAnyway}
+                className="w-full py-2 text-zinc-500 hover:text-zinc-400 text-[11px] font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer mt-1"
+              >
+                <Clock className="w-3 h-3" />
+                <span>Postpone Anyway (Snooze 30m)</span>
+              </button>
+            </div>
+          </div>
+        ) : !answeredYes ? (
+          /* ═══════════════════════════════════════════════════════════════
+              STEP 1: Did you hit the gym today? (Initial Modal State)
+             ═══════════════════════════════════════════════════════════════ */
           <div className="text-center py-4 relative z-10">
             {/* Mascot Asking with anime bounce and interactive aura */}
             <div className="relative w-24 h-24 mx-auto mb-3 group">
@@ -389,12 +483,20 @@ export default function DailyCheckInModal({
             <h2 className="text-2xl font-black text-zinc-100 tracking-tight mb-1.5">
               Did you hit the gym today?
             </h2>
-            <p className="text-zinc-400 text-xs italic mb-6 max-w-xs mx-auto">
+            <p className="text-zinc-400 text-xs italic mb-4 max-w-xs mx-auto">
               &ldquo;{questionMascot.questionQuote}&rdquo;
             </p>
 
+            {/* Late Night Impending Midnight Banner */}
+            {isLateNightStreakRisk() && (
+              <div className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 text-[11px] font-bold mb-3.5 animate-pulse max-w-xs mx-auto">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span>Past 11:30 PM — Midnight deadline approaching!</span>
+              </div>
+            )}
+
             {/* Action Buttons with Anime Hype Triggers */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3.5">
               <button
                 type="button"
                 onClick={handleTriggerYes}
@@ -416,6 +518,16 @@ export default function DailyCheckInModal({
                 <span>Rest Day</span>
               </button>
             </div>
+
+            {/* Remind Me Later Snooze Button */}
+            <button
+              type="button"
+              onClick={handleTriggerLater}
+              className="w-full mt-3 py-2.5 px-4 rounded-2xl bg-zinc-900/70 hover:bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 text-xs font-bold transition-all duration-200 border border-zinc-800/80 hover:border-zinc-700 flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
+            >
+              <Clock className="w-3.5 h-3.5 text-zinc-400 group-hover:text-amber-400 transition-colors" />
+              <span>Remind Me Later (30m)</span>
+            </button>
           </div>
         ) : (
           /* ═══════════════════════════════════════════════════════════════
