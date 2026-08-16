@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { AnimePower } from '@/assets/anime';
 import { PowerScoreBreakdown } from '@/lib/scientific-power';
 import { getPowerColorTheme, useTieredBarAnimation } from './power-chart-utils';
+import CharacterPowerParticles from './CharacterPowerParticles';
 import { Sparkles, Trophy, Zap, X, Target, Timer, Puzzle, Flame } from 'lucide-react';
 
 interface PowerLevelCelebrationModalProps {
@@ -24,7 +25,7 @@ export default function PowerLevelCelebrationModal({
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { currentScore, continuousScore, currentCharacter, isCompleted, tierJustChanged } = useTieredBarAnimation({
+  const { currentScore, continuousScore, currentCharacter, isCompleted, isAnimating, tierJustChanged } = useTieredBarAnimation({
     targetScore,
     inView: isOpen,
     delay: 200,
@@ -55,7 +56,7 @@ export default function PowerLevelCelebrationModal({
   if (!isOpen) return null;
 
   const theme = getPowerColorTheme(currentScore, true);
-  const heightPercent = Math.max(8, continuousScore);
+  const heightPercent = continuousScore;
 
   return (
     <div
@@ -108,6 +109,13 @@ export default function PowerLevelCelebrationModal({
           {/* Character Avatar Box */}
           <div className="flex flex-col items-center gap-2">
             <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center">
+              {/* Dynamic Glowing Ki Particles during calibration */}
+              <CharacterPowerParticles
+                isAnimating={isAnimating}
+                score={currentScore}
+                size="lg"
+              />
+
               {/* Glow behind character */}
               <div
                 className={`absolute inset-0 rounded-full blur-xl transition-all duration-500 ${
@@ -164,12 +172,12 @@ export default function PowerLevelCelebrationModal({
 
             {/* Bar Container */}
             <div
-              className={`w-14 bg-zinc-950/90 rounded-xl overflow-hidden flex flex-col justify-end h-32 p-1 border transition-all duration-300 relative shadow-inner ${theme.container}`}
+              className={`w-14 bg-zinc-950/90 rounded-xl overflow-hidden flex flex-col justify-end h-32 p-1 border transition-colors duration-300 relative shadow-inner ${theme.container}`}
             >
               {/* Bar Glow */}
               <div
                 style={{ height: `${heightPercent}%` }}
-                className={`w-full rounded-lg transition-all duration-150 relative overflow-hidden ${theme.bar}`}
+                className={`w-full rounded-lg relative overflow-hidden ${theme.bar}`}
               >
                 {/* Shimmer Effect inside the rising bar */}
                 <div className="absolute inset-0 bg-gradient-to-t from-white/0 via-white/25 to-white/0 animate-pulse" />

@@ -26,7 +26,7 @@ export default function FilterBar({
   const uniqueLabels = new Set<string>(['All']);
 
   planCategories.forEach((cat) => {
-    if (!uniqueLabels.has(cat)) {
+    if (cat.toLowerCase() !== 'rest' && !uniqueLabels.has(cat)) {
       displayFilterItems.push(cat);
       uniqueLabels.add(cat);
     }

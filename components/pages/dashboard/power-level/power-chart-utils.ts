@@ -78,6 +78,55 @@ export const getPowerColorTheme = (score: number, isCurrent: boolean) => {
   };
 };
 
+export const getTierParticleColors = (score: number) => {
+  if (score < 35) {
+    return {
+      primary: '#22d3ee',
+      secondary: '#38bdf8',
+      accent: '#a5f3fc',
+      glow: 'rgba(34, 211, 238, 0.8)',
+    };
+  }
+  if (score < 55) {
+    return {
+      primary: '#34d399',
+      secondary: '#2dd4bf',
+      accent: '#6ee7b7',
+      glow: 'rgba(52, 211, 153, 0.8)',
+    };
+  }
+  if (score < 72) {
+    return {
+      primary: '#818cf8',
+      secondary: '#a78bfa',
+      accent: '#c7d2fe',
+      glow: 'rgba(129, 140, 248, 0.8)',
+    };
+  }
+  if (score < 88) {
+    return {
+      primary: '#c084fc',
+      secondary: '#e879f9',
+      accent: '#f5d0fe',
+      glow: 'rgba(192, 132, 252, 0.8)',
+    };
+  }
+  if (score < 97) {
+    return {
+      primary: '#f43f5e',
+      secondary: '#fb7185',
+      accent: '#fecdd3',
+      glow: 'rgba(244, 63, 94, 0.8)',
+    };
+  }
+  return {
+    primary: '#f59e0b',
+    secondary: '#fbbf24',
+    accent: '#fef08a',
+    glow: 'rgba(245, 158, 11, 0.9)',
+  };
+};
+
 export function useInView(threshold: number = 0.15) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = React.useState(false);
@@ -124,6 +173,7 @@ export function useTieredBarAnimation({
   const [currentScore, setCurrentScore] = React.useState<number>(0);
   const [continuousScore, setContinuousScore] = React.useState<number>(0);
   const [isCompleted, setIsCompleted] = React.useState<boolean>(false);
+  const [isAnimating, setIsAnimating] = React.useState<boolean>(false);
   const [tierJustChanged, setTierJustChanged] = React.useState<boolean>(false);
   const lastTierIdRef = React.useRef<string>('aqua');
 
@@ -154,6 +204,7 @@ export function useTieredBarAnimation({
       setCurrentScore(0);
       setContinuousScore(0);
       setIsCompleted(false);
+      setIsAnimating(false);
       lastTierIdRef.current = 'aqua';
       return;
     }
@@ -162,6 +213,7 @@ export function useTieredBarAnimation({
       setCurrentScore(0);
       setContinuousScore(0);
       setIsCompleted(true);
+      setIsAnimating(false);
       return;
     }
 
@@ -183,7 +235,13 @@ export function useTieredBarAnimation({
     let animFrame: number;
     let timeoutId: NodeJS.Timeout;
 
+    // Reset strictly to 0 before starting
+    setCurrentScore(0);
+    setContinuousScore(0);
+    setIsCompleted(false);
+
     timeoutId = setTimeout(() => {
+      setIsAnimating(true);
       const startTime = performance.now();
 
       const animate = (currentTime: number) => {
@@ -193,6 +251,7 @@ export function useTieredBarAnimation({
           setCurrentScore(targetScore);
           setContinuousScore(targetScore);
           setIsCompleted(true);
+          setIsAnimating(false);
           return;
         }
 
@@ -224,6 +283,7 @@ export function useTieredBarAnimation({
     return () => {
       clearTimeout(timeoutId);
       cancelAnimationFrame(animFrame);
+      setIsAnimating(false);
     };
   }, [inView, targetScore, delay, stepDuration, sortedTiers]);
 
@@ -232,6 +292,7 @@ export function useTieredBarAnimation({
     continuousScore,
     currentCharacter,
     isCompleted,
+    isAnimating,
     tierJustChanged,
   };
 }

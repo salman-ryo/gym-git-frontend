@@ -225,7 +225,7 @@ export default function WorkoutLogForm({
           Select Protocol:
         </label>
         <div className="grid grid-cols-3 gap-2 max-h-36 overflow-y-auto pr-1">
-          {categories.map((type) => {
+          {Array.from(new Set(categories.filter((c) => c.toLowerCase() !== 'rest'))).map((type) => {
             const isSelected = workoutType === type;
             const typeTheme = getThemeForWorkout(type);
 

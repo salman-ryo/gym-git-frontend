@@ -1,11 +1,11 @@
 'use client';
 
 import { PREBUILT_PLANS, WeeklyPlan } from '@/lib/types';
-import React, { useState } from 'react';
-import { Settings2, X, Dumbbell } from 'lucide-react';
-import PrebuiltPlanGrid from './weekly-plan/PrebuiltPlanGrid';
-import CustomPlanEditor from './weekly-plan/CustomPlanEditor';
+import React, { useState, useEffect } from 'react';
+import { X, Layers, Calendar, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import PlanFrequencyStep from './weekly-plan/PlanFrequencyStep';
+import DayScheduleStep from './weekly-plan/DayScheduleStep';
 
 interface WeeklyPlanModalProps {
   currentPlan?: WeeklyPlan;
@@ -15,6 +15,21 @@ interface WeeklyPlanModalProps {
   preventClose?: boolean;
 }
 
+// Generate default 7-day schedule for a given frequency
+const getDefaultScheduleForDays = (days: number): string[] => {
+  switch (days) {
+    case 3:
+      return ['Full Body', 'Rest', 'Cardio', 'Rest', 'Mobility', 'Rest', 'Rest'];
+    case 5:
+      return ['Push', 'Pull', 'Legs', 'Core', 'Cardio', 'Rest', 'Rest'];
+    case 6:
+      return ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs', 'Rest'];
+    case 4:
+    default:
+      return ['Push', 'Pull', 'Legs', 'Rest', 'Cardio', 'Rest', 'Rest'];
+  }
+};
+
 export default function WeeklyPlanModal({
   currentPlan,
   isOpen,
@@ -22,61 +37,130 @@ export default function WeeklyPlanModal({
   onSavePlan,
   preventClose = false,
 }: WeeklyPlanModalProps) {
-  const isCustomActive = currentPlan?.id ? !PREBUILT_PLANS.some((p) => p.id === currentPlan.id) : false;
+  const [step, setStep] = useState<1 | 2>(1);
+
+  const isCustomActive = currentPlan?.id
+    ? !PREBUILT_PLANS.some((p) => p.id === currentPlan.id)
+    : false;
+
   const [selectedPlanId, setSelectedPlanId] = useState<string>(
     currentPlan?.id ? (isCustomActive ? 'custom-plan' : currentPlan.id) : PREBUILT_PLANS[0].id
   );
-  const [customCategories, setCustomCategories] = useState<string[]>(
-    currentPlan?.categories || ['Push', 'Pull', 'Legs', 'Cardio', 'Core']
+
+  const [categories, setCategories] = useState<string[]>(
+    currentPlan?.categories || PREBUILT_PLANS[0].categories
   );
-  const [customName, setCustomName] = useState<string>(
-    isCustomActive ? (currentPlan?.name || 'My Custom Plan') : 'My Custom Plan'
+
+  const [planName, setPlanName] = useState<string>(
+    currentPlan?.name || PREBUILT_PLANS[0].name
   );
-  const [customDesc, setCustomDesc] = useState<string>(
-    isCustomActive ? (currentPlan?.description || '') : 'Personalized workout categories.'
+
+  const [planDesc, setPlanDesc] = useState<string>(
+    currentPlan?.description || PREBUILT_PLANS[0].description || ''
   );
-  const [newCatInput, setNewCatInput] = useState<string>('');
+
+  const [schedule, setSchedule] = useState<string[]>(() => {
+    if (currentPlan?.schedule && currentPlan.schedule.length === 7) {
+      return currentPlan.schedule;
+    }
+    const found = PREBUILT_PLANS.find((p) => p.id === currentPlan?.id);
+    if (found?.schedule) {
+      return found.schedule;
+    }
+    if (currentPlan?.categories && currentPlan.categories.length > 0) {
+      const active = currentPlan.categories.filter((c) => c.toLowerCase() !== 'rest');
+      const baseSchedule = ['Rest', 'Rest', 'Rest', 'Rest', 'Rest', 'Rest', 'Rest'];
+      active.slice(0, 6).forEach((cat, idx) => {
+        baseSchedule[idx] = cat;
+      });
+      return baseSchedule;
+    }
+    return PREBUILT_PLANS[0].schedule || getDefaultScheduleForDays(4);
+  });
+
   const [saving, setSaving] = useState<boolean>(false);
+
+  // Sync state whenever currentPlan changes or modal opens
+  useEffect(() => {
+    if (isOpen && currentPlan) {
+      const isCustom = !PREBUILT_PLANS.some((p) => p.id === currentPlan.id);
+      setSelectedPlanId(isCustom ? 'custom-plan' : currentPlan.id);
+      setPlanName(currentPlan.name || 'My Weekly Split');
+      setPlanDesc(currentPlan.description || '');
+      setCategories(currentPlan.categories || PREBUILT_PLANS[0].categories);
+
+      if (currentPlan.schedule && currentPlan.schedule.length === 7) {
+        setSchedule(currentPlan.schedule);
+      } else {
+        const found = PREBUILT_PLANS.find((p) => p.id === currentPlan.id);
+        if (found?.schedule) {
+          setSchedule(found.schedule);
+        } else {
+          setSchedule(getDefaultScheduleForDays(4));
+        }
+      }
+    }
+  }, [isOpen, currentPlan]);
 
   if (!isOpen) return null;
 
+  // Handle Preset Split Selection in Step 1
   const handleSelectPlan = (plan: WeeklyPlan) => {
     setSelectedPlanId(plan.id);
-    if (plan.id !== 'custom-plan') {
-      setCustomCategories(plan.categories);
+    setPlanName(plan.name);
+    setPlanDesc(plan.description || '');
+    setCategories(plan.categories);
+    if (plan.schedule && plan.schedule.length === 7) {
+      setSchedule(plan.schedule);
+    } else {
+      setSchedule(getDefaultScheduleForDays(plan.daysPerWeek || 4));
     }
   };
 
-  const handleAddCategory = () => {
-    if (!newCatInput.trim()) return;
-    const cleanName = newCatInput.trim();
-    if (!customCategories.includes(cleanName)) {
-      setCustomCategories([...customCategories, cleanName]);
-    }
-    setNewCatInput('');
+  // Handle Custom Split Creation in Step 1
+  const handleSelectCustom = (daysCount: number) => {
     setSelectedPlanId('custom-plan');
+    setPlanName(`My Custom ${daysCount}-Day Split`);
+    setPlanDesc(`Personalized ${daysCount}-day training split.`);
+    const newSched = getDefaultScheduleForDays(daysCount);
+    setSchedule(newSched);
+
+    // Initial categories: unique active days from schedule + standard categories
+    const initialCats = Array.from(
+      new Set([...newSched.filter((c) => c.toLowerCase() !== 'rest'), 'Upper Body', 'Lower Body', 'Core', 'Cardio', 'Custom'])
+    );
+    setCategories(initialCats);
+    setStep(2);
   };
 
-  const handleRemoveCategory = (cat: string) => {
-    setCustomCategories(customCategories.filter((c) => c !== cat));
-    setSelectedPlanId('custom-plan');
-  };
-
+  // Handle Saving the Final Plan
   const handleSave = async () => {
     setSaving(true);
     try {
-      let finalPlan: WeeklyPlan;
-      if (selectedPlanId === 'custom-plan') {
-        finalPlan = {
-          id: 'custom-plan',
-          name: customName.trim() || 'My Custom Weekly Plan',
-          description: customDesc.trim() || 'Personalized workout categories.',
-          categories: customCategories.length > 0 ? customCategories : ['Push', 'Pull', 'Legs', 'Custom'],
-        };
-      } else {
-        const found = PREBUILT_PLANS.find((p) => p.id === selectedPlanId);
-        finalPlan = found || PREBUILT_PLANS[0];
-      }
+      const activeDays = schedule.filter((c) => c.toLowerCase() !== 'rest');
+      const activeCategories = Array.from(
+        new Set([
+          ...activeDays,
+          ...categories.filter((c) => c.toLowerCase() !== 'rest'),
+        ])
+      );
+
+      // Check if user changed anything from the original prebuilt plan
+      const originalPreset = PREBUILT_PLANS.find((p) => p.id === selectedPlanId);
+      const isModified =
+        !originalPreset ||
+        originalPreset.name !== planName ||
+        JSON.stringify(originalPreset.schedule) !== JSON.stringify(schedule);
+
+      const finalPlan: WeeklyPlan = {
+        id: isModified ? 'custom-plan' : selectedPlanId,
+        name: planName.trim() || 'My Weekly Workout Plan',
+        description: planDesc.trim() || 'Personalized workout categories.',
+        categories: activeCategories.length > 0 ? activeCategories : ['Push', 'Pull', 'Legs', 'Cardio'],
+        schedule: schedule,
+        daysPerWeek: activeDays.length,
+      };
+
       await onSavePlan(finalPlan);
       onClose();
     } finally {
@@ -86,7 +170,6 @@ export default function WeeklyPlanModal({
 
   return (
     <>
-      {/* Custom Scrollbar Styles to make it look professional on Webkit browsers */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
@@ -95,27 +178,26 @@ export default function WeeklyPlanModal({
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #3f3f46; /* zinc-700 */
+          background-color: #3f3f46;
           border-radius: 20px;
-          border: 2px solid #18181b; /* zinc-900 background match for visual padding */
+          border: 2px solid #18181b;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: #52525b; /* zinc-600 */
+          background-color: #52525b;
         }
       `}</style>
 
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/85 backdrop-blur-xl animate-in fade-in duration-200"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-zinc-950/85 backdrop-blur-xl animate-in fade-in duration-200"
         onClick={() => {
           if (!preventClose) onClose();
         }}
       >
-        {/* OUTER CONTAINER: Handles the cyberpunk shape, borders, and glow */}
         <div
-          className="relative w-full max-w-xl bg-[#080c10]/95 border border-[rgba(0,255,136,0.2)] rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col max-h-[90vh] overflow-hidden animate-in scale-in-95 duration-200"
+          className="relative w-full max-w-3xl bg-[#080c10]/95 border border-[rgba(0,255,136,0.2)] rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col max-h-[90vh] overflow-hidden animate-in scale-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* FIXED CLOSE BUTTON: Stays at the top right while content scrolls */}
+          {/* Close button */}
           {!preventClose && (
             <button
               type="button"
@@ -126,67 +208,84 @@ export default function WeeklyPlanModal({
             </button>
           )}
 
-          {/* INNER CONTAINER: Handles the padding and the actual scrolling */}
-          <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
-
+          <div className="flex-1 overflow-y-auto p-5 sm:p-8 custom-scrollbar">
             {/* Modal Header */}
             <div className="flex items-center gap-3.5 mb-6 pb-4 border-b border-zinc-800/80">
-              <Image src={"/images/icons/week.png"} alt='Plan workout' width={100} height={100} unoptimized className="size-12" />
+              <Image
+                src="/images/icons/week.png"
+                alt="Plan workout"
+                width={100}
+                height={100}
+                unoptimized
+                className="size-12"
+              />
               <div className="pr-8">
                 <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">
-                  {preventClose ? 'Setup Your Workout Plan' : 'Weekly Workout Plan & Filters'}
+                  {preventClose ? 'Setup Your Weekly Workout Split' : 'Weekly Plan & Day Configuration'}
                 </h3>
                 <p className="text-xs text-zinc-400 font-medium mt-0.5">
                   {preventClose
-                    ? 'To get started, choose an existing split or create your own custom workout categories.'
-                    : 'Customize your split. Past workout data remains safe & intact!'}
+                    ? 'Select your workout frequency, choose a split template, and assign your 7-day schedule.'
+                    : 'Customize your workout split & assign days. Past workout history remains safe & intact!'}
                 </p>
               </div>
             </div>
 
-            {/* Workout Plan Split Options */}
-            <div className="space-y-3 mb-6">
-              <label className="block text-[11px] font-black text-zinc-300 uppercase tracking-widest">
-                Choose a Workout Split:
-              </label>
+            {/* Step Progress Tracker */}
+            <div className="grid grid-cols-2 gap-2 mb-6">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  step === 1
+                    ? 'bg-neon-green/10 border-neon-green/40 text-neon-green shadow-[0_0_12px_rgba(0,255,136,0.15)]'
+                    : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>1. Choose Split &amp; Frequency</span>
+              </button>
 
-              <PrebuiltPlanGrid
-                selectedPlanId={selectedPlanId}
-                setSelectedPlanId={setSelectedPlanId}
-                handleSelectPlan={handleSelectPlan}
-                customCategories={customCategories}
-              />
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  step === 2
+                    ? 'bg-neon-cyan/10 border-neon-cyan/40 text-neon-cyan shadow-[0_0_12px_rgba(34,211,238,0.15)]'
+                    : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>2. Assign &amp; Customize Days</span>
+              </button>
             </div>
 
-            <CustomPlanEditor
-              selectedPlanId={selectedPlanId}
-              customName={customName}
-              setCustomName={setCustomName}
-              customDesc={customDesc}
-              setCustomDesc={setCustomDesc}
-              customCategories={customCategories}
-              handleRemoveCategory={handleRemoveCategory}
-              newCatInput={newCatInput}
-              setNewCatInput={setNewCatInput}
-              handleAddCategory={handleAddCategory}
-            />
+            {/* Step 1: Frequency & Template Selector */}
+            {step === 1 && (
+              <PlanFrequencyStep
+                selectedPlanId={selectedPlanId}
+                onSelectPlan={handleSelectPlan}
+                onSelectCustom={handleSelectCustom}
+                onNext={() => setStep(2)}
+              />
+            )}
 
-            {/* Modal Save Action */}
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving || (selectedPlanId === 'custom-plan' && !customName.trim())}
-              className="w-full bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan hover:shadow-[0_0_25px_rgba(0,255,136,0.4)] text-[#060a0e] font-black py-3.5 px-4 rounded-2xl text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 cursor-pointer"
-            >
-              {saving ? (
-                <div className="w-5 h-5 border-2 border-[#060a0e] border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <Dumbbell className="w-4 h-4 text-[#060a0e]" />
-                  <span className="tracking-wide uppercase text-xs font-black">Apply Weekly Plan</span>
-                </>
-              )}
-            </button>
+            {/* Step 2: Day Assignment & Schedule Builder */}
+            {step === 2 && (
+              <DayScheduleStep
+                schedule={schedule}
+                setSchedule={setSchedule}
+                categories={categories}
+                setCategories={setCategories}
+                planName={planName}
+                setPlanName={setPlanName}
+                planDesc={planDesc}
+                setPlanDesc={setPlanDesc}
+                onBack={() => setStep(1)}
+                onSave={handleSave}
+                saving={saving}
+              />
+            )}
           </div>
         </div>
       </div>

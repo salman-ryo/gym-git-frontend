@@ -7,6 +7,8 @@ export interface WeeklyPlan {
   name: string;
   description?: string;
   categories: string[]; // e.g. ['Push', 'Pull', 'Legs', 'Core', 'Cardio']
+  daysPerWeek?: number; // e.g. 3, 4, 5, 6
+  schedule?: string[]; // 7-day schedule Mon-Sun: e.g. ['Push', 'Pull', 'Legs', 'Rest', 'Cardio', 'Rest', 'Rest']
 }
 
 export interface GymLog {
@@ -244,25 +246,49 @@ export const PREBUILT_PLANS: WeeklyPlan[] = [
     id: 'ppl-standard',
     name: 'Push / Pull / Legs (PPL)',
     description: 'Classic 4-day active split focusing on movement patterns.',
+    daysPerWeek: 4,
+    schedule: ['Push', 'Pull', 'Legs', 'Rest', 'Cardio', 'Rest', 'Rest'],
     categories: ['Push', 'Pull', 'Legs', 'Cardio', 'Custom'],
-  },
-  {
-    id: 'ppl-core',
-    name: 'PPL + Core & Cardio',
-    description: 'Comprehensive 5-day athletic split.',
-    categories: ['Push', 'Pull', 'Legs', 'Core', 'Cardio', 'Custom'],
   },
   {
     id: 'upper-lower',
     name: 'Upper / Lower Split',
-    description: '4-day hypertrophy split split into upper & lower body.',
+    description: '4-day hypertrophy split divided into upper & lower body.',
+    daysPerWeek: 4,
+    schedule: ['Upper Body', 'Lower Body', 'Rest', 'Upper Body', 'Lower Body', 'Rest', 'Rest'],
     categories: ['Upper Body', 'Lower Body', 'Core & Cardio', 'Custom'],
   },
   {
     id: 'full-body',
     name: 'Full Body & Functional',
     description: '3-day full body strength & conditioning plan.',
+    daysPerWeek: 3,
+    schedule: ['Full Body', 'Rest', 'Cardio', 'Rest', 'Mobility', 'Rest', 'Rest'],
     categories: ['Full Body', 'Cardio', 'Mobility', 'Custom'],
+  },
+  {
+    id: 'ppl-core',
+    name: 'PPL + Core & Cardio',
+    description: 'Comprehensive 5-day athletic split.',
+    daysPerWeek: 5,
+    schedule: ['Push', 'Pull', 'Legs', 'Core', 'Cardio', 'Rest', 'Rest'],
+    categories: ['Push', 'Pull', 'Legs', 'Core', 'Cardio', 'Custom'],
+  },
+  {
+    id: 'bro-split',
+    name: 'Classic Bodypart Split',
+    description: '5-day muscle isolation targeting one group per day.',
+    daysPerWeek: 5,
+    schedule: ['Chest', 'Back', 'Shoulders', 'Legs', 'Arms', 'Rest', 'Rest'],
+    categories: ['Chest', 'Back', 'Shoulders', 'Legs', 'Arms', 'Custom'],
+  },
+  {
+    id: 'ppl',
+    name: '6-Day Push / Pull / Legs (PPL x2)',
+    description: 'High frequency 6-day split with 1 active rest token.',
+    daysPerWeek: 6,
+    schedule: ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs', 'Rest'],
+    categories: ['Push', 'Pull', 'Legs', 'Custom'],
   },
 ];
 

@@ -4,6 +4,7 @@ import React from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AnimeTierCard from '../AnimeTierCard';
 import { MonthlyPowerStat, getPowerColorTheme, useInView, useTieredBarAnimation } from './power-chart-utils';
+import CharacterPowerParticles from './CharacterPowerParticles';
 
 interface MonthlyProgressProps {
   monthlyPowerStats: MonthlyPowerStat[];
@@ -19,14 +20,14 @@ function MonthlyBarColumn({
   inView: boolean;
 }) {
   const targetScore = m.scoreData.totalScore;
-  const { currentScore, continuousScore, currentCharacter, tierJustChanged } = useTieredBarAnimation({
+  const { currentScore, continuousScore, currentCharacter, isAnimating, tierJustChanged } = useTieredBarAnimation({
     targetScore,
     inView,
     delay: idx * 40,
     stepDuration: 350,
   });
 
-  const heightPercent = Math.max(6, continuousScore);
+  const heightPercent = continuousScore;
   const compositeKey = `${m.year}-${m.monthIndex}-${idx}`;
   const theme = getPowerColorTheme(currentScore, m.isCurrentMonth);
 
@@ -40,17 +41,24 @@ function MonthlyBarColumn({
                 style={{
                   bottom: `calc(${heightPercent}% * 0.76 + 16px)`,
                 }}
-                className={`absolute w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center overflow-hidden z-20 pointer-events-none transition-all duration-200 ${
+                className={`absolute w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center overflow-visible z-20 pointer-events-none transition-transform duration-200 ${
                   tierJustChanged
                     ? 'scale-135 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]'
                     : 'group-hover:scale-125'
                 }`}
               >
+                {/* Dynamic Ki Particles during animation */}
+                <CharacterPowerParticles
+                  isAnimating={isAnimating}
+                  score={currentScore}
+                  size="sm"
+                />
+
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={currentCharacter.image}
                   alt={currentCharacter.name}
-                  className="w-full h-full object-contain group-hover:border-white/50 transition-all duration-300"
+                  className="w-full h-full object-contain group-hover:border-white/50 transition-all duration-300 relative z-10"
                 />
               </div>
             )}
@@ -59,13 +67,13 @@ function MonthlyBarColumn({
             </span>
 
             <div
-              className={`w-full max-w-[36px] bg-zinc-900/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-36 p-0.5 border transition-all duration-200 relative ${theme.container}`}
+              className={`w-full max-w-[36px] bg-zinc-900/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-36 p-0.5 border transition-colors duration-200 relative ${theme.container}`}
             >
               <div
                 style={{
                   height: `${heightPercent}%`,
                 }}
-                className={`w-full rounded-t transition-all duration-150 ${theme.bar} ${
+                className={`w-full rounded-t ${theme.bar} ${
                   m.isCurrentMonth && currentScore > 0 ? 'relative overflow-hidden' : ''
                 }`}
               >
