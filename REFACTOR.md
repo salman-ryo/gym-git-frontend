@@ -159,19 +159,19 @@ frontend/
 ### Phase 4: Landing Page, Authentication & CSS Harmonization
 *Goal: Fix landing page React effect warnings, unify animations, and clean up auth pages.*
 
-- [ ] **4.1 Fix `HeroSection.tsx` Typewriter & Effect Warning**:
+- [x] **4.1 Fix `HeroSection.tsx` Typewriter & Effect Warning**:
   - Replace manual `setTimeout` state cascading with the new `useTypewriter` hook.
   - Remove unused icon imports (`TrendingUp`, `Activity`).
-- [ ] **4.2 Harmonize Landing Page Animated Counters**:
+- [x] **4.2 Harmonize Landing Page Animated Counters**:
   - In `WhyGymGitSection.tsx`, replace inline `useCounter` with `useAnimatedCounter`.
   - Clean up unused icon imports (`Flame`, `BarChart3`, `Users`, etc.).
-- [ ] **4.3 Clean up Unescaped Entities & Lint Warnings**:
+- [x] **4.3 Clean up Unescaped Entities & Lint Warnings**:
   - `TestimonialsSection.tsx`: Fix unescaped quotes in JSX.
   - `MobileFeatureSection.tsx`: Remove unused imports.
-- [ ] **4.4 CSS Consolidation**:
+- [x] **4.4 CSS Consolidation**:
   - Centralize repeated keyframes (`badge-pulse`, `shimmer-effect`, `particle-float`) in `app/globals.css`.
   - Remove redundant inline `<style>` tags across components.
-- [ ] **4.5 Refactor `app/login/page.tsx`**:
+- [x] **4.5 Refactor `app/login/page.tsx`**:
   - Extract form state/handlers or clean up error states and typed error catching.
 
 ---

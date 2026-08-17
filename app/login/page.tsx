@@ -14,7 +14,6 @@ import {
   EyeOff,
   ShieldCheck,
   ArrowLeft,
-  Sparkles,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -59,8 +58,8 @@ export default function LoginPage() {
         await login(email, password);
       }
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err?.message || `${mode === 'signup' ? 'Sign up' : 'Login'} failed. Please try again.`);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : `${mode === 'signup' ? 'Sign up' : 'Login'} failed. Please try again.`);
     } finally {
       setSubmitting(false);
     }
@@ -71,8 +70,8 @@ export default function LoginPage() {
     setGoogleSubmitting(true);
     try {
       await loginWithGoogle();
-    } catch (err: any) {
-      setError(err?.message || 'Google Sign-In failed.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Google Sign-In failed.');
       setGoogleSubmitting(false);
     }
   };

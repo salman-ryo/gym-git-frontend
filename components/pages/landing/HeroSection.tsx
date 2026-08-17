@@ -1,10 +1,11 @@
 'use client';
 
 import './HeroSection.css';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Flame, Zap, TrendingUp, Activity } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { useTypewriter } from '@/hooks/useTypewriter';
 
 /* ─────────────────────────────────────────────
    Sub-components
@@ -24,38 +25,16 @@ function HeroBadge() {
 const ROTATING_WORDS = ['a developer.', 'an engineer.', 'a lifter.', 'an athlete.'];
 
 function RotatingWord() {
-  const [index, setIndex] = useState(0);
-  const [displayed, setDisplayed] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const currentWord = ROTATING_WORDS[index];
-    let timeout: ReturnType<typeof setTimeout>;
-
-    if (!isDeleting && displayed.length < currentWord.length) {
-      // Typing forward
-      timeout = setTimeout(() => {
-        setDisplayed(currentWord.slice(0, displayed.length + 1));
-      }, 80);
-    } else if (!isDeleting && displayed.length === currentWord.length) {
-      // Pause before deleting
-      timeout = setTimeout(() => setIsDeleting(true), 1800);
-    } else if (isDeleting && displayed.length > 0) {
-      // Deleting
-      timeout = setTimeout(() => {
-        setDisplayed(currentWord.slice(0, displayed.length - 1));
-      }, 45);
-    } else if (isDeleting && displayed.length === 0) {
-      setIsDeleting(false);
-      setIndex((index + 1) % ROTATING_WORDS.length);
-    }
-
-    return () => clearTimeout(timeout);
-  }, [displayed, isDeleting, index]);
+  const { displayedText } = useTypewriter({
+    words: ROTATING_WORDS,
+    typingSpeed: 80,
+    deletingSpeed: 45,
+    pauseDuration: 1800,
+  });
 
   return (
     <span className="hero__rotating-word" aria-live="polite">
-      <span className="text-cyan-400">{displayed}</span>
+      <span className="text-cyan-400">{displayedText}</span>
       <span className="text-teal-400" aria-hidden="true">|</span>
     </span>
   );

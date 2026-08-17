@@ -3,7 +3,6 @@
 import './TestimonialsSection.css';
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 
 /* ─────────────────────────────────────────────
    Data
@@ -21,7 +20,7 @@ interface Testimonial {
 const TESTIMONIALS: Testimonial[] = [
   {
     id: '1',
-    quote: "Gym-Git changed the way I track my workouts. The streaks keep me accountable every single day.",
+    quote: 'Gym-Git changed the way I track my workouts. The streaks keep me accountable every single day.',
     name: 'Aryan Sharma',
     handle: '@aryan_lifts',
     role: 'Powerlifter',
@@ -71,12 +70,14 @@ function SectionHeadline() {
 
 function TestimonialCard({ quote, name, handle, role, avatarInitials, avatarColor }: Testimonial) {
   return (
-    <article className="relative rounded-2xl border border-zinc-800/50 bg-glass-bg backdrop-blur-md overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-neon-green/15 hover:bg-glass-bg-scrolled hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] hover:-translate-y-1 will-change-transform p-8 flex flex-col justify-between select-none relative group">
+    <article className="relative rounded-2xl border border-zinc-800/50 bg-glass-bg backdrop-blur-md overflow-hidden transition-all duration-350 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-neon-green/15 hover:bg-glass-bg-scrolled hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] hover:-translate-y-1 will-change-transform p-8 flex flex-col justify-between select-none group">
       {/* Quote Icon watermark */}
-      <div className="absolute top-2 right-6 text-zinc-800 text-[6rem] leading-none font-serif opacity-20 pointer-events-none select-none" aria-hidden="true">"</div>
-      
+      <div className="absolute top-2 right-6 text-zinc-800 text-[6rem] leading-none font-serif opacity-20 pointer-events-none select-none" aria-hidden="true">
+        &ldquo;
+      </div>
+
       <p className="text-[14.5px] leading-relaxed text-[#e4e4e7] relative z-10 mb-6 italic">{quote}</p>
-      
+
       <div className="flex items-center gap-3 mt-auto relative z-10">
         <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: avatarColor }}>
           {avatarInitials}
@@ -113,9 +114,9 @@ export default function TestimonialsSection() {
       </div>
 
       <div className="max-w-nav-max-width mx-auto px-6 lg:px-10 relative z-10 flex items-center gap-6">
-        
         {/* Left Arrow */}
-        <button 
+        <button
+          type="button"
           className="hidden lg:flex items-center justify-center w-12 h-12 rounded-full bg-[rgba(24,24,27,0.5)] border border-[rgba(63,63,70,0.5)] text-[#a1a1aa] hover:text-[#fafafa] hover:bg-[rgba(39,39,42,0.6)] hover:border-[rgba(161,161,170,0.3)] transition-all cursor-pointer flex-shrink-0"
           onClick={handlePrev}
           aria-label="Previous testimonial"
@@ -131,21 +132,21 @@ export default function TestimonialsSection() {
         </div>
 
         {/* Right Arrow */}
-        <button 
+        <button
+          type="button"
           className="hidden lg:flex items-center justify-center w-12 h-12 rounded-full bg-[rgba(24,24,27,0.5)] border border-[rgba(63,63,70,0.5)] text-[#a1a1aa] hover:text-[#fafafa] hover:bg-[rgba(39,39,42,0.6)] hover:border-[rgba(161,161,170,0.3)] transition-all cursor-pointer flex-shrink-0"
           onClick={handleNext}
           aria-label="Next testimonial"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
-
       </div>
 
       {/* Pagination Dots */}
       <div className="flex items-center justify-center gap-2 mt-8 md:hidden" aria-hidden="true">
         {TESTIMONIALS.map((_, i) => (
-          <span 
-            key={i} 
+          <span
+            key={i}
             className={`w-2 h-2 rounded-full bg-zinc-700 cursor-pointer transition-all duration-300 ${i === activeIndex ? 'w-6 bg-neon-green' : ''}`}
             onClick={() => setActiveIndex(i)}
           />

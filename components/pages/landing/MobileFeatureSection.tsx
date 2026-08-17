@@ -2,7 +2,7 @@
 
 import './MobileFeatureSection.css';
 import React from 'react';
-import { CheckCircle2, ChevronRight, Dumbbell, Smartphone, ChevronLeft } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Dumbbell, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
 /* ─────────────────────────────────────────────

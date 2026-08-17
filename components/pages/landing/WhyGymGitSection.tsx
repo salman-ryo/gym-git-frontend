@@ -1,18 +1,10 @@
 'use client';
 
 import './WhyGymGitSection.css';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  Flame,
-  BarChart3,
-  ClipboardList,
-  ShieldCheck,
-  Users,
-  Dumbbell,
-  Clock,
-  CalendarCheck,
-} from 'lucide-react';
+import React, { useRef } from 'react';
 import Image from 'next/image';
+import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
+import { useInView } from '@/hooks/useInView';
 
 /* ─────────────────────────────────────────────
    Data
@@ -27,7 +19,7 @@ interface FeatureCard {
 
 const FEATURES: FeatureCard[] = [
   {
-    icon: <Image src={"/images/icons/git.png"} alt='Git tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
+    icon: <Image src="/images/icons/git.png" alt="Git tracking" width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#f59e0b',
     glowColor: 'rgba(245, 158, 11, 0.25)',
     title: 'GITHUB-STYLE STREAKS',
@@ -35,7 +27,7 @@ const FEATURES: FeatureCard[] = [
       'Streaks that actually motivate. Commit to your plan and keep the flame alive.',
   },
   {
-    icon: <Image src={"/images/icons/progress.png"} alt='Progress tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
+    icon: <Image src="/images/icons/progress.png" alt="Progress tracking" width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#8b5cf6',
     glowColor: 'rgba(139, 92, 246, 0.25)',
     title: 'DEEP PROGRESS INSIGHTS',
@@ -43,7 +35,7 @@ const FEATURES: FeatureCard[] = [
       'Visualize your volume, consistency, and performance over time.',
   },
   {
-    icon: <Image src={"/images/icons/plan.png"} alt='Plan tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
+    icon: <Image src="/images/icons/plan.png" alt="Plan tracking" width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.25)',
     title: 'PLAN & LOG SMARTER',
@@ -51,7 +43,7 @@ const FEATURES: FeatureCard[] = [
       'Structured workout plans with easy logging and auto tracking.',
   },
   {
-    icon: <Image src={"/images/icons/privacy.png"} alt='Privacy tracking' width={100} height={100} unoptimized className="size-10 md:size-12" />,
+    icon: <Image src="/images/icons/privacy.png" alt="Privacy tracking" width={100} height={100} unoptimized className="size-10 md:size-12" />,
     iconColor: '#00ff88',
     glowColor: 'rgba(0, 255, 136, 0.25)',
     title: 'PRIVACY FIRST BY DESIGN',
@@ -70,28 +62,28 @@ interface StatCounter {
 
 const STATS: StatCounter[] = [
   {
-    icon: <Image src={"/images/icons/users.png"} alt='Users' width={100} height={100} unoptimized className="size-10" />,
+    icon: <Image src="/images/icons/users.png" alt="Users" width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#f59e0b',
     value: 2457,
     suffix: '+',
     label: 'Active Lifters',
   },
   {
-    icon: <Image src={"/images/icons/workout.png"} alt='Workout' width={100} height={100} unoptimized className="size-10" />,
+    icon: <Image src="/images/icons/workout.png" alt="Workout" width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#8b5cf6',
     value: 18329,
     suffix: '+',
     label: 'Workouts Logged',
   },
   {
-    icon: <Image src={"/images/icons/time.png"} alt='Time' width={100} height={100} unoptimized className="size-10" />,
+    icon: <Image src="/images/icons/time.png" alt="Time" width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#22d3ee',
     value: 11250,
     suffix: '+',
     label: 'Hours Tracked',
   },
   {
-    icon: <Image src={"/images/icons/consistency.png"} alt='Consistency' width={100} height={100} unoptimized className="size-10" />,
+    icon: <Image src="/images/icons/consistency.png" alt="Consistency" width={100} height={100} unoptimized className="size-10" />,
     iconColor: '#00ff88',
     value: 91520,
     suffix: '+',
@@ -171,56 +163,10 @@ function WhyFeatureCard({
   );
 }
 
-/** Animated counter hook */
-function useCountUp(target: number, duration = 2000) {
-  const [count, setCount] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasStarted) {
-          setHasStarted(true);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [hasStarted]);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-
-    let frame: number;
-    const start = performance.now();
-
-    const step = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      // Ease-out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-
-      if (progress < 1) {
-        frame = requestAnimationFrame(step);
-      }
-    };
-
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [hasStarted, target, duration]);
-
-  return { count, ref };
-}
-
 /** Individual stat counter card */
 function WhyStatCard({ icon, iconColor, value, suffix, label }: StatCounter) {
-  const { count, ref } = useCountUp(value, 2200);
+  const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0.3, triggerOnce: true });
+  const count = useAnimatedCounter(value, { inView, duration: 2200 });
 
   return (
     <div
