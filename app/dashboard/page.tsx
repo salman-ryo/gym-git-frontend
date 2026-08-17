@@ -208,7 +208,7 @@ export default function DashboardPage() {
             onClose={() => state.setIsInventoryOpen(false)}
             inventoryItems={state.inventoryItems}
             onUseItem={state.handleUseInventoryItem}
-            onRequestFreeze={(tokens) => {
+            onRequestFreeze={() => {
               state.setIsInventoryOpen(false);
               state.setIsFreezeModalOpen(true);
             }}

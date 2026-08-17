@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { Dumbbell, Flame, LogOut, User as UserIcon, Package } from 'lucide-react';
+import { LogOut, User as UserIcon, Package } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -14,6 +14,7 @@ interface HeaderProps {
 }
 
 export default function Header({ currentStreak = 0, onOpenInventory, inventoryCount = 0 }: HeaderProps) {
+  void currentStreak;
   const { user, logout } = useAuth();
 
   return (

@@ -14,9 +14,9 @@ interface RawInventoryItem {
     id: string;
     name: string;
     description?: string;
-    effect_type: string;
+    effect_type: 'INSTANT_USE' | 'TIME_BASED' | string;
     duration_seconds: number;
-    rarity: string;
+    rarity: 'common' | 'rare' | 'epic' | 'legendary' | string;
     icon_slug?: string;
   };
 }
@@ -35,18 +35,22 @@ interface RawInventoryResponse {
 
 function mapRawInventoryItem(item: RawInventoryItem): UserInventoryItem {
   const rawDetails = item.item_details || item.item;
+  const effectType = (rawDetails?.effect_type === 'TIME_BASED' ? 'TIME_BASED' : 'INSTANT_USE') as 'INSTANT_USE' | 'TIME_BASED';
+  const rarity = (rawDetails?.rarity === 'rare' || rawDetails?.rarity === 'epic' || rawDetails?.rarity === 'legendary' ? rawDetails.rarity : 'common') as 'common' | 'rare' | 'epic' | 'legendary';
+  const itemId = ((rawDetails && ('item_id' in rawDetails ? rawDetails.item_id : rawDetails.id)) || item.item_id || 'XP_BOOST') as ItemCatalogItem['item_id'];
+
   return {
     item_id: item.item_id,
     quantity: item.quantity,
     item_details: {
-      item_id: (rawDetails && ('item_id' in rawDetails ? rawDetails.item_id : rawDetails.id)) || item.item_id || '',
+      item_id: itemId,
       name: rawDetails?.name || '',
-      effect_type: (rawDetails?.effect_type || 'INSTANT_USE') as any,
+      effect_type: effectType,
       duration_seconds: rawDetails?.duration_seconds || 0,
       description: rawDetails?.description || '',
-      rarity: (rawDetails?.rarity || 'common') as any,
+      rarity: rarity,
       icon: (rawDetails && ('icon' in rawDetails ? rawDetails.icon : rawDetails.icon_slug)) || '',
-    } as any,
+    },
   };
 }
 

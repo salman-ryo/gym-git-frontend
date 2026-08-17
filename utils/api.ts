@@ -1,7 +1,7 @@
 import { createClient as createBrowserClient } from '@/utils/supabase/client';
 import { env } from '@/lib/env';
 
-export interface ApiSuccessResponse<T = any> {
+export interface ApiSuccessResponse<T = unknown> {
   success: true;
   data: T;
   message?: string;
@@ -49,7 +49,7 @@ async function getAccessToken(): Promise<string | null> {
 
   try {
     const supabase = createBrowserClient();
-    
+
     // 1. Retrieve active session from shared Supabase client
     const {
       data: { session },
@@ -69,7 +69,7 @@ async function getAccessToken(): Promise<string | null> {
     }
 
     return null;
-  } catch (err) {
+  } catch (err: unknown) {
     console.warn('[API Wrapper] Failed to retrieve Supabase session token:', err);
     return null;
   }
@@ -79,7 +79,7 @@ async function getAccessToken(): Promise<string | null> {
  * Main API fetch wrapper that automatically retrieves the active Supabase token,
  * attaches the Authorization: Bearer <token> header to requests.
  */
-export async function apiFetch<T = any>(
+export async function apiFetch<T = unknown>(
   endpoint: string,
   options: ApiOptions = {}
 ): Promise<T> {
@@ -102,7 +102,7 @@ export async function apiFetch<T = any>(
       if (timezone) {
         headers.set('X-Timezone', timezone);
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn('[API Client] Failed to resolve timezone:', e);
     }
   }
@@ -111,7 +111,8 @@ export async function apiFetch<T = any>(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const { token: _, ...fetchOptions } = options;
+  const { token: _token, ...fetchOptions } = options;
+  void _token;
 
   const config: RequestInit = {
     ...fetchOptions,
@@ -122,9 +123,9 @@ export async function apiFetch<T = any>(
 
   // Handle 401 Unauthorized - log error details and throw ApiError without forcing signOut
   if (response.status === 401) {
-    let errorPayload: any = null;
+    let errorPayload: ApiErrorEnvelope | null = null;
     try {
-      errorPayload = await response.clone().json();
+      errorPayload = (await response.clone().json()) as ApiErrorEnvelope;
     } catch {
       // ignore
     }
@@ -140,9 +141,9 @@ export async function apiFetch<T = any>(
     throw new ApiError(message, code, 401, details);
   }
 
-  let json: any;
+  let json: Record<string, unknown> | null = null;
   try {
-    json = await response.json();
+    json = (await response.json()) as Record<string, unknown>;
   } catch {
     if (!response.ok) {
       throw new ApiError(
@@ -155,9 +156,9 @@ export async function apiFetch<T = any>(
   }
 
   if (!response.ok || (json && json.success === false)) {
-    const errorData = json?.error;
+    const errorData = json?.error as { code?: string; message?: string; details?: Array<{ field: string; issue: string }> } | undefined;
     const message =
-      errorData?.message || json?.message || `API request failed with status ${response.status}`;
+      errorData?.message || (json?.message as string | undefined) || `API request failed with status ${response.status}`;
     const code = errorData?.code || `HTTP_${response.status}`;
     const details = errorData?.details;
     throw new ApiError(message, code, response.status, details);
@@ -168,23 +169,23 @@ export async function apiFetch<T = any>(
 }
 
 export const api = {
-  get: <T = any>(endpoint: string, options?: ApiOptions) =>
+  get: <T = unknown>(endpoint: string, options?: ApiOptions) =>
     apiFetch<T>(endpoint, { ...options, method: 'GET' }),
 
-  post: <T = any>(endpoint: string, body?: any, options?: ApiOptions) =>
+  post: <T = unknown, B = unknown>(endpoint: string, body?: B, options?: ApiOptions) =>
     apiFetch<T>(endpoint, {
       ...options,
       method: 'POST',
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
 
-  put: <T = any>(endpoint: string, body?: any, options?: ApiOptions) =>
+  put: <T = unknown, B = unknown>(endpoint: string, body?: B, options?: ApiOptions) =>
     apiFetch<T>(endpoint, {
       ...options,
       method: 'PUT',
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
 
-  delete: <T = any>(endpoint: string, options?: ApiOptions) =>
+  delete: <T = unknown>(endpoint: string, options?: ApiOptions) =>
     apiFetch<T>(endpoint, { ...options, method: 'DELETE' }),
 };

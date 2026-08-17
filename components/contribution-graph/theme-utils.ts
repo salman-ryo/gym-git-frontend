@@ -243,6 +243,7 @@ export const getDayStyleInfo = (
   activeFilter: string = 'All',
   weeklyPlan?: WeeklyPlan
 ): DayStyleInfo => {
+  void weeklyPlan;
   if (day.isFuture) {
     return {
       tileClass: 'bg-zinc-950/40 border-zinc-800/40 opacity-40 cursor-not-allowed',

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Layers, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { PREBUILT_PLANS, WeeklyPlan } from '@/lib/types';
@@ -79,8 +79,9 @@ export default function WeeklyPlanModal({
   });
 
   const [saving, setSaving] = useState<boolean>(false);
-
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(isOpen);
+  if (isOpen !== prevOpen) {
+    setPrevOpen(isOpen);
     if (isOpen && currentPlan) {
       const isCustom = !PREBUILT_PLANS.some((p) => p.id === currentPlan.id);
       setSelectedPlanId(isCustom ? 'custom-plan' : currentPlan.id);
@@ -92,14 +93,10 @@ export default function WeeklyPlanModal({
         setSchedule(currentPlan.schedule);
       } else {
         const found = PREBUILT_PLANS.find((p) => p.id === currentPlan.id);
-        if (found?.schedule) {
-          setSchedule(found.schedule);
-        } else {
-          setSchedule(getDefaultScheduleForDays(4));
-        }
+        setSchedule(found?.schedule || getDefaultScheduleForDays(4));
       }
     }
-  }, [isOpen, currentPlan]);
+  }
 
   if (!isOpen) return null;
 

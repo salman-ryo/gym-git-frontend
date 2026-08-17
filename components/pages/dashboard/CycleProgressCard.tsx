@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Stats, User } from '@/lib/types';
-import { AlertTriangle, Cpu, Zap, Activity } from 'lucide-react';
+import { AlertTriangle, Zap, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useInView, AnimatedScoreCounter } from './power-level/power-chart-utils';
 

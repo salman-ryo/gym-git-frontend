@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Snowflake, Play, AlertTriangle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Snowflake, Play, AlertCircle } from 'lucide-react';
 import { ActiveItemEffect } from '@/lib/types';
 import { unfreezeStreak } from '@/lib/streak-service';
 
@@ -11,20 +11,11 @@ interface FrozenStateBannerProps {
   onUnfreezeSuccess: () => Promise<void>;
 }
 
-function formatDuration(totalSeconds: number): string {
-  if (totalSeconds <= 0) return 'Expired';
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const parts = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0 || days > 0) parts.push(`${hours}h`);
-  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
-  parts.push(`${seconds}s`);
-
-  return parts.join(' ');
+function formatTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
 }
 
 export default function FrozenStateBanner({
@@ -33,30 +24,21 @@ export default function FrozenStateBanner({
   onUnfreezeSuccess,
 }: FrozenStateBannerProps) {
   const freezeEffect = activeEffects.find((e) => e.item_id === 'STREAK_FREEZE_TOKEN');
-  const [remainingSeconds, setRemainingSeconds] = useState<number>(
-    freezeEffect ? freezeEffect.remaining_seconds : 0
-  );
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(() => freezeEffect ? freezeEffect.remaining_seconds : 0);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const [isResuming, setIsResuming] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Sync remaining seconds if parent changes it
-  useEffect(() => {
-    if (freezeEffect) {
-      setRemainingSeconds(freezeEffect.remaining_seconds);
-    }
-  }, [freezeEffect]);
-
   // Timer ticking
   useEffect(() => {
-    if (!isFrozen || remainingSeconds <= 0) return;
+    if (!isFrozen) return;
 
     const interval = setInterval(() => {
       setRemainingSeconds((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isFrozen, remainingSeconds]);
+  }, [isFrozen]);
 
   if (!isFrozen) return null;
 
@@ -67,86 +49,86 @@ export default function FrozenStateBanner({
       await unfreezeStreak();
       await onUnfreezeSuccess();
       setShowConfirm(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to manually unfreeze:', err);
-      setErrorMsg(err.message || 'Failed to resume streak. Please try again.');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to resume streak. Please try again.');
     } finally {
       setIsResuming(false);
     }
   };
 
   return (
-    <div className="w-full relative rounded-2xl overflow-hidden border border-neon-cyan/30 bg-gradient-to-r from-cyan-950/40 via-zinc-950/70 to-cyan-950/40 backdrop-blur-2xl shadow-[0_0_30px_rgba(34,211,238,0.12)] p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in duration-300">
-      
-      {/* Visual background freeze highlights */}
-      <div className="absolute top-0 bottom-0 left-0 w-1 bg-neon-cyan shadow-[0_0_10px_#22d3ee]" />
-      
-      {/* Icon + Title/Sub */}
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-neon-cyan/15 border border-neon-cyan/40 flex items-center justify-center text-neon-cyan shrink-0 animate-pulse">
-          <Snowflake className="w-5 h-5" />
-        </div>
-        <div className="space-y-1 text-left">
-          <h4 className="text-xs font-black uppercase tracking-wider text-neon-cyan flex items-center gap-2">
-            <span>Ice Pause Active</span>
-            {remainingSeconds > 0 && (
-              <span className="px-2 py-0.5 rounded-md bg-neon-cyan/10 border border-neon-cyan/30 text-[10px] font-mono text-neon-cyan font-bold">
-                {formatDuration(remainingSeconds)} left
-              </span>
-            )}
-          </h4>
-          <p className="text-[11px] text-zinc-300 font-medium leading-relaxed max-w-xl">
-            Streak decay is temporarily paused. Your current streak is safe. Dashboard workout requirements are suspended.
-          </p>
-        </div>
-      </div>
+    <aside aria-label="Streak frozen warning" className="w-full relative overflow-hidden rounded-2xl border border-cyan-500/40 bg-gradient-to-r from-cyan-950/80 via-blue-950/60 to-cyan-950/80 backdrop-blur-xl p-5 md:p-6 shadow-[0_0_40px_rgba(6,182,212,0.25)]">
+      {/* Background Frost Glow */}
+      <div className="absolute -top-24 -left-24 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Manual Unfreeze actions */}
-      <div className="w-full md:w-auto shrink-0 z-10">
-        {showConfirm ? (
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 bg-zinc-950/80 border border-neon-cyan/20 p-2.5 rounded-xl animate-in slide-in-from-right-3 duration-250">
-            <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-cyan-200">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>Resume workout track?</span>
+      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* Left Side: Status & Description */}
+        <div className="flex items-start gap-4">
+          <div className="relative p-3 rounded-xl bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] flex-shrink-0 animate-pulse">
+            <Snowflake className="w-7 h-7" />
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="text-xs font-black tracking-widest px-2.5 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-400/40 text-cyan-300 uppercase">
+                ICE PAUSE ACTIVE
+              </span>
+              <span className="text-xs font-mono font-bold text-cyan-200">
+                {formatTime(remainingSeconds)} REMAINING
+              </span>
             </div>
-            <div className="flex gap-2 w-full sm:w-auto justify-end">
+
+            <h3 className="text-base sm:text-lg font-black text-cyan-100 tracking-wide">
+              Your Streak is Protected by Sickness Freeze Vault
+            </h3>
+            <p className="text-xs sm:text-sm text-cyan-200/80 max-w-2xl mt-0.5">
+              Streak decay and penalty resets are currently paused while you recover. Log a workout anytime to automatically resume, or resume manually below.
+            </p>
+
+            {errorMsg && (
+              <div className="flex items-center gap-1.5 text-xs text-rose-400 font-semibold mt-2">
+                <AlertCircle className="w-4 h-4" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side: Action Button */}
+        <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3 self-stretch md:self-center">
+          {!showConfirm ? (
+            <button
+              onClick={() => setShowConfirm(true)}
+              className="w-full md:w-auto px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 hover:border-cyan-300 text-cyan-100 hover:text-white transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Resume Streak</span>
+            </button>
+          ) : (
+            <div className="w-full md:w-auto flex items-center gap-2 bg-cyan-950/90 border border-cyan-400/50 p-1.5 rounded-xl shadow-lg">
               <button
-                type="button"
-                onClick={handleUnfreeze}
                 disabled={isResuming}
-                className="px-3 py-1.5 rounded-lg bg-neon-cyan hover:bg-[#00f3ff] text-zinc-950 text-[10.5px] font-black uppercase transition-all flex items-center gap-1 cursor-pointer"
+                onClick={handleUnfreeze}
+                className="flex-1 md:flex-initial px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-zinc-950 transition-all shadow-md disabled:opacity-50 cursor-pointer"
               >
-                {isResuming ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
-                <span>Yes, Resume</span>
+                {isResuming ? 'Resuming...' : 'Confirm Resume'}
               </button>
               <button
-                type="button"
-                onClick={() => {
-                  setShowConfirm(false);
-                  setErrorMsg(null);
-                }}
                 disabled={isResuming}
-                className="px-3 py-1.5 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-300 text-[10.5px] font-extrabold uppercase transition-all cursor-pointer"
+                onClick={() => setShowConfirm(false)}
+                className="px-3 py-2 rounded-lg text-xs font-bold text-cyan-300 hover:text-white hover:bg-cyan-900/50 transition-all cursor-pointer"
               >
                 Cancel
               </button>
             </div>
-            {errorMsg && (
-              <span className="text-[9px] text-red-400 block mt-1">{errorMsg}</span>
-            )}
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowConfirm(true)}
-            className="w-full md:w-auto px-5 py-2.5 rounded-xl border border-neon-cyan/40 hover:border-neon-cyan bg-neon-cyan/10 hover:bg-neon-cyan text-neon-cyan hover:text-zinc-950 text-xs font-black uppercase tracking-wider transition-all duration-300 hover:scale-[1.03] active:scale-100 flex items-center justify-center gap-1.5 cursor-pointer shadow-[0_0_15px_rgba(34,211,238,0.15)]"
-          >
-            <Play className="w-3.5 h-3.5 shrink-0" />
-            <span>Resume Streak</span>
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
-    </div>
+      {/* Subtle Bottom Accent Indicator */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
+    </aside>
   );
 }

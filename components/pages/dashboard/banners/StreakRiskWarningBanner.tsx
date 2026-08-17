@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, Play, Bell, ChevronDown, ChevronUp } from 'lucide-react';
+import { Flame, Clock, Dumbbell, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { StreakWarningEvent } from '@/lib/types';
 
 interface StreakRiskWarningBannerProps {
@@ -10,37 +10,34 @@ interface StreakRiskWarningBannerProps {
   onLogWorkoutClick: () => void;
 }
 
+function calculateTimeLeft(): string {
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(23, 59, 59, 999);
+
+  const diffMs = midnight.getTime() - now.getTime();
+  if (diffMs <= 0) {
+    return '00:00:00';
+  }
+
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+  const pad = (num: number) => String(num).padStart(2, '0');
+  return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+}
+
 export default function StreakRiskWarningBanner({
   event,
   currentStreak,
   onLogWorkoutClick,
 }: StreakRiskWarningBannerProps) {
-  const [timeLeft, setTimeLeft] = useState<string>('');
+  const [timeLeft, setTimeLeft] = useState<string>(calculateTimeLeft);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     if (!event) return;
-
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const midnight = new Date();
-      midnight.setHours(23, 59, 59, 999);
-
-      const diffMs = midnight.getTime() - now.getTime();
-      if (diffMs <= 0) {
-        return '00:00:00';
-      }
-
-      const hours = Math.floor(diffMs / (1000 * 60 * 60));
-      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-
-      const pad = (num: number) => String(num).padStart(2, '0');
-      return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-    };
-
-    // Initial set
-    setTimeLeft(calculateTimeLeft());
 
     // Tick every second
     const interval = setInterval(() => {
@@ -58,91 +55,80 @@ export default function StreakRiskWarningBanner({
     return (
       <div className="w-full flex items-center justify-end">
         <button
-          type="button"
           onClick={() => setIsCollapsed(false)}
-          aria-label="Expand Streak Warning Banner"
-          title="Click to expand warning banner"
-          className="group inline-flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/30 hover:border-amber-500/50 text-amber-400 backdrop-blur-md shadow-[0_0_20px_rgba(245,158,11,0.08)] hover:shadow-[0_0_25px_rgba(245,158,11,0.18)] transition-all duration-200 cursor-pointer"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] cursor-pointer"
         >
-          <div className="relative flex items-center justify-center">
-            <Bell className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform duration-200" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-zinc-950 animate-ping" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-zinc-950" />
-          </div>
-
-          <div className="flex items-center gap-1.5 text-xs font-bold">
-            <span className="text-zinc-300">Streak At Risk:</span>
-            <span className="font-mono text-amber-400 font-extrabold">{timeLeft}</span>
-          </div>
-
-          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-            <span>Expand</span>
-            <ChevronDown className="w-3 h-3 text-amber-400 group-hover:translate-y-0.5 transition-transform" />
-          </span>
+          <AlertTriangle className="w-3.5 h-3.5 animate-pulse text-amber-400" />
+          <span>Streak Decay Warning ({timeLeft})</span>
         </button>
       </div>
     );
   }
 
-  // Expanded banner view
   return (
-    <div className="relative w-full bg-amber-500/10 border border-amber-500/25 rounded-2xl p-4 sm:p-5 backdrop-blur-md shadow-[0_0_20px_rgba(245,158,11,0.06)] overflow-hidden group transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_25px_rgba(245,158,11,0.12)] flex flex-col sm:flex-row items-center justify-between gap-4">
-      {/* Background cyber orb */}
-      <div className="absolute -top-12 -left-12 w-28 h-28 bg-amber-500/[0.04] rounded-full blur-2xl pointer-events-none" />
-      
-      {/* Highlight Top Alert Line */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500/30 via-amber-400/10 to-transparent" />
+    <aside aria-label="Streak warning" className="w-full relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/80 via-orange-950/60 to-amber-950/80 backdrop-blur-xl p-5 md:p-6 shadow-[0_0_35px_rgba(245,158,11,0.2)]">
+      {/* Background Amber Glow */}
+      <div className="absolute -top-20 -left-20 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-orange-600/20 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Warning details */}
-      <div className="flex items-start gap-3.5 text-center sm:text-left flex-col sm:flex-row pr-2 sm:pr-0">
-        <div className="mx-auto sm:mx-0 w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center shrink-0">
-          <AlertTriangle className="w-5 h-5 text-amber-400" />
-        </div>
-        <div>
-          <div className="flex items-center justify-center sm:justify-start gap-2">
-            <h4 className="text-xs font-black uppercase tracking-wider text-amber-400">
-              Streak Decay Imminent
-            </h4>
-            <span className="px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-[8px] font-black text-amber-400 uppercase">
-              At Risk
-            </span>
+      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* Left Side: Status & Warning Message */}
+        <div className="flex items-start gap-4">
+          <div className="relative p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.3)] flex-shrink-0 animate-bounce">
+            <Flame className="w-7 h-7 fill-amber-500/30" />
           </div>
-          <p className="text-xs text-zinc-350 font-medium mt-1 leading-normal max-w-md">
-            Rest tokens are fully exhausted (0 remaining). You must log a workout before local midnight to maintain your current daily streak.
-          </p>
+
+          <div>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="text-xs font-black tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 uppercase animate-pulse">
+                STREAK AT RISK
+              </span>
+              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-200 bg-amber-950/80 px-2.5 py-0.5 rounded-md border border-amber-800/60">
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <span>{timeLeft} UNTIL MIDNIGHT</span>
+              </div>
+            </div>
+
+            <h3 className="text-base sm:text-lg font-black text-amber-100 tracking-wide">
+              {currentStreak !== undefined && currentStreak > 0
+                ? `Your ${currentStreak}-Day Streak Decays at Midnight!`
+                : 'Your Streak is at Risk of Decaying!'}
+            </h3>
+            <p className="text-xs sm:text-sm text-amber-200/80 max-w-2xl mt-0.5">
+              {event.message ||
+                'No workout logged yet today and 0 Rest Tokens remaining. Log a session before midnight to keep your fire burning!'}
+            </p>
+
+            {event.rest_tokens_left === 0 && (
+              <div className="flex items-center gap-1.5 text-[11px] text-amber-300/90 font-medium mt-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>Rest Tokens: 0 left &bull; Workout required tonight</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side: Action Buttons */}
+        <div className="w-full md:w-auto flex flex-row items-center gap-3 self-stretch md:self-center">
+          <button
+            onClick={onLogWorkoutClick}
+            className="flex-1 md:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-zinc-950 transition-all shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)] flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-100"
+          >
+            <Dumbbell className="w-4 h-4" />
+            <span>Log Workout Now</span>
+          </button>
+          <button
+            onClick={() => setIsCollapsed(true)}
+            className="px-3 py-2.5 rounded-xl text-xs font-bold text-amber-400/80 hover:text-amber-200 hover:bg-amber-900/30 transition-all cursor-pointer"
+            title="Dismiss warning"
+          >
+            Dismiss
+          </button>
         </div>
       </div>
 
-      {/* Countdown, CTA Button, and Collapse Button */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto border-t sm:border-t-0 border-amber-500/10 pt-3 sm:pt-0 shrink-0">
-        {/* Real-time Ticking Countdown */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-950/60 border border-zinc-850 font-semibold text-xs text-zinc-300">
-          <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-          <span className="font-mono text-amber-400 font-extrabold">{timeLeft}</span>
-        </div>
-
-        <button
-          type="button"
-          onClick={onLogWorkoutClick}
-          className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-zinc-950 font-black py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_20px_rgba(245,158,11,0.4)]"
-        >
-          <span>Log Workout</span>
-          <Play className="w-3.5 h-3.5 fill-zinc-950 stroke-none shrink-0" />
-        </button>
-
-        {/* Collapse Button */}
-        <button
-          type="button"
-          onClick={() => setIsCollapsed(true)}
-          title="Collapse to notification icon"
-          aria-label="Collapse banner"
-          className="w-full sm:w-auto p-2.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-amber-300 transition-all duration-150 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer"
-        >
-          <ChevronUp className="w-4 h-4" />
-          <span className="sm:hidden">Collapse Banner</span>
-        </button>
-      </div>
-    </div>
+      {/* Subtle Bottom Accent Indicator */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-60" />
+    </aside>
   );
 }
-

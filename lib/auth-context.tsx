@@ -237,7 +237,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleGoogleLogin = async (_plan?: WeeklyPlan) => {
+  const handleGoogleLogin = async (plan?: WeeklyPlan) => {
+    void plan;
     setLoading(true);
     try {
       const supabase = createBrowserClient();

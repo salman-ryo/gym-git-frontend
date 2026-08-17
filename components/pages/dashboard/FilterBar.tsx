@@ -2,7 +2,7 @@
 
 import { WorkoutType, WeeklyPlan } from '@/lib/types';
 import React from 'react';
-import { SlidersHorizontal, Settings2, Sparkles, Check, Calendar } from 'lucide-react';
+import { SlidersHorizontal, Settings2, Calendar } from 'lucide-react';
 import { getThemeForWorkout } from '@/components/contribution-graph/theme-utils';
 
 interface FilterBarProps {

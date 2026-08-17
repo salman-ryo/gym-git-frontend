@@ -179,14 +179,14 @@ frontend/
 ### Phase 5: Type Safety, Linting Zero-Tolerance & Build Verification
 *Goal: Eliminate all 41 ESLint errors, remove `any` types, and ensure zero build/runtime regressions.*
 
-- [ ] **5.1 Strict Types in API & Service Layers**:
+- [x] **5.1 Strict Types in API & Service Layers**:
   - `utils/api.ts`: Replace `any` with generic type parameters (`<T>`) and strict error envelopes.
   - `lib/gym-service.ts`: Type all payload and response objects strictly.
   - `lib/inventory-service.ts`: Type inventory mutation payloads.
   - `lib/scientific-streak.ts`: Fix `prefer-const` and unused variable warnings.
-- [ ] **5.2 Strict Error Handling**:
+- [x] **5.2 Strict Error Handling**:
   - Replace `catch (err: any)` with `catch (err: unknown)` using `err instanceof Error ? err.message : '...'` across all modals and service handlers.
-- [ ] **5.3 Final Verification Suite**:
+- [x] **5.3 Final Verification Suite**:
   - Run `npm run lint` -> Must finish with **0 errors and 0 warnings**.
   - Run `npm run build` -> Must succeed with zero TypeScript or build errors.
   - Test all interactive workflows: Daily Check-In, Log Edit, Freeze Modal, Streak Broken Recovery, Weekly Plan Modal, Inventory Drawer, and 365-day Mock Suite.

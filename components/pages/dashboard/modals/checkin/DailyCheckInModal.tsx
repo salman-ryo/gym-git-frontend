@@ -60,20 +60,19 @@ export function DailyCheckInModal({
     availableWorkoutTypes.length > 0 ? availableWorkoutTypes : DEFAULT_WORKOUT_TYPES;
   const categories = Array.from(new Set(rawCategories));
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(isOpen);
+  if (isOpen !== prevOpen) {
+    setPrevOpen(isOpen);
     if (isOpen) {
       setQuestionMascot(getWeightedQuestionMascot());
       setAnsweredYes(false);
       setShowLateNightWarning(false);
       setAnimState('idle');
+      if (categories.length > 0 && !categories.includes(workoutType)) {
+        setWorkoutType(categories[0]);
+      }
     }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (categories.length > 0 && !categories.includes(workoutType)) {
-      setWorkoutType(categories[0]);
-    }
-  }, [categories, workoutType]);
+  }
 
   useEffect(() => {
     return () => {

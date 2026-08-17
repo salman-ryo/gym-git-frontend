@@ -1,7 +1,7 @@
 'use client';
 
 import './WhyGymGitSection.css';
-import React, { useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 import { useInView } from '@/hooks/useInView';

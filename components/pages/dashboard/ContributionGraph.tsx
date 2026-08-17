@@ -47,7 +47,7 @@ export default function ContributionGraph({
     startDate.setDate(startDate.getDate() - 364 - todayDayOfWeek);
     startDate.setHours(0, 0, 0, 0); // Ensure midnight boundary
 
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
     let currentWeekIndex = 0;
     let currentWeekDays: DayTile[] = [];
     let lastMonth = -1;

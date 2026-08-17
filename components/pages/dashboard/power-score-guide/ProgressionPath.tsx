@@ -5,15 +5,6 @@ import { Activity } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { animePowerLevels } from '@/assets/anime';
 
-const getTierColor = (score: number) => {
-  if (score < 35) return 'border-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]';
-  if (score < 55) return 'border-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]';
-  if (score < 72) return 'border-indigo-400 shadow-[0_0_10px_rgba(129,140,248,0.5)]';
-  if (score < 88) return 'border-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.5)]';
-  if (score < 97) return 'border-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.5)]';
-  return 'border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.6)]';
-};
-
 export default function ProgressionPath() {
   return (
     <div className="flex-1 min-w-0 bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-4 flex flex-col relative overflow-hidden">
@@ -50,8 +41,6 @@ export default function ProgressionPath() {
 
             // Map the 0-100 score to 5%-95% of the container width to keep portraits from clipping the edges
             const mappedPosition = 5 + (char.minPower * 0.9);
-            // Declared ringColor in case it is ever utilized/needed
-            const ringColor = getTierColor(char.minPower);
 
             return (
               <div

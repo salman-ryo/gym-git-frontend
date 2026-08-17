@@ -3,12 +3,35 @@ import { animePowerLevels } from '@/assets/anime';
 import { calculateScientificPowerScore, PowerScoreBreakdown } from './scientific-power';
 import { GymLog, MonthlyStat, Stats, WeeklyPlan, UserStreak, RawStreakResponse, RawStatsResponse } from './types';
 
+export interface RawGymLog {
+  id?: string;
+  date?: string;
+  hours?: number | string;
+  workout_type?: string;
+  workoutType?: string;
+  notes?: string;
+  updated_at?: string;
+  updatedAt?: string;
+}
+
+export interface RawPowerScoreResponse {
+  power_score?: {
+    total_score?: number;
+    consistency?: number;
+    duration_quality?: number;
+    variety?: number;
+    momentum?: number;
+  };
+  active_days?: number;
+  unique_workout_types?: number;
+}
+
 /**
  * Service wrapper for Gym Logs & Analytics.
  * Routes requests strictly to the Go backend via utils/api.ts.
  */
 
-export function mapGymLog(raw: any): GymLog {
+export function mapGymLog(raw: RawGymLog | null | undefined): GymLog {
   if (!raw) {
     return {
       id: '',
@@ -41,7 +64,7 @@ export async function fetchGymLogs(
   const queryString = queryParams.toString();
   const endpoint = `/logs${queryString ? `?${queryString}` : ''}`;
 
-  const rawLogs = await api.get<any[]>(endpoint);
+  const rawLogs = await api.get<RawGymLog[]>(endpoint);
   return (Array.isArray(rawLogs) ? rawLogs : []).map(mapGymLog);
 }
 
@@ -58,7 +81,7 @@ export async function saveGymLog(
     notes: notes || undefined,
   };
 
-  const rawLog = await api.post<any>('/logs', payload);
+  const rawLog = await api.post<RawGymLog>('/logs', payload);
   return mapGymLog(rawLog);
 }
 
@@ -66,150 +89,99 @@ export async function deleteGymLog(date: string): Promise<void> {
   await api.delete(`/logs/${date}`);
 }
 
-export async function fetchDashboardStats(_userPlan?: WeeklyPlan): Promise<Stats> {
+export async function fetchDashboardStats(userPlan?: WeeklyPlan): Promise<Stats> {
+  void userPlan;
   const [rawStats, rawStreak, logs] = await Promise.all([
     api.get<RawStatsResponse>('/stats').catch(() => null),
     api.get<RawStreakResponse>('/streak').catch(() => null),
     fetchGymLogs().catch(() => []),
   ]);
 
-  // Find oldest log date to start generating dynamic graphs
-  let oldestDate = new Date();
-  if (logs.length > 0) {
-    logs.forEach((log) => {
-      const logDate = new Date(log.date);
-      if (logDate < oldestDate) {
-        oldestDate = logDate;
-      }
-    });
-  }
-
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonthIdx = today.getMonth();
 
-  const startYear = oldestDate.getFullYear();
-  const startMonthIdx = oldestDate.getMonth();
+  const dynamicMonthlyData: MonthlyStat[] = [];
 
-  const monthlyData: MonthlyStat[] = [];
-  let tempYear = startYear;
-  let tempMonthIdx = startMonthIdx;
+  for (let i = 11; i >= 0; i--) {
+    const targetDate = new Date(currentYear, currentMonthIdx - i, 1);
+    const mYear = targetDate.getFullYear();
+    const mIdx = targetDate.getMonth();
+    const mName = monthNames[mIdx];
 
-  while (tempYear < currentYear || (tempYear === currentYear && tempMonthIdx <= 11)) {
-    let count = 0;
-    let totalHours = 0;
-
-    logs.forEach((log) => {
-      if (!log.date) return;
-      const [yStr, mStr] = log.date.split('-');
-      const year = parseInt(yStr, 10);
-      const monthIdx = parseInt(mStr, 10) - 1;
-      if (year === tempYear && monthIdx === tempMonthIdx) {
-        count += 1;
-        totalHours += log.hours || 0;
-      }
+    const monthLogs = logs.filter((l) => {
+      const parts = l.date.split('-');
+      return parseInt(parts[0], 10) === mYear && parseInt(parts[1], 10) === (mIdx + 1);
     });
 
-    monthlyData.push({
-      month: monthNames[tempMonthIdx],
-      monthIndex: tempMonthIdx,
-      year: tempYear,
-      count,
-      totalHours: Math.round(totalHours * 10) / 10,
-    });
+    const activeDays = monthLogs.length;
+    const hours = monthLogs.reduce((acc, l) => acc + l.hours, 0);
 
-    tempMonthIdx++;
-    if (tempMonthIdx > 11) {
-      tempMonthIdx = 0;
-      tempYear++;
+    dynamicMonthlyData.push({
+      month: mName,
+      monthIndex: mIdx,
+      year: mYear,
+      count: activeDays,
+      totalHours: Math.round(hours * 10) / 10,
+    });
+  }
+
+  const totalLogsCount = logs.length;
+  const totalHoursCount = logs.reduce((acc, l) => acc + l.hours, 0);
+
+  // Compute 7-day rolling attendance
+  const past7Days = Array.from({ length: 7 }, (_, idx) => {
+    const d = new Date();
+    d.setDate(d.getDate() - idx);
+    return d.toISOString().split('T')[0];
+  });
+
+  let compliantDaysInCycle = 0;
+  past7Days.forEach((dateStr) => {
+    const logForDay = logs.find((l) => l.date === dateStr);
+    if (logForDay) {
+      compliantDaysInCycle++;
     }
-  }
+  });
 
-  // Fallback to current month if no monthly data was generated
-  if (monthlyData.length === 0) {
-    monthlyData.push({
-      month: monthNames[currentMonthIdx],
-      monthIndex: currentMonthIdx,
-      year: currentYear,
-      count: 0,
-      totalHours: 0,
-    });
-  }
+  const rawSplitAccuracy = Math.round((compliantDaysInCycle / 7) * 100);
 
-  // Prefer /streak response (full StreakResponse with cycle_info) over the
-  // lightweight StreakStats embedded in /stats, which lacks cycle_info.
-  const streakFull = rawStreak?.streak || rawStreak || {};
-  const streakStats = rawStats?.streak || {};
-  const streakObj = Object.keys(streakFull).length > 0 ? streakFull : streakStats;
-
-  const currentStreak = streakObj.current_streak ?? streakObj.currentStreak ?? 0;
-  const longestStreak = streakObj.longest_streak ?? streakObj.longestStreak ?? currentStreak;
-  const totalDays = rawStats?.total_sessions ?? rawStats?.totalDays ?? logs.length;
-  const totalHours = rawStats?.total_hours ?? rawStats?.totalHours ?? 0;
-  const averageHoursPerSession = rawStats?.avg_session_duration ?? rawStats?.averageHoursPerSession ?? 0;
-
-  const cycleInfo = streakObj.cycle_info ? {
-    cycle_start_date: streakObj.cycle_info.cycle_start_date,
-    cycle_end_date: streakObj.cycle_info.cycle_end_date,
-    workouts_completed_in_cycle: streakObj.cycle_info.workouts_completed_in_cycle,
-    workouts_target_in_cycle: streakObj.cycle_info.workouts_target_in_cycle,
-    rest_tokens_total: streakObj.cycle_info.rest_tokens_total,
-    rest_tokens_used: streakObj.cycle_info.rest_tokens_used,
-    rest_tokens_remaining: streakObj.cycle_info.rest_tokens_remaining,
-    days_remaining_in_cycle: streakObj.cycle_info.days_remaining_in_cycle,
-  } : undefined;
-
-  const accuracyScore = streakObj.accuracy_score ?? streakObj.accuracyScore ?? undefined;
-  const isFrozen = streakObj.is_frozen ?? streakObj.isFrozen ?? undefined;
-
-  const streakBrokenEvent = streakObj.streak_broken_event ? {
-    previous_streak: streakObj.streak_broken_event.previous_streak,
-    broken_on: streakObj.streak_broken_event.broken_on,
-    restore_shield_available: streakObj.streak_broken_event.restore_shield_available,
-    restore_shields_count: streakObj.streak_broken_event.restore_shields_count,
-    can_restore_until: streakObj.streak_broken_event.can_restore_until,
-  } : null;
-
-  const streakWarningEvent = streakObj.streak_warning_event ? {
-    is_at_risk: streakObj.streak_warning_event.is_at_risk,
-    hours_remaining: streakObj.streak_warning_event.hours_remaining,
-    rest_tokens_left: streakObj.streak_warning_event.rest_tokens_left,
-    message: streakObj.streak_warning_event.message,
-  } : null;
+  const streakEvent = rawStreak?.streak_broken_event || rawStats?.streak_broken_event;
+  const warningEvent = rawStreak?.streak_warning_event || rawStats?.streak_warning_event;
 
   return {
-    currentStreak,
-    longestStreak,
-    totalDays,
-    totalHours: Math.round(totalHours * 10) / 10,
-    averageHoursPerSession: Math.round(averageHoursPerSession * 10) / 10,
-    monthlyData,
-    cycleInfo,
-    accuracyScore,
-    isFrozen,
-    streakBrokenEvent,
-    streakWarningEvent,
+    currentStreak: rawStreak?.current_streak ?? rawStreak?.currentStreak ?? rawStats?.current_streak ?? rawStats?.currentStreak ?? 0,
+    longestStreak: rawStreak?.longest_streak ?? rawStreak?.longestStreak ?? rawStats?.longest_streak ?? rawStats?.longestStreak ?? 0,
+    totalDays: rawStats?.totalDays ?? rawStats?.total_sessions ?? totalLogsCount,
+    totalHours: rawStats?.totalHours ?? rawStats?.total_hours ?? Math.round(totalHoursCount * 10) / 10,
+    averageHoursPerSession: rawStats?.averageHoursPerSession ?? rawStats?.avg_session_duration ?? (totalLogsCount > 0 ? Number((totalHoursCount / totalLogsCount).toFixed(1)) : 0),
+    monthlyData: dynamicMonthlyData,
+    cycleInfo: rawStreak?.cycle_info || rawStats?.cycle_info,
+    accuracyScore: rawStreak?.accuracy_score ?? rawStreak?.accuracyScore ?? rawStats?.accuracy_score ?? rawStats?.accuracyScore ?? rawSplitAccuracy,
+    isFrozen: rawStreak?.is_frozen ?? rawStreak?.isFrozen ?? rawStats?.is_frozen ?? rawStats?.isFrozen ?? false,
+    streakBrokenEvent: streakEvent ? {
+      previous_streak: streakEvent.previous_streak,
+      broken_on: streakEvent.broken_on,
+      restore_shield_available: streakEvent.restore_shield_available,
+      restore_shields_count: streakEvent.restore_shields_count,
+      can_restore_until: streakEvent.can_restore_until,
+    } : null,
+    streakWarningEvent: warningEvent ? {
+      is_at_risk: warningEvent.is_at_risk,
+      hours_remaining: warningEvent.hours_remaining,
+      rest_tokens_left: warningEvent.rest_tokens_left,
+      message: warningEvent.message,
+    } : null,
   };
 }
 
-export async function fetchStreakLifecycle(): Promise<UserStreak> {
-  const data = await api.get<RawStreakResponse>('/streak');
-  const s = data?.streak || data || {};
+export function mapUserStreak(s: RawStreakResponse): UserStreak {
   return {
     currentStreak: s.current_streak ?? s.currentStreak ?? 0,
     longestStreak: s.longest_streak ?? s.longestStreak ?? 0,
     complianceRate: s.compliance_rate ?? s.complianceRate ?? 0,
-    cycleInfo: s.cycle_info ? {
-      cycle_start_date: s.cycle_info.cycle_start_date,
-      cycle_end_date: s.cycle_info.cycle_end_date,
-      workouts_completed_in_cycle: s.cycle_info.workouts_completed_in_cycle,
-      workouts_target_in_cycle: s.cycle_info.workouts_target_in_cycle,
-      rest_tokens_total: s.cycle_info.rest_tokens_total,
-      rest_tokens_used: s.cycle_info.rest_tokens_used,
-      rest_tokens_remaining: s.cycle_info.rest_tokens_remaining,
-      days_remaining_in_cycle: s.cycle_info.days_remaining_in_cycle,
-    } : undefined,
+    cycleInfo: s.cycle_info,
     accuracyScore: s.accuracy_score ?? s.accuracyScore ?? 0,
     isFrozen: s.is_frozen ?? s.isFrozen ?? false,
     streakBrokenEvent: s.streak_broken_event ? {
@@ -234,7 +206,7 @@ export async function fetchPowerScore(
   targetWeeklyDays: number = 4
 ): Promise<PowerScoreBreakdown> {
   try {
-    const rawPower = await api.get<any>(`/stats/power?days=${days}`);
+    const rawPower = await api.get<RawPowerScoreResponse>(`/stats/power?days=${days}`);
     if (rawPower?.power_score) {
       const ps = rawPower.power_score;
       const score = ps.total_score || 0;

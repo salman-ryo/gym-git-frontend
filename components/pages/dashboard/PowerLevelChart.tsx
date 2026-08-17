@@ -17,6 +17,7 @@ interface PowerLevelChartProps {
 }
 
 export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartProps) {
+  void monthlyData;
   const logsMap = useMemo(() => {
     const map = new Map<string, GymLog>();
     logs.forEach((log) => {

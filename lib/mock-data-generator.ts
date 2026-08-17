@@ -1,6 +1,5 @@
-import { GymLog, MonthlyStat, Stats, WeeklyPlan, WorkoutType, UserInventoryItem, ActiveItemEffect, RoadmapMilestone } from './types';
+import { GymLog, MonthlyStat, Stats, WeeklyPlan, UserInventoryItem, ActiveItemEffect, RoadmapMilestone } from './types';
 import { formatDateKey } from './scientific-streak';
-import { calculateScientificPowerScore } from './scientific-power';
 import { saveGymLog } from './gym-service';
 
 export const MOCK_WORKOUT_TYPES: { type: string; minHours: number; maxHours: number; notes: string[] }[] = [

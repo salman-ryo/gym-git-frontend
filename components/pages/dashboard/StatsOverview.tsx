@@ -2,7 +2,7 @@
 
 import { Stats } from '@/lib/types';
 import React from 'react';
-import { ShieldCheck, CheckCircle2, Flame, Trophy, CheckSquare, Clock, Snowflake } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Trophy, Clock, Snowflake } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import Image from 'next/image';
 import { useAuth } from '@/lib/auth-context';

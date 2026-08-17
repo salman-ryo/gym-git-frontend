@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { PowerScoreBreakdown } from '@/lib/scientific-power';
 import { getPowerColorTheme, useTieredBarAnimation } from './power-chart-utils';
