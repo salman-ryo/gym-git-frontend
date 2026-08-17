@@ -19,7 +19,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import Image from 'next/image';
-import { getThemeForWorkout } from '../../contribution-graph/theme-utils';
+import { getThemeForWorkout } from '@/components/contribution-graph/theme-utils';
 import { isLateNightStreakRisk, getMinutesUntilMidnight } from '@/lib/checkin-snooze';
 import {
   animeImages,

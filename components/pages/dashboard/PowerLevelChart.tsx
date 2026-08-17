@@ -6,7 +6,7 @@ import { calculateScientificPowerScore } from '@/lib/scientific-power';
 import React, { useMemo } from 'react';
 import { Swords } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import PowerScoreGuideModal from './PowerScoreGuideModal';
+import { PowerScoreGuideModal } from '@/components/pages/dashboard/modals';
 import WeeklyProgress from './power-level/WeeklyProgress';
 import MonthlyProgress from './power-level/MonthlyProgress';
 import { MonthlyPowerStat, WeeklyPowerStat } from './power-level/power-chart-utils';

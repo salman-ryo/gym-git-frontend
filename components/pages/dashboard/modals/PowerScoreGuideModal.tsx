@@ -4,8 +4,8 @@ import React from 'react';
 import { Zap, HelpCircle, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import ProgressionPath from './power-score-guide/ProgressionPath';
-import ScoringMetrics from './power-score-guide/ScoringMetrics';
+import ProgressionPath from '@/components/pages/dashboard/power-score-guide/ProgressionPath';
+import ScoringMetrics from '@/components/pages/dashboard/power-score-guide/ScoringMetrics';
 
 export default function PowerScoreGuideModal() {
   return (

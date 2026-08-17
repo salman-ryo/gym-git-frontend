@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { WorkoutType } from '@/lib/types';
 import { Clock, Plus, Check, Save, Trash2 } from 'lucide-react';
-import { getThemeForWorkout } from '../../contribution-graph/theme-utils';
+import { getThemeForWorkout } from '@/components/contribution-graph/theme-utils';
 
 // --- CyberDial Component ---
 interface CyberDialProps {

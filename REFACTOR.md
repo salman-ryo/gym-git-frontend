@@ -114,13 +114,13 @@ frontend/
 ### Phase 2: Dead Code Elimination, File Renaming & Directory Organization
 *Goal: Remove orphaned files, eliminate confusing naming collisions, and group dashboard components logically.*
 
-- [ ] **2.1 Delete Dead Code**:
+- [x] **2.1 Delete Dead Code**:
   - Delete `components/pages/dashboard/weekly-plan/PrebuiltPlanGrid.tsx` (unused).
   - Delete `components/pages/dashboard/weekly-plan/CustomPlanEditor.tsx` (unused).
-- [ ] **2.2 Resolve Naming Collisions**:
+- [x] **2.2 Resolve Naming Collisions**:
   - Rename `components/contribution-graph/Header.tsx` -> `components/contribution-graph/ContributionGraphHeader.tsx`.
   - Update imports in `ContributionGraph.tsx`.
-- [ ] **2.3 Organize Dashboard Sub-components**:
+- [x] **2.3 Organize Dashboard Sub-components**:
   - Create `components/pages/dashboard/banners/` for `FrozenStateBanner.tsx` and `StreakRiskWarningBanner.tsx`.
   - Create `components/pages/dashboard/modals/` for all modal components.
   - Create `components/pages/dashboard/toolbar/MockTestingToolbar.tsx`.

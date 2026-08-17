@@ -4,7 +4,7 @@ import React from 'react';
 import { CalendarRange, Calendar, CalendarDays } from 'lucide-react';
 import { TimeframeView } from '@/lib/types';
 
-interface HeaderProps {
+export interface ContributionGraphHeaderProps {
   timeframe: TimeframeView;
   setTimeframe: (view: TimeframeView) => void;
   yearData: {
@@ -23,13 +23,13 @@ interface HeaderProps {
   };
 }
 
-export default function Header({
+export default function ContributionGraphHeader({
   timeframe,
   setTimeframe,
   yearData,
   monthData,
   weekData,
-}: HeaderProps) {
+}: ContributionGraphHeaderProps) {
   return (
     <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-8 pb-4 border-b border-zinc-800/50">
       <div className="w-full">

@@ -3,11 +3,11 @@
 import { GymLog, TimeframeView, WeeklyPlan, WorkoutType } from '@/lib/types';
 import { formatDateKey } from '@/lib/scientific-streak';
 import React, { useMemo, useState } from 'react';
-import Header from '../../contribution-graph/Header';
-import YearView from '../../contribution-graph/YearView';
-import MonthView from '../../contribution-graph/MonthView';
-import WeekView from '../../contribution-graph/WeekView';
-import { DayTile, WeekColumn } from '../../contribution-graph/theme-utils';
+import ContributionGraphHeader from '@/components/contribution-graph/ContributionGraphHeader';
+import YearView from '@/components/contribution-graph/YearView';
+import MonthView from '@/components/contribution-graph/MonthView';
+import WeekView from '@/components/contribution-graph/WeekView';
+import { DayTile, WeekColumn } from '@/components/contribution-graph/theme-utils';
 
 interface ContributionGraphProps {
   logs: GymLog[];
@@ -211,7 +211,7 @@ export default function ContributionGraph({
 
   return (
     <div className="bg-zinc-950/80 border border-zinc-800 p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] relative overflow-hidden">
-      <Header
+      <ContributionGraphHeader
         timeframe={timeframe}
         setTimeframe={setTimeframe}
         yearData={yearData}

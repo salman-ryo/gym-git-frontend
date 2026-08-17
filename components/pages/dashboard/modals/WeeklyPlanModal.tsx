@@ -4,8 +4,8 @@ import { PREBUILT_PLANS, WeeklyPlan } from '@/lib/types';
 import React, { useState, useEffect } from 'react';
 import { X, Layers, Calendar, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import PlanFrequencyStep from './weekly-plan/PlanFrequencyStep';
-import DayScheduleStep from './weekly-plan/DayScheduleStep';
+import PlanFrequencyStep from '@/components/pages/dashboard/weekly-plan/PlanFrequencyStep';
+import DayScheduleStep from '@/components/pages/dashboard/weekly-plan/DayScheduleStep';
 
 interface WeeklyPlanModalProps {
   currentPlan?: WeeklyPlan;

@@ -3,12 +3,21 @@
 import AuthGuard from '@/components/AuthGuard';
 import ContributionGraph from '@/components/pages/dashboard/ContributionGraph';
 import CyberpunkLoader from '@/components/CyberpunkLoader';
-import DailyCheckInModal from '@/components/pages/dashboard/DailyCheckInModal';
-import EditLogModal from '@/components/pages/dashboard/EditLogModal';
+import {
+  DailyCheckInModal,
+  EditLogModal,
+  FreezeModal,
+  StreakBrokenModal,
+  WeeklyPlanModal,
+} from '@/components/pages/dashboard/modals';
+import {
+  FrozenStateBanner,
+  StreakRiskWarningBanner,
+} from '@/components/pages/dashboard/banners';
+import { MockTestingToolbar } from '@/components/pages/dashboard/toolbar';
 import FilterBar from '@/components/pages/dashboard/FilterBar';
 import Header from '@/components/pages/dashboard/Header';
 import StatsOverview from '@/components/pages/dashboard/StatsOverview';
-import WeeklyPlanModal from '@/components/pages/dashboard/WeeklyPlanModal';
 import { useAuth } from '@/lib/auth-context';
 import { formatDateKey } from '@/lib/scientific-streak';
 import {
@@ -31,15 +40,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import Footer from '@/components/layout/Footer';
 import { LandingBackground } from '@/components/pages/landing';
-import { Sparkles, Database, RotateCcw, Check, Loader2, Snowflake, AlertTriangle, ShieldAlert } from 'lucide-react';
-import FreezeModal from '@/components/pages/dashboard/FreezeModal';
-import FrozenStateBanner from '@/components/pages/dashboard/FrozenStateBanner';
 import RewardRoadmap from '@/components/pages/dashboard/rewards/RewardRoadmap';
 import ClaimCelebrationModal from '@/components/pages/dashboard/rewards/ClaimCelebrationModal';
 import { fetchRewardRoadmap } from '@/lib/rewards-service';
-import StreakBrokenModal from '@/components/pages/dashboard/StreakBrokenModal';
 import { restoreStreak } from '@/lib/streak-service';
-import StreakRiskWarningBanner from '@/components/pages/dashboard/StreakRiskWarningBanner';
 import PowerLevelCelebrationModal from '@/components/pages/dashboard/power-level/PowerLevelCelebrationModal';
 import { calculateScientificPowerScore, PowerScoreBreakdown } from '@/lib/scientific-power';
 import {
@@ -408,134 +412,57 @@ export default function DashboardPage() {
           <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
             {/* Floating Testing Toolbar for 365-day screenshot — conditionally rendered when enable_mock_data is true */}
             {enable_mock_data && (
-              <div className="bg-zinc-900/90 border border-neon-green/30 backdrop-blur-md rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-[0_0_25px_rgba(0,255,136,0.08)]">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-neon-green/10 border border-neon-green/30 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-neon-green" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-zinc-100 flex items-center gap-2 m-0">
-                      <span>365-Day Mock Testing Suite</span>
-                      {isMockActive && (
-                        <span className="px-2 py-0.5 rounded-full bg-neon-green/10 border border-neon-green/30 text-[10px] font-extrabold text-neon-green">
-                          ACTIVE PREVIEW
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-[11px] text-zinc-400 m-0">
-                      {isMockActive
-                        ? 'Populated ~300 workout sessions (all < 2 hours) across 365 days'
-                        : 'Toggle 365-day colored preview for screenshots or seed to database'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  {!isMockActive ? (
-                    <button
-                      type="button"
-                      onClick={activateMockData}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-green to-[#00e077] text-[#060a0e] text-xs font-extrabold shadow-[0_0_20px_rgba(0,255,136,0.35)] hover:scale-[1.02] active:scale-100 transition-all cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Fill 365-Day Graph (&lt;2h)</span>
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={resetToRealData}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5 text-zinc-400" />
-                        <span>Reset Real Data</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (stats) {
-                            setStats({
-                              ...stats,
-                              isFrozen: !stats.isFrozen,
-                            });
-                          }
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-cyan-400 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
-                      >
-                        <Snowflake className="w-3.5 h-3.5 shrink-0" />
-                        <span>{stats?.isFrozen ? 'Unfreeze Mock' : 'Freeze Mock'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (stats) {
-                            setStats({
-                              ...stats,
-                              streakWarningEvent: stats.streakWarningEvent
-                                ? null
-                                : {
-                                  is_at_risk: true,
-                                  hours_remaining: 5,
-                                  rest_tokens_left: 0,
-                                  message: 'Streak decay imminent! Log a workout before midnight.'
-                                }
-                            });
-                          }
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-amber-400 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
-                      >
-                        <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-                        <span>{stats?.streakWarningEvent ? 'Clear Warning' : 'Trigger Warning'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (stats) {
-                            if (!stats.streakBrokenEvent) {
-                              setHasSeenBrokenModal(false);
-                            }
-                            setStats({
-                              ...stats,
-                              streakBrokenEvent: stats.streakBrokenEvent
-                                ? null
-                                : {
-                                  previous_streak: 15,
-                                  broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
-                                  restore_shield_available: true,
-                                  restore_shields_count: 2,
-                                  can_restore_until: new Date().toISOString().split('T')[0]
-                                }
-                            });
-                          }
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-red-400 text-xs font-semibold border border-zinc-700 transition-all cursor-pointer"
-                      >
-                        <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-red-400" />
-                        <span>{stats?.streakBrokenEvent ? 'Clear Broken' : 'Trigger Broken'}</span>
-                      </button>
-                    </>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={handleSeedToBackend}
-                    disabled={isSeeding}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 hover:text-white text-xs font-semibold border border-zinc-700/80 transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    {isSeeding ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 text-neon-green animate-spin" />
-                        <span>{seedProgress || 'Seeding...'}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Database className="w-3.5 h-3.5 text-neon-cyan" />
-                        <span>Save to Backend DB</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
+              <MockTestingToolbar
+                isMockActive={isMockActive}
+                onActivateMock={activateMockData}
+                onResetRealData={resetToRealData}
+                stats={stats}
+                onToggleFreezeMock={() => {
+                  if (stats) {
+                    setStats({
+                      ...stats,
+                      isFrozen: !stats.isFrozen,
+                    });
+                  }
+                }}
+                onToggleStreakWarning={() => {
+                  if (stats) {
+                    setStats({
+                      ...stats,
+                      streakWarningEvent: stats.streakWarningEvent
+                        ? null
+                        : {
+                            is_at_risk: true,
+                            hours_remaining: 5,
+                            rest_tokens_left: 0,
+                            message: 'Streak decay imminent! Log a workout before midnight.',
+                          },
+                    });
+                  }
+                }}
+                onToggleStreakBroken={() => {
+                  if (stats) {
+                    if (!stats.streakBrokenEvent) {
+                      setHasSeenBrokenModal(false);
+                    }
+                    setStats({
+                      ...stats,
+                      streakBrokenEvent: stats.streakBrokenEvent
+                        ? null
+                        : {
+                            previous_streak: 15,
+                            broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
+                            restore_shield_available: true,
+                            restore_shields_count: 2,
+                            can_restore_until: new Date().toISOString().split('T')[0],
+                          },
+                    });
+                  }
+                }}
+                onSeedToBackend={handleSeedToBackend}
+                isSeeding={isSeeding}
+                seedProgress={seedProgress}
+              />
             )}
 
             {loading ? (
