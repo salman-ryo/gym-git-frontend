@@ -4,6 +4,7 @@ import React from 'react';
 import { GymLog, WeeklyPlan, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
 import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout, getDayStyleInfo } from './theme-utils';
+import DayTileTooltip from './DayTileTooltip';
 
 interface MonthViewProps {
   startPadding: number;
@@ -40,51 +41,11 @@ export default function MonthView({
             ? getThemeForWorkout(day.workoutType, weeklyPlan)
             : DEFAULT_GREEN_THEME;
 
-          const formattedDate = day.dateObj.toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          });
-
-          const displayDate = day.isToday ? 'Today' : formattedDate;
-
-          return (
-            <CustomTooltip
-              key={day.dateStr}
-              content={
-                day.isFuture ? (
-                  <div className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">Future Date Locked</div>
-                ) : (
-                  <div className="text-left space-y-1">
-                    <div className="font-bold text-xs">
-                      {styleInfo.tooltipType === 'freeze' ? (
-                        <span className="text-sky-400">❄️ Ice Pause Active</span>
-                      ) : styleInfo.tooltipType === 'rest' ? (
-                        <span className="text-slate-350">🛡️ Rest Token Applied</span>
-                      ) : day.hours > 0 ? (
-                        <span className="text-emerald-450">{day.hours} hrs spent</span>
-                      ) : (
-                        <span className="text-zinc-400">No workout logged</span>
-                      )}
-                    </div>
-                    <div className="text-[11px] text-zinc-400 mt-0.5">
-                      {displayDate}
-                      {day.workoutType && (
-                        <span className="ml-1.5 font-bold text-zinc-300">
-                          • {day.workoutType}
-                        </span>
-                      )}
-                    </div>
-                    {day.log?.notes && (
-                      <div className="text-[10px] text-zinc-550 border-t border-zinc-900 pt-1 mt-1 max-w-[200px] italic">
-                        &ldquo;{day.log.notes}&rdquo;
-                      </div>
-                    )}
-                  </div>
-                )
-              }
-            >
+            return (
+              <CustomTooltip
+                key={day.dateStr}
+                content={<DayTileTooltip day={day} styleInfo={styleInfo} />}
+              >
               <button
                 type="button"
                 disabled={day.isFuture}

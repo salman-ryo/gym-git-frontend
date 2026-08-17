@@ -1,11 +1,7 @@
 import { GymLog, WeeklyPlan } from './types';
+import { formatDateKey } from './date-utils';
 
-export function formatDateKey(date: Date): string {
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
+export { formatDateKey };
 
 export interface StreakAnalysis {
   currentStreakDays: number;
@@ -52,7 +48,6 @@ export function calculateScientificStreak(
   });
 
   const today = new Date();
-  const todayStr = formatDateKey(today);
 
   // Helper to count active gym days in a 7-day window ending on checkDate
   const getWindowActiveCount = (endDate: Date): number => {
@@ -106,7 +101,7 @@ export function calculateScientificStreak(
   const startDate = new Date(today);
   startDate.setDate(today.getDate() - 365);
 
-  let iterDate = new Date(startDate);
+  const iterDate = new Date(startDate);
   while (iterDate <= today) {
     if (isDateCompliant(iterDate)) {
       tempStreak++;
@@ -146,7 +141,7 @@ export function calculateScientificStreak(
   let totalTrackedDays = 0;
   let totalCompliantDays = 0;
 
-  let evalDate = new Date(startDate);
+  const evalDate = new Date(startDate);
   while (evalDate <= today) {
     totalTrackedDays++;
     if (isDateCompliant(evalDate)) {

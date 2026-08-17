@@ -91,22 +91,22 @@ frontend/
 ### Phase 1: Core Primitives, Utilities & Custom Hooks (Foundations)
 *Goal: Create shared single sources of truth for dates, rarity themes, power tiers, animation hooks, and modal wrappers.*
 
-- [ ] **1.1 Centralize Date Utilities (`lib/date-utils.ts`)**:
+- [x] **1.1 Centralize Date Utilities (`lib/date-utils.ts`)**:
   - Implement formatters: `formatDisplayDate`, `formatFullDate`, `formatShortDate`, `formatMonthYear`, `formatTimeRemaining`.
   - Implement date arithmetic: `getStartAndEndOfWeek`, `getDaysDifference`, `isWithinLookbackWindow`.
   - Re-export `formatDateKey` for consistency.
-- [ ] **1.2 Centralize Item Rarity & Buff Themes (`lib/rarity-theme.ts`)**:
+- [x] **1.2 Centralize Item Rarity & Buff Themes (`lib/rarity-theme.ts`)**:
   - Define unified styling maps for `'common' | 'rare' | 'epic' | 'legendary'`.
   - Export `getRarityBorderClass`, `getRarityGlowClass`, `getRarityBadgeClass`, `getRarityTextClass`, `getRarityBackgroundClass`.
-- [ ] **1.3 Centralize Power Tiers & Color Themes (`lib/power-tier-theme.ts`)**:
+- [x] **1.3 Centralize Power Tiers & Color Themes (`lib/power-tier-theme.ts`)**:
   - Merge `getTierColor` (from `ProgressionPath.tsx`) and `getPowerColorTheme` / `getTierParticleColors` (from `power-chart-utils.ts`) into a single unified theme provider.
-- [ ] **1.4 Create Shared Custom Hooks (`hooks/`)**:
+- [x] **1.4 Create Shared Custom Hooks (`hooks/`)**:
   - `hooks/useInView.ts`: Standalone IntersectionObserver hook with customizable threshold.
   - `hooks/useAnimatedCounter.ts`: Smooth requestAnimationFrame counter with easing.
   - `hooks/useTypewriter.ts`: Pure, glitch-free typewriter hook without cascading setState triggers.
-- [ ] **1.5 Build Reusable Modal Primitive (`components/ui/modal-shell.tsx`)**:
+- [x] **1.5 Build Reusable Modal Primitive (`components/ui/modal-shell.tsx`)**:
   - Create `<ModalShell>` supporting standard cyberpunk backdrop, responsive centering, animated scale entrance, top gradient accent bar, close 'X' button, and custom scrollbar handling.
-- [ ] **1.6 Extract Contribution Graph Tile Tooltip (`components/contribution-graph/DayTileTooltip.tsx`)**:
+- [x] **1.6 Extract Contribution Graph Tile Tooltip (`components/contribution-graph/DayTileTooltip.tsx`)**:
   - Extract the 40-line duplicated tooltip logic into a clean, reusable component.
 
 ---
