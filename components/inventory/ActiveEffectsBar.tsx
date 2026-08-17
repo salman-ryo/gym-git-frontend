@@ -2,27 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { ActiveItemEffect } from '@/lib/types';
+import { formatTimeRemaining } from '@/lib/date-utils';
 import ItemIcon from './ItemIcon';
 import { Shield } from 'lucide-react';
 
-interface ActiveEffectsBarProps {
+export interface ActiveEffectsBarProps {
   activeEffects: ActiveItemEffect[];
-}
-
-function formatDuration(totalSeconds: number): string {
-  if (totalSeconds <= 0) return 'Expired';
-  const days = Math.floor(totalSeconds / 86400);
-  const hours = Math.floor((totalSeconds % 86400) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const parts = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0 || days > 0) parts.push(`${hours}h`);
-  if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
-  parts.push(`${seconds}s`);
-
-  return parts.join(' ');
 }
 
 function getEffectLabel(itemId: string): string {
@@ -69,7 +54,7 @@ export default function ActiveEffectsBar({ activeEffects }: ActiveEffectsBarProp
         <Shield className="w-3.5 h-3.5 text-neon-cyan animate-pulse" />
         <span>Active Buffs</span>
       </div>
-      
+
       <div className="flex flex-wrap gap-2.5 items-center">
         {effects.map((effect) => (
           <div
@@ -81,7 +66,7 @@ export default function ActiveEffectsBar({ activeEffects }: ActiveEffectsBarProp
               {getEffectLabel(effect.item_id)}:
             </span>
             <span className="text-[10px] font-extrabold text-neon-cyan font-mono animate-pulse">
-              {formatDuration(effect.remaining_seconds)}
+              {formatTimeRemaining(effect.remaining_seconds)}
             </span>
           </div>
         ))}

@@ -1,14 +1,14 @@
 'use client';
 
-import { GymLog, WorkoutType } from '@/lib/types';
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
 import Image from 'next/image';
+import { GymLog, WorkoutType } from '@/lib/types';
+import { formatDisplayDate, formatDateKey } from '@/lib/date-utils';
+import ModalShell from '@/components/ui/modal-shell';
 import WorkoutLogForm from './WorkoutLogForm';
-import { formatDateKey } from '@/lib/scientific-streak';
 import RestoreConfirmModal from './RestoreConfirmModal';
 
-interface EditLogModalProps {
+export interface EditLogModalProps {
   dateStr: string | null;
   existingLog?: GymLog;
   isOpen: boolean;
@@ -57,8 +57,7 @@ export default function EditLogModal({
   };
 
   const handleSave = async () => {
-    const today = new Date();
-    const todayStr = formatDateKey(today);
+    const todayStr = formatDateKey(new Date());
 
     if (dateStr && dateStr < todayStr) {
       const targetDate = new Date(dateStr + 'T00:00:00');
@@ -91,70 +90,49 @@ export default function EditLogModal({
     }
   };
 
-  const formattedDate = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-
+  const formattedDate = formatDisplayDate(dateStr, { showToday: true, includeYear: true });
   const rawCategories = availableWorkoutTypes.length > 0 ? availableWorkoutTypes : DEFAULT_WORKOUT_TYPES;
   const categories = Array.from(new Set(rawCategories));
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/85 backdrop-blur-xl animate-in fade-in duration-200">
-        <div className="w-full max-w-md bg-[#080c10]/95 border border-[rgba(0,255,136,0.2)] rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(0,0,0,0.9)] relative animate-in scale-in-95 duration-200">
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-5 right-5 text-zinc-400 hover:text-red-400 p-2 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-red-500/40 backdrop-blur-sm transition-all cursor-pointer group"
-          >
-            <X className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />
-          </button>
-
-          {/* Header */}
-          <div className="flex items-center gap-3.5 mb-6 pb-4 border-b border-zinc-800/80">
-            <div>
-              <Image src={"/images/icons/write.png"} alt='Log workout' width={100} height={100} unoptimized className="size-10" />
-            </div>
-            <div>
-              <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent">
-                {existingLog ? 'Edit Workout Entry' : 'Log Workout'}
-              </h3>
-              <p className="text-xs text-zinc-400 font-medium mt-0.5">{formattedDate}</p>
-            </div>
-          </div>
-
-          {/* Error Message */}
-          {errorMsg && (
-            <div className="mb-5 p-3.5 bg-red-950/20 border border-red-500/30 rounded-2xl text-red-400 text-xs font-bold text-left flex gap-2.5 items-start animate-in fade-in duration-200">
-              <span className="mt-0.5 text-base leading-none">⚠️</span>
-              <span className="leading-relaxed">{errorMsg}</span>
-            </div>
-          )}
-
-          {/* Form Controls */}
-          <WorkoutLogForm
-            hours={hours}
-            setHours={setHours}
-            isCustomHours={isCustomHours}
-            setIsCustomHours={setIsCustomHours}
-            customHoursInput={customHoursInput}
-            setCustomHoursInput={setCustomHoursInput}
-            workoutType={workoutType}
-            setWorkoutType={setWorkoutType}
-            notes={notes}
-            setNotes={setNotes}
-            categories={categories}
-            onSubmit={handleSave}
-            saving={saving}
-            submitButtonText="Upload Log"
-            onDelete={existingLog ? handleDelete : undefined}
-            deleting={deleting}
+      <ModalShell
+        isOpen={isOpen}
+        onClose={onClose}
+        maxWidth="md"
+        errorMsg={errorMsg}
+        title={existingLog ? 'Edit Workout Entry' : 'Log Workout'}
+        subtitle={formattedDate}
+        icon={
+          <Image
+            src="/images/icons/write.png"
+            alt="Log workout"
+            width={100}
+            height={100}
+            unoptimized
+            className="size-10"
           />
-        </div>
-      </div>
+        }
+      >
+        <WorkoutLogForm
+          hours={hours}
+          setHours={setHours}
+          isCustomHours={isCustomHours}
+          setIsCustomHours={setIsCustomHours}
+          customHoursInput={customHoursInput}
+          setCustomHoursInput={setCustomHoursInput}
+          workoutType={workoutType}
+          setWorkoutType={setWorkoutType}
+          notes={notes}
+          setNotes={setNotes}
+          categories={categories}
+          onSubmit={handleSave}
+          saving={saving}
+          submitButtonText="Upload Log"
+          onDelete={existingLog ? handleDelete : undefined}
+          deleting={deleting}
+        />
+      </ModalShell>
 
       <RestoreConfirmModal
         isOpen={showRestoreConfirm}

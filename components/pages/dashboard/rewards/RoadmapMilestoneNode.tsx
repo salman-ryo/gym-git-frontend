@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Lock, Gift, Check, Loader2 } from 'lucide-react';
 import { RoadmapMilestone } from '@/lib/types';
+import { getRarityStyles } from '@/lib/rarity-theme';
 import ItemIcon from '@/components/inventory/ItemIcon';
 
-interface RoadmapMilestoneNodeProps {
+export interface RoadmapMilestoneNodeProps {
   milestone: RoadmapMilestone;
   onClaim: (milestone: RoadmapMilestone) => Promise<void>;
   claimLoadingId: string | null;
@@ -22,60 +23,8 @@ export default function RoadmapMilestoneNode({
   const { status, streak_target, item_id, item_name, quantity, title, description, rarity } =
     milestone;
 
-  // We now retain the rarity theme even when locked, just heavily muted
-  const getRarityStyles = (rarityName: string, activeStatus: string) => {
-    const isLocked = activeStatus === 'LOCKED';
-
-    switch (rarityName.toLowerCase()) {
-      case 'common':
-        return {
-          border: isLocked ? 'border-zinc-800/50 bg-zinc-900/20' : 'border-zinc-700 bg-zinc-900/40 hover:border-zinc-600',
-          glow: '',
-          title: isLocked ? 'text-zinc-600' : 'text-zinc-200',
-          badge: isLocked ? 'bg-zinc-900/50 border-zinc-800/50 text-zinc-600' : 'bg-zinc-800 border-zinc-700 text-zinc-300',
-          iconBg: isLocked ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-zinc-900 border-zinc-800',
-          lockedText: 'text-zinc-600',
-        };
-      case 'rare':
-        return {
-          border: isLocked ? 'border-neon-cyan/10 bg-neon-cyan/[0.02]' : 'border-neon-cyan/30 bg-neon-cyan/10 hover:border-neon-cyan/50',
-          glow: isLocked ? '' : 'hover:shadow-[0_0_15px_rgba(34,211,238,0.12)]',
-          title: isLocked ? 'text-neon-cyan/40' : 'text-neon-cyan',
-          badge: isLocked ? 'bg-neon-cyan/5 border-neon-cyan/10 text-neon-cyan/40' : 'bg-neon-cyan/10 border-neon-cyan/20 text-neon-cyan',
-          iconBg: isLocked ? 'bg-zinc-900/50 border-neon-cyan/10' : 'bg-zinc-900 border-neon-cyan/30',
-          lockedText: 'text-neon-cyan/40',
-        };
-      case 'epic':
-        return {
-          border: isLocked ? 'border-neon-purple/10 bg-neon-purple/[0.02]' : 'border-neon-purple/30 bg-neon-purple/10 hover:border-neon-purple/50',
-          glow: isLocked ? '' : 'hover:shadow-[0_0_15px_rgba(168,85,247,0.12)]',
-          title: isLocked ? 'text-neon-purple/40' : 'text-neon-purple',
-          badge: isLocked ? 'bg-neon-purple/5 border-neon-purple/10 text-neon-purple/40' : 'bg-neon-purple/10 border-neon-purple/20 text-neon-purple',
-          iconBg: isLocked ? 'bg-zinc-900/50 border-neon-purple/10' : 'bg-zinc-900 border-neon-purple/30',
-          lockedText: 'text-neon-purple/40',
-        };
-      case 'legendary':
-        return {
-          border: isLocked ? 'border-amber-400/10 bg-amber-400/[0.02]' : 'border-amber-400/30 bg-amber-400/10 hover:border-amber-400/50',
-          glow: isLocked ? '' : 'hover:shadow-[0_0_15px_rgba(251,191,36,0.12)]',
-          title: isLocked ? 'text-amber-500/40' : 'text-amber-400',
-          badge: isLocked ? 'bg-amber-400/5 border-amber-400/10 text-amber-500/40' : 'bg-amber-400/10 border-amber-400/20 text-amber-400',
-          iconBg: isLocked ? 'bg-zinc-900/50 border-amber-400/10' : 'bg-zinc-900 border-amber-400/30',
-          lockedText: 'text-amber-500/40',
-        };
-      default:
-        return {
-          border: isLocked ? 'border-zinc-800/50 bg-zinc-900/20' : 'border-zinc-800 bg-zinc-900/40',
-          glow: '',
-          title: isLocked ? 'text-zinc-500' : 'text-zinc-300',
-          badge: isLocked ? 'bg-zinc-900/50 border-zinc-800/50 text-zinc-500' : 'bg-zinc-800 border-zinc-700 text-zinc-400',
-          iconBg: isLocked ? 'bg-zinc-900/30 border-zinc-800/50' : 'bg-zinc-900 border-zinc-800',
-          lockedText: 'text-zinc-600',
-        };
-    }
-  };
-
-  const styles = getRarityStyles(rarity, status);
+  const isLocked = status === 'LOCKED';
+  const styles = getRarityStyles(rarity, isLocked);
 
   return (
     <div

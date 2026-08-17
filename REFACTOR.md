@@ -130,15 +130,15 @@ frontend/
 ### Phase 3: Monolith Decomposition & Component Refactoring
 *Goal: Break down complex monolithic files into small, focused, maintainable modules.*
 
-- [ ] **3.1 Decompose `DailyCheckInModal.tsx` (583 lines -> 4 focused submodules)**:
+- [x] **3.1 Decompose `DailyCheckInModal.tsx` (583 lines -> 4 focused submodules)**:
   - `components/pages/dashboard/modals/checkin/AnimeCheckInCutscene.tsx`: Handles Yes/No anime cutscene sequences, sound effects, and speed lines.
   - `components/pages/dashboard/modals/checkin/LateNightWarningView.tsx`: Handles >= 11:30 PM midnight risk prompt.
   - `components/pages/dashboard/modals/checkin/CheckInPromptStep.tsx`: Handles Step 1 question & mascot greeting.
   - `components/pages/dashboard/modals/checkin/DailyCheckInModal.tsx`: Slim orchestrator using `<ModalShell>`.
-- [ ] **3.2 Refactor Contribution Graph Views (`YearView`, `MonthView`, `WeekView`)**:
+- [x] **3.2 Refactor Contribution Graph Views (`YearView`, `MonthView`, `WeekView`)**:
   - Replace duplicate tooltip blocks with `<DayTileTooltip>`.
   - Standardize date formatting using `lib/date-utils.ts`.
-- [ ] **3.3 Refactor Modals to use `<ModalShell>` and Shared Primitives**:
+- [x] **3.3 Refactor Modals to use `<ModalShell>` and Shared Primitives**:
   - `EditLogModal.tsx`: Use `<ModalShell>` and `lib/date-utils.ts`.
   - `FreezeModal.tsx`: Remove inline `<style>`, use `<ModalShell>`.
   - `StreakBrokenModal.tsx`: Use `<ModalShell>` and `lib/date-utils.ts`.
@@ -146,11 +146,11 @@ frontend/
   - `WeeklyPlanModal.tsx`: Use `<ModalShell>`.
   - `ClaimCelebrationModal.tsx`: Use shared `lib/rarity-theme.ts` and `<ModalShell>`.
   - `PowerLevelCelebrationModal.tsx`: Use `<ModalShell>` and shared hooks.
-- [ ] **3.4 Refactor Inventory & Rewards Components**:
+- [x] **3.4 Refactor Inventory & Rewards Components**:
   - `InventoryDrawer.tsx`: Use shared `lib/rarity-theme.ts`.
   - `RoadmapMilestoneNode.tsx`: Use shared `lib/rarity-theme.ts`.
-  - `ActiveEffectsBar.tsx`: Use shared `lib/rarity-theme.ts`.
-- [ ] **3.5 Extract Custom Hook for Dashboard Page (`app/dashboard/useDashboardState.ts`)**:
+  - `ActiveEffectsBar.tsx`: Use shared `lib/rarity-theme.ts` & `lib/date-utils.ts`.
+- [x] **3.5 Extract Custom Hook for Dashboard Page (`app/dashboard/useDashboardState.ts`)**:
   - Extract data fetching (`refreshData`), mock data controls (`activateMockData`, `resetToRealData`), backend seeding, snooze timers, and power score calculations from `app/dashboard/page.tsx`.
   - Reduce `app/dashboard/page.tsx` from 703 lines down to a clean declarative layout under 150 lines.
 

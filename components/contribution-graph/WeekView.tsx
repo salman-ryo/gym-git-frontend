@@ -5,6 +5,7 @@ import { GymLog, WeeklyPlan, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
 import { DayTile, DEFAULT_GREEN_THEME, getThemeForWorkout, getDayStyleInfo } from './theme-utils';
 import DayTileTooltip from './DayTileTooltip';
+import { formatShortDate } from '@/lib/date-utils';
 
 interface WeekViewProps {
   days: DayTile[];

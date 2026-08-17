@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import { UserInventoryItem } from '@/lib/types';
+import { getRarityStyles } from '@/lib/rarity-theme';
 import ItemIcon from './ItemIcon';
 import { X, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
 
-interface InventoryDrawerProps {
+export interface InventoryDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   inventoryItems: UserInventoryItem[];
@@ -79,47 +80,6 @@ export default function InventoryDrawer({
     }
   };
 
-  // Helper to determine border colors for rarities
-  const getRarityStyles = (rarity: string) => {
-    switch (rarity) {
-      case 'common':
-        return {
-          border: 'border-zinc-700/60 hover:border-zinc-500 bg-zinc-950/40',
-          text: 'text-zinc-400',
-          glow: '',
-          bgGradient: 'from-zinc-500/5 to-transparent',
-        };
-      case 'rare':
-        return {
-          border: 'border-neon-cyan/40 hover:border-neon-cyan bg-zinc-950/60 shadow-[0_0_10px_rgba(34,211,238,0.15)]',
-          text: 'text-neon-cyan',
-          glow: 'shadow-[0_0_20px_rgba(34,211,238,0.35)]',
-          bgGradient: 'from-neon-cyan/10 to-transparent',
-        };
-      case 'epic':
-        return {
-          border: 'border-neon-purple/40 hover:border-neon-purple bg-zinc-950/60 shadow-[0_0_12px_rgba(168,85,247,0.18)]',
-          text: 'text-neon-purple font-black',
-          glow: 'shadow-[0_0_25px_rgba(168,85,247,0.4)]',
-          bgGradient: 'from-neon-purple/10 to-transparent',
-        };
-      case 'legendary':
-        return {
-          border: 'border-amber-400/50 hover:border-amber-400 bg-zinc-950/80 shadow-[0_0_15px_rgba(251,191,36,0.22)]',
-          text: 'text-amber-400 font-black animate-pulse',
-          glow: 'shadow-[0_0_30px_rgba(251,191,36,0.55)]',
-          bgGradient: 'from-amber-400/10 to-transparent',
-        };
-      default:
-        return {
-          border: 'border-zinc-800 bg-zinc-950/20',
-          text: 'text-zinc-400',
-          glow: '',
-          bgGradient: '',
-        };
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fade-in">
       {/* Background Click dismisser */}
@@ -127,18 +87,17 @@ export default function InventoryDrawer({
 
       {/* Drawer Container Panel */}
       <div className="relative z-10 w-full max-w-lg md:max-w-xl h-full bg-[#060a0e]/95 border-l border-zinc-800/80 shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col justify-between overflow-hidden animate-slide-in-right">
-        
         {/* Futuristic Top Header Bar */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-800/80 bg-zinc-950/40 relative">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-neon-cyan/40 to-transparent" />
-          
+
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-neon-cyan animate-pulse" />
             <h2 className="text-sm font-black uppercase tracking-[0.2em] bg-gradient-to-r from-neon-cyan via-white to-neon-purple bg-clip-text text-transparent">
               Hero Inventory
             </h2>
           </div>
-          
+
           <button
             type="button"
             onClick={onClose}
@@ -150,18 +109,17 @@ export default function InventoryDrawer({
 
         {/* Content Section: Slot Grid & Detail Panel */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-          
           {/* Left Column: RPG Slot Grid (Scrollable) */}
           <div className="flex-1 p-6 overflow-y-auto space-y-4">
             <div className="text-[10px] font-black uppercase text-zinc-500 tracking-wider">
               Item Slots ({inventoryItems.length} active)
             </div>
-            
+
             <div className="grid grid-cols-4 gap-4">
               {slots.map((item, idx) => {
                 const isSelected = selectedItem && item && selectedItem.item_details.item_id === item.item_details.item_id;
                 const rStyles = item ? getRarityStyles(item.item_details.rarity) : null;
-                
+
                 return (
                   <div
                     key={idx}
@@ -175,11 +133,11 @@ export default function InventoryDrawer({
                     {item ? (
                       <>
                         {/* Glowing rarity background accent */}
-                        <div className={`absolute inset-0 rounded-xl bg-gradient-to-t ${rStyles?.bgGradient} pointer-events-none opacity-40 group-hover/slot:opacity-80 transition-opacity`} />
-                        
+                        <div className={`absolute inset-0 rounded-xl bg-gradient-to-t ${rStyles?.gradient} pointer-events-none opacity-40 group-hover/slot:opacity-80 transition-opacity`} />
+
                         {/* Item Icon */}
                         <ItemIcon itemId={item.item_details.item_id} size={30} className="relative z-10 transition-transform duration-200 group-hover/slot:scale-110" />
-                        
+
                         {/* Quantity Counter Badge */}
                         <div className="absolute top-1.5 right-1.5 z-10 px-1 bg-zinc-900 border border-zinc-800 rounded font-black text-[9px] text-neon-cyan shadow-sm">
                           x{item.quantity}
@@ -198,14 +156,13 @@ export default function InventoryDrawer({
           <div className="w-full md:w-[220px] bg-zinc-950/50 border-t md:border-t-0 md:border-l border-zinc-850 p-6 flex flex-col justify-between overflow-y-auto">
             {selectedItem ? (
               <div className="space-y-6 h-full flex flex-col justify-between">
-                
                 {/* Details */}
                 <div className="space-y-4">
                   {/* Rarity Tag */}
                   <span className={`inline-block px-2.5 py-0.5 rounded-full bg-zinc-900 border text-[9px] uppercase tracking-wider font-extrabold ${getRarityStyles(selectedItem.item_details.rarity).text}`}>
                     {selectedItem.item_details.rarity}
                   </span>
-                  
+
                   {/* Item Icon & Title */}
                   <div className="space-y-2">
                     <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center ${getRarityStyles(selectedItem.item_details.rarity).border} ${getRarityStyles(selectedItem.item_details.rarity).glow}`}>
@@ -267,7 +224,6 @@ export default function InventoryDrawer({
                     </button>
                   )}
                 </div>
-
               </div>
             ) : (
               <div className="h-full flex flex-col justify-center items-center text-center text-zinc-500 space-y-2">
@@ -281,9 +237,7 @@ export default function InventoryDrawer({
               </div>
             )}
           </div>
-
         </div>
-
       </div>
     </div>
   );
