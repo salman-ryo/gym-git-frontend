@@ -32,7 +32,18 @@ export class ApiError extends Error {
 
 ---
 
-## 2. Authentication & 401 Handling Strategy
+## 2. Domain Error Handling & Business Rules
+
+1. **Past Log Editing Restrictions (`RESTRICTED`):**  
+   Editing historical logs is restricted based on plan consistency rules. The backend returns code `RESTRICTED` or `FORBIDDEN`. The UI must display an informative toast/alert explaining why past dates cannot be modified without power-ups.
+2. **Restore Shield Lookback Window:**  
+   `POST /api/v1/streak/restore` only permits restoration within the 3-day lookback window. If expired, the backend returns `EXPIRED_RESTORE_WINDOW`.
+3. **Inventory & Token Validation:**  
+   Consuming items (`POST /api/v1/inventory/use`) returns `INSUFFICIENT_QUANTITY` if user balance is zero.
+
+---
+
+## 3. Authentication & 401 Handling Strategy
 
 1. **Token Refresh Fallback:**  
    Before dispatching requests, `getAccessToken()` queries `supabase.auth.getSession()`. If missing or expiring, it attempts `supabase.auth.refreshSession()`.
@@ -45,7 +56,7 @@ export class ApiError extends Error {
 
 ---
 
-## 3. Verification & Circuit Breaker Workflow
+## 4. Verification & Circuit Breaker Workflow
 
 1. **Local Build Check:**  
    Run `npm run build` to verify type safety and Next.js route compilation.

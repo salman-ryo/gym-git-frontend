@@ -15,6 +15,7 @@
 1. **Frontend Auth & Backend Integration:** [.agent/features/frontend-auth-and-backend/STATE.md](file:///.agent/features/frontend-auth-and-backend/STATE.md)
 2. **Landing Page & CSS Refactoring:** [.agent/features/landing-and-css-refactor/STATE.md](file:///.agent/features/landing-and-css-refactor/STATE.md)
 3. **Core Dashboard & Analytics:** [.agent/features/core-dashboard-and-analytics/STATE.md](file:///.agent/features/core-dashboard-and-analytics/STATE.md)
+4. **Gamification, Cycles & Rewards Engine:** [.agent/features/gamification-and-rewards/STATE.md](file:///.agent/features/gamification-and-rewards/STATE.md)
 
 ---
 
@@ -61,6 +62,7 @@ Every agent operating in this repository **must strictly abide** by the followin
 | **Styling** | Tailwind CSS v4 (`@theme inline`), CSS Variables, Radix UI / Shadcn primitives |
 | **Authentication** | Supabase Auth (`@supabase/ssr`) with HttpOnly Cookie Sessions |
 | **Backend API** | Go / Gin REST API at `http://localhost:8080/api/v1` |
-| **API Client** | Custom fetch wrapper `utils/api.ts` with automatic Supabase JWT injection & envelope parsing |
+| **API Client** | Custom fetch wrapper `utils/api.ts` with automatic Supabase JWT & `X-Timezone` header injection & envelope unwrapping |
+| **Gamification Engine** | 7-Day Plan Cycles, Rest Tokens, Split Accuracy Scoring, Sickness Freeze Vault ("Ice Pause"), Master Item Inventory, Dynamic Reward Roadmap |
 | **Package Manager** | `npm` (Node.js 20+) |
 | **State Management** | React Context (`lib/auth-context.tsx`), local hooks, URL search params |

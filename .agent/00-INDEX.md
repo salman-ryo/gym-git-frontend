@@ -8,9 +8,9 @@
 
 | Task Category / Path Glob | Applicable Rule File | Core Responsibility |
 | :--- | :--- | :--- |
-| **Global Architecture & Backend** (`app/**`, `utils/api.ts`, `utils/supabase/**`, `lib/**`) | [.agent/rules/01-architecture.md](file:///.agent/rules/01-architecture.md) | Next.js 16 App Router, Supabase Auth SSR, Go/Gin backend integration, environment config |
-| **Styling & Components** (`app/globals.css`, `components/**`, `app/**/*.tsx`) | [.agent/rules/02-code-style.md](file:///.agent/rules/02-code-style.md) | Tailwind CSS v4 `@theme inline`, design tokens, glassmorphism, responsive patterns, component conventions |
-| **Testing, Error Handling & API Envelope** (`utils/api.ts`, `components/AuthGuard.tsx`, modals, handlers) | [.agent/rules/03-testing-and-errors.md](file:///.agent/rules/03-testing-and-errors.md) | Standard `ApiErrorEnvelope`, HTTP 401 handling, session refresh, error boundaries, validation |
+| **Global Architecture & Backend** (`app/**`, `utils/api.ts`, `utils/supabase/**`, `lib/**`, `lib/*service.ts`) | [.agent/rules/01-architecture.md](file:///.agent/rules/01-architecture.md) | Next.js 16 App Router, Supabase Auth SSR, Go/Gin backend integration, timezone header, environment config, API contracts |
+| **Styling & Components** (`app/globals.css`, `components/**`, `app/**/*.tsx`) | [.agent/rules/02-code-style.md](file:///.agent/rules/02-code-style.md) | Tailwind CSS v4 `@theme inline`, design tokens, RPG inventory rarities, roadmap styling, glassmorphism, responsive patterns |
+| **Testing, Error Handling & API Envelope** (`utils/api.ts`, `components/AuthGuard.tsx`, modals, handlers) | [.agent/rules/03-testing-and-errors.md](file:///.agent/rules/03-testing-and-errors.md) | Standard `ApiErrorEnvelope`, HTTP 401 handling, past log restrictions, session refresh, error boundaries, validation |
 
 ---
 
@@ -21,6 +21,7 @@
 | **1. Frontend Auth & Backend Integration** | [.agent/features/frontend-auth-and-backend/](file:///.agent/features/frontend-auth-and-backend/) | Supabase SSR cookie session, Go backend `/api/v1/auth/bootstrap` & `/api/v1/auth/me`, API Client wrapper, route middleware. [View STATE.md](file:///.agent/features/frontend-auth-and-backend/STATE.md) |
 | **2. Landing Page & CSS Refactoring** | [.agent/features/landing-and-css-refactor/](file:///.agent/features/landing-and-css-refactor/) | Modern neon cyber-fitness landing page, Tailwind v4 theme consolidation, component refactoring into `app/globals.css`. [View STATE.md](file:///.agent/features/landing-and-css-refactor/STATE.md) |
 | **3. Core Dashboard & Analytics** | [.agent/features/core-dashboard-and-analytics/](file:///.agent/features/core-dashboard-and-analytics/) | Multi-view contribution graph (Year/Month/Week), scientific power scoring, daily check-in modal, weekly plan selector. [View STATE.md](file:///.agent/features/core-dashboard-and-analytics/STATE.md) |
+| **4. Gamification, Cycles & Rewards Engine** | [.agent/features/gamification-and-rewards/](file:///.agent/features/gamification-and-rewards/) | 7-Day Plan Cycles, Rest Tokens, Sickness Freeze Vault ("Ice Pause"), Master Item Inventory, Dynamic Streak Reward Roadmap, Streak Broken Recovery Modal. [View STATE.md](file:///.agent/features/gamification-and-rewards/STATE.md) |
 
 ---
 
