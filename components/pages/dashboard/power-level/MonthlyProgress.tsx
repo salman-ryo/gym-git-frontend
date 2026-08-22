@@ -51,6 +51,7 @@ function MonthlyBarColumn({
                 <CharacterPowerParticles
                   isAnimating={isAnimating}
                   score={currentScore}
+                  tierJustChanged={tierJustChanged}
                   size="sm"
                 />
 
@@ -77,6 +78,10 @@ function MonthlyBarColumn({
                   m.isCurrentMonth && currentScore > 0 ? 'relative overflow-hidden' : ''
                 }`}
               >
+                {/* Energy beam cap at the top of the rising bar */}
+                {isAnimating && currentScore > 0 && (
+                  <div className="absolute top-0 inset-x-0 h-1 bg-white shadow-[0_0_8px_#ffffff] z-10 rounded-t" />
+                )}
                 {m.isCurrentMonth && currentScore > 0 && (
                   <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/20 to-transparent animate-pulse" />
                 )}

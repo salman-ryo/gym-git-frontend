@@ -89,6 +89,7 @@ export default function PowerLevelCelebrationModal({
             <CharacterPowerParticles
               isAnimating={isAnimating}
               score={currentScore}
+              tierJustChanged={tierJustChanged}
               size="lg"
             />
 
@@ -157,6 +158,10 @@ export default function PowerLevelCelebrationModal({
               style={{ height: `${heightPercent}%` }}
               className={`w-full rounded-lg relative overflow-hidden ${theme.bar}`}
             >
+              {/* Energy beam cap at the top of the rising bar */}
+              {isAnimating && currentScore > 0 && (
+                <div className="absolute top-0 inset-x-0 h-1.5 bg-white shadow-[0_0_10px_#ffffff] z-10 rounded-t" />
+              )}
               {/* Shimmer Effect inside the rising bar */}
               <div className="absolute inset-0 bg-gradient-to-t from-white/0 via-white/25 to-white/0 animate-pulse" />
             </div>
