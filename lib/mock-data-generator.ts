@@ -117,9 +117,13 @@ export function generate365MockLogs(daysCount = 365): GymLog[] {
     const categoryIdx = Math.floor(seededRandom() * MOCK_WORKOUT_TYPES.length);
     const categoryConfig = MOCK_WORKOUT_TYPES[categoryIdx];
 
-    // Duration strictly less than 2 hours (0.8h - 1.8h)
-    const rawHours = categoryConfig.minHours + seededRandom() * (categoryConfig.maxHours - categoryConfig.minHours);
-    const hours = Math.min(1.9, Math.round(rawHours * 10) / 10);
+    // Diverse duration distribution across all 4 tiers (0.6h to 2.4h)
+    let rawHours = categoryConfig.minHours + seededRandom() * (categoryConfig.maxHours - categoryConfig.minHours);
+    // 12% chance of intense long session (2.0h - 2.4h) on heavy days
+    if (seededRandom() < 0.12) {
+      rawHours += 0.6;
+    }
+    const hours = Math.min(2.5, Math.max(0.5, Math.round(rawHours * 10) / 10));
 
     const noteIdx = Math.floor(seededRandom() * categoryConfig.notes.length);
     const notes = categoryConfig.notes[noteIdx];

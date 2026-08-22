@@ -67,6 +67,7 @@ export default function YearView({
                           onClick={() => !day.isFuture && onTileClick(day.dateStr, day.log)}
                           className={`w-3 h-3 rounded-[4px] transition-all duration-150 border transform relative overflow-hidden
                             ${tileColorClass} 
+                            ${!isFilteredOut && styleInfo.glowClass ? styleInfo.glowClass : ''}
                             ${day.isFuture ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer hover:scale-125 hover:z-20'} 
                             ${ringClass}
                           `}
@@ -89,11 +90,12 @@ export default function YearView({
 
       <div className="flex items-center justify-end gap-2 text-[9px] font-bold uppercase tracking-widest text-zinc-500 mt-5 pt-4 border-t border-zinc-800/40">
         <span>Less</span>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-[4px] bg-zinc-800/70 border border-zinc-700/50" title="0 hrs" />
-          <div className="w-3 h-3 rounded-[4px] bg-green-700 border border-green-600" title="< 1.0 hr" />
-          <div className="w-3 h-3 rounded-[4px] bg-green-500 border border-green-400" title="1.0 - 1.9 hrs" />
-          <div className="w-3 h-3 rounded-[4px] bg-green-300 border border-green-400" title="2.0+ hrs" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-[4px] bg-[#0d1117] border border-zinc-800/80" title="0 hrs (No workout)" />
+          <div className="w-3 h-3 rounded-[4px] bg-[#0e4429] border border-[#006d32]/80 shadow-[0_0_4px_rgba(14,68,41,0.4)]" title="Light session (< 1.0 hr)" />
+          <div className="w-3 h-3 rounded-[4px] bg-[#006d32] border border-[#26a641]/80 shadow-[0_0_8px_rgba(0,109,50,0.5)]" title="Moderate session (1.0 - 1.4 hrs)" />
+          <div className="w-3 h-3 rounded-[4px] bg-[#26a641] border border-[#39d353] shadow-[0_0_12px_rgba(38,166,65,0.6)]" title="Solid session (1.5 - 1.9 hrs)" />
+          <div className="w-3 h-3 rounded-[4px] bg-[#39d353] border border-[#00ff88] shadow-[0_0_16px_rgba(57,211,83,0.75)]" title="Beast Mode (2.0+ hrs)" />
         </div>
         <span>More</span>
       </div>

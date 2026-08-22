@@ -2,9 +2,12 @@
 
 import React, { useState } from 'react';
 import { UserInventoryItem } from '@/lib/types';
-import { getRarityStyles } from '@/lib/rarity-theme';
+import { getRarityStyles, normalizeRarity } from '@/lib/rarity-theme';
 import ItemIcon from './ItemIcon';
-import { X, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+import ModalShell from '@/components/ui/modal-shell';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Package, Sparkles, ShieldAlert, Loader2, Clock, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface InventoryDrawerProps {
   isOpen: boolean;
@@ -15,6 +18,55 @@ export interface InventoryDrawerProps {
   onRequestFreeze?: (availableTokens: number) => void;
 }
 
+function formatItemDuration(seconds?: number, effectType?: string): string {
+  if (effectType === 'INSTANT_USE' || !seconds || seconds <= 0) {
+    return 'Instant Consumable';
+  }
+  if (seconds >= 86400) {
+    const days = Math.round(seconds / 86400);
+    return `${days} ${days === 1 ? 'Day' : 'Days'}`;
+  }
+  if (seconds >= 3600) {
+    const hours = Math.round(seconds / 3600);
+    return `${hours} ${hours === 1 ? 'Hour' : 'Hours'}`;
+  }
+  if (seconds >= 60) {
+    const mins = Math.round(seconds / 60);
+    return `${mins} ${mins === 1 ? 'Min' : 'Mins'}`;
+  }
+  return `${seconds}s`;
+}
+
+function getItemActionHint(itemId: string): string {
+  switch (itemId) {
+    case 'STREAK_FREEZE_TOKEN':
+      return '❄️ Click to Configure Freeze';
+    case 'RESTORE_SHIELD':
+      return '🛡️ Click to Restore Streak';
+    case 'XP_BOOST':
+      return '⚡ Click to Activate 2x XP';
+    case 'ACCURACY_CHARM':
+      return '🎯 Click to Activate Charm';
+    default:
+      return '⚡ Click to Activate';
+  }
+}
+
+function getTooltipGlowClass(rarity?: string | null): string {
+  const norm = normalizeRarity(rarity);
+  switch (norm) {
+    case 'legendary':
+      return 'border-amber-400/50 shadow-[0_0_30px_rgba(251,191,36,0.3)]';
+    case 'epic':
+      return 'border-neon-purple/50 shadow-[0_0_30px_rgba(168,85,247,0.3)]';
+    case 'rare':
+      return 'border-neon-cyan/50 shadow-[0_0_30px_rgba(34,211,238,0.3)]';
+    case 'common':
+    default:
+      return 'border-zinc-700/80 shadow-[0_0_20px_rgba(0,0,0,0.8)]';
+  }
+}
+
 export default function InventoryDrawer({
   isOpen,
   onClose,
@@ -23,222 +75,296 @@ export default function InventoryDrawer({
   loading = false,
   onRequestFreeze,
 }: InventoryDrawerProps) {
-  const [selectedItem, setSelectedItem] = useState<UserInventoryItem | null>(null);
-  const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [isUsing, setIsUsing] = useState<boolean>(false);
+  const [confirmingItem, setConfirmingItem] = useState<UserInventoryItem | null>(null);
+  const [isUsingItemId, setIsUsingItemId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Fill up slots up to 8 for that classic RPG empty slot look
-  const totalSlots = Math.max(8, Math.ceil((inventoryItems.length || 1) / 4) * 4);
+  // Fill up slots to multiples of 4 (minimum 12 slots for RPG grid aesthetic)
+  const totalSlots = Math.max(12, Math.ceil(Math.max(inventoryItems.length, 1) / 4) * 4);
   const slots = Array.from({ length: totalSlots }).map((_, idx) => {
     return inventoryItems[idx] || null;
   });
 
-  if (!isOpen) return null;
+  const totalCount = inventoryItems.reduce((acc, curr) => acc + curr.quantity, 0);
 
-  const handleSelect = (item: UserInventoryItem | null) => {
-    if (isUsing) return;
-    setSelectedItem(item);
-    setShowConfirm(false);
-  };
+  const handleItemClick = (item: UserInventoryItem) => {
+    if (isUsingItemId || loading) return;
 
-  const handleUseRequest = () => {
-    if (!selectedItem) return;
-    // Intercept streak freeze to show duration selection modal
-    if (selectedItem.item_details.item_id === 'STREAK_FREEZE_TOKEN') {
+    if (item.item_details.item_id === 'STREAK_FREEZE_TOKEN') {
       if (onRequestFreeze) {
-        onRequestFreeze(selectedItem.quantity);
+        onRequestFreeze(item.quantity);
       }
-    } else if (selectedItem.item_details.item_id === 'RESTORE_SHIELD') {
-      setShowConfirm(true);
-    } else {
-      executeUse();
+      return;
     }
+
+    if (item.item_details.item_id === 'RESTORE_SHIELD') {
+      setConfirmingItem(item);
+      return;
+    }
+
+    // Direct use for consumables/buffs
+    executeUse(item);
   };
 
-  const executeUse = async () => {
-    if (!selectedItem) return;
-    setIsUsing(true);
+  const executeUse = async (item: UserInventoryItem) => {
+    setIsUsingItemId(item.item_details.item_id);
+    setErrorMsg(null);
     try {
-      await onUseItem(selectedItem.item_details.item_id);
-      // Refresh selected item balance
-      const updated = inventoryItems.find(
-        (i) => i.item_details.item_id === selectedItem.item_details.item_id
-      );
-      if (updated && updated.quantity > 1) {
-        setSelectedItem({
-          ...selectedItem,
-          quantity: updated.quantity - 1,
-        });
-      } else {
-        setSelectedItem(null);
-      }
-      setShowConfirm(false);
-    } catch (err) {
+      await onUseItem(item.item_details.item_id);
+      setConfirmingItem(null);
+      setSuccessMsg(`Activated ${item.item_details.name}!`);
+      setTimeout(() => {
+        setSuccessMsg(null);
+      }, 3000);
+    } catch (err: unknown) {
       console.error('Failed to use item:', err);
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to use item. Please try again.');
     } finally {
-      setIsUsing(false);
+      setIsUsingItemId(null);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fade-in">
-      {/* Background Click dismisser */}
-      <div className="absolute inset-0" onClick={onClose} />
-
-      {/* Drawer Container Panel */}
-      <div className="relative z-10 w-full max-w-lg md:max-w-xl h-full bg-[#060a0e]/95 border-l border-zinc-800/80 shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col justify-between overflow-hidden animate-slide-in-right">
-        {/* Futuristic Top Header Bar */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-800/80 bg-zinc-950/40 relative">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-neon-cyan/40 to-transparent" />
-
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-neon-cyan animate-pulse" />
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] bg-gradient-to-r from-neon-cyan via-white to-neon-purple bg-clip-text text-transparent">
-              Hero Inventory
-            </h2>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-zinc-900/60 border border-zinc-800 hover:border-neon-cyan/40 text-zinc-400 hover:text-neon-cyan flex items-center justify-center transition-all cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+    <ModalShell
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="lg"
+      className="p-5 sm:p-6"
+      errorMsg={errorMsg}
+      accentGradient="bg-gradient-to-r from-neon-cyan via-teal-300 to-neon-purple"
+      title={
+        <div className="flex items-center gap-2.5">
+          <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-cyan via-white to-neon-purple bg-clip-text text-transparent">
+            Hero Inventory
+          </h3>
+          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan tracking-wider font-mono">
+            {inventoryItems.length} {inventoryItems.length === 1 ? 'Slot' : 'Slots'} Active
+          </span>
         </div>
+      }
+      subtitle="Hover over any item to inspect stats and lore. Click an item to use its power."
+      icon={
+        <div className="w-11 h-11 rounded-2xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+          <Package className="w-5 h-5 text-neon-cyan animate-pulse" />
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        {/* Success Alert Banner */}
+        {successMsg && (
+          <div className="p-3 rounded-xl bg-neon-green/10 border border-neon-green/30 text-neon-green text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200 shadow-[0_0_15px_rgba(0,255,136,0.15)]">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{successMsg}</span>
+          </div>
+        )}
 
-        {/* Content Section: Slot Grid & Detail Panel */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-          {/* Left Column: RPG Slot Grid (Scrollable) */}
-          <div className="flex-1 p-6 overflow-y-auto space-y-4">
-            <div className="text-[10px] font-black uppercase text-zinc-500 tracking-wider">
-              Item Slots ({inventoryItems.length} active)
+        {/* High-Value Item Confirmation Banner */}
+        {confirmingItem && (
+          <div className="p-3.5 rounded-2xl bg-red-950/40 border border-red-500/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(239,68,68,0.25)]">
+                <ShieldAlert className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-red-200 uppercase tracking-wide">
+                  Use {confirmingItem.item_details.name}?
+                </h4>
+                <p className="text-[10px] text-zinc-400">
+                  This will consume 1x token from your inventory balance.
+                </p>
+              </div>
             </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => executeUse(confirmingItem)}
+                disabled={!!isUsingItemId}
+                className="flex-1 sm:flex-initial px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-[11px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.3)] disabled:opacity-50"
+              >
+                {isUsingItemId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Confirm & Use'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingItem(null)}
+                disabled={!!isUsingItemId}
+                className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-bold text-[11px] uppercase tracking-wider transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
-            <div className="grid grid-cols-4 gap-4">
+        {/* The Cyberpunk Inventory Grid Box */}
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 shadow-inner relative overflow-hidden">
+          <TooltipProvider delayDuration={50} skipDelayDuration={0}>
+            <div className="grid grid-cols-4 gap-3 sm:gap-3.5">
               {slots.map((item, idx) => {
-                const isSelected = selectedItem && item && selectedItem.item_details.item_id === item.item_details.item_id;
-                const rStyles = item ? getRarityStyles(item.item_details.rarity) : null;
+                if (!item) {
+                  return (
+                    <div
+                      key={idx}
+                      className="aspect-square rounded-2xl border border-dashed border-zinc-850/80 bg-zinc-950/30 flex items-center justify-center text-zinc-800 transition-colors"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-zinc-900 border border-zinc-800/60" />
+                    </div>
+                  );
+                }
+
+                const rStyles = getRarityStyles(item.item_details.rarity);
+                const isSlotUsing = isUsingItemId === item.item_details.item_id;
 
                 return (
-                  <div
-                    key={idx}
-                    onClick={() => item && handleSelect(item)}
-                    className={`aspect-square relative rounded-xl border flex items-center justify-center transition-all duration-300 ${
-                      item
-                        ? `${rStyles?.border} cursor-pointer group/slot`
-                        : 'border-zinc-850 bg-zinc-950/20 cursor-default'
-                    } ${isSelected ? 'scale-105 border-white ring-2 ring-neon-cyan/30' : ''}`}
-                  >
-                    {item ? (
-                      <>
-                        {/* Glowing rarity background accent */}
-                        <div className={`absolute inset-0 rounded-xl bg-gradient-to-t ${rStyles?.gradient} pointer-events-none opacity-40 group-hover/slot:opacity-80 transition-opacity`} />
+                  <Tooltip key={item.item_details.item_id || idx}>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => handleItemClick(item)}
+                        disabled={loading || isSlotUsing}
+                        aria-label={`${item.item_details.name} (x${item.quantity})`}
+                        className={cn(
+                          'aspect-square relative rounded-2xl border flex items-center justify-center transition-all duration-200 group/slot cursor-pointer outline-none',
+                          rStyles.border,
+                          rStyles.glow,
+                          'hover:scale-105 active:scale-95 hover:z-10 focus-visible:ring-2 focus-visible:ring-neon-cyan/60'
+                        )}
+                      >
+                        {/* Glowing background gradient */}
+                        <div
+                          className={cn(
+                            'absolute inset-0 rounded-2xl bg-gradient-to-t pointer-events-none opacity-40 group-hover/slot:opacity-80 transition-opacity duration-300',
+                            rStyles.gradient
+                          )}
+                        />
+
+                        {/* Corner rarity accent dot */}
+                        <span
+                          className={cn(
+                            'absolute top-2 left-2 w-1.5 h-1.5 rounded-full shadow-[0_0_6px_currentColor] pointer-events-none',
+                            rStyles.text
+                          )}
+                        />
 
                         {/* Item Icon */}
-                        <ItemIcon itemId={item.item_details.item_id} size={30} className="relative z-10 transition-transform duration-200 group-hover/slot:scale-110" />
+                        <ItemIcon
+                          itemId={item.item_details.item_id}
+                          size={32}
+                          className="relative z-10 transition-transform duration-200 group-hover/slot:scale-110"
+                        />
 
                         {/* Quantity Counter Badge */}
-                        <div className="absolute top-1.5 right-1.5 z-10 px-1 bg-zinc-900 border border-zinc-800 rounded font-black text-[9px] text-neon-cyan shadow-sm">
+                        <div className="absolute top-1.5 right-1.5 z-10 px-1.5 py-0.5 bg-zinc-950/90 border border-zinc-800/90 rounded-md font-black text-[9px] text-neon-cyan shadow-sm font-mono tracking-tight pointer-events-none">
                           x{item.quantity}
                         </div>
-                      </>
-                    ) : (
-                      <div className="w-2 h-2 rounded-full bg-zinc-900/60" />
-                    )}
-                  </div>
+
+                        {/* Loading Spinner during activation */}
+                        {isSlotUsing && (
+                          <div className="absolute inset-0 z-20 rounded-2xl bg-zinc-950/85 backdrop-blur-[1px] flex items-center justify-center animate-in fade-in duration-150">
+                            <Loader2 className="w-5 h-5 text-neon-cyan animate-spin" />
+                          </div>
+                        )}
+                      </button>
+                    </TooltipTrigger>
+
+                    <TooltipContent
+                      side="top"
+                      sideOffset={10}
+                      className={cn(
+                        'z-50 w-72 p-3.5 rounded-2xl bg-[#060a0f]/95 backdrop-blur-xl border custom-scrollbar space-y-2.5',
+                        getTooltipGlowClass(item.item_details.rarity)
+                      )}
+                    >
+                      {/* Tooltip Header */}
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={cn(
+                            'w-9 h-9 rounded-xl border flex items-center justify-center shrink-0',
+                            rStyles.border,
+                            rStyles.iconBg
+                          )}
+                        >
+                          <ItemIcon itemId={item.item_details.item_id} size={20} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className={cn('text-xs font-black leading-snug truncate', rStyles.text)}>
+                            {item.item_details.name}
+                          </h4>
+                          <span
+                            className={cn(
+                              'inline-block mt-0.5 px-2 py-0.2 rounded-full text-[8.5px] font-black uppercase tracking-wider',
+                              rStyles.badge
+                            )}
+                          >
+                            {item.item_details.rarity}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+
+                      {/* Item Description */}
+                      <p className="text-[11px] text-zinc-300 font-medium leading-relaxed">
+                        {item.item_details.description}
+                      </p>
+
+                      {/* Metadata Pills */}
+                      <div className="grid grid-cols-2 gap-2 pt-0.5">
+                        <div className="px-2 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800/80 text-[10px] text-zinc-400 flex items-center gap-1.5">
+                          <Clock className="w-3 h-3 text-neon-cyan shrink-0" />
+                          <span className="truncate">
+                            {formatItemDuration(
+                              item.item_details.duration_seconds,
+                              item.item_details.effect_type
+                            )}
+                          </span>
+                        </div>
+                        <div className="px-2 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800/80 text-[10px] text-zinc-400 flex items-center gap-1.5">
+                          <Package className="w-3 h-3 text-neon-green shrink-0" />
+                          <span className="truncate">
+                            In Bag: <strong className="text-white font-black">{item.quantity}</strong>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action Prompt */}
+                      <div className="pt-0.5">
+                        <div className="w-full py-1.5 px-2 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-[10px] font-black text-center uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[0_0_10px_rgba(34,211,238,0.15)]">
+                          <Sparkles className="w-3 h-3 shrink-0" />
+                          <span>{getItemActionHint(item.item_details.item_id)}</span>
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
                 );
               })}
             </div>
+          </TooltipProvider>
+
+          {/* Empty State Banner if 0 items */}
+          {inventoryItems.length === 0 && (
+            <div className="py-6 text-center space-y-2 text-zinc-500">
+              <Sparkles className="w-6 h-6 text-zinc-700 mx-auto" />
+              <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Vault is Empty</p>
+              <p className="text-[11px] text-zinc-500 max-w-[260px] mx-auto">
+                Complete milestones, maintain streaks, and achieve check-ins to unlock power items.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Summary / Quick Tip */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 text-[11px] text-zinc-400">
+          <div className="flex items-center gap-1.5 text-zinc-400">
+            <Sparkles className="w-3.5 h-3.5 text-neon-cyan shrink-0" />
+            <span>Hover item to inspect • Click to activate</span>
           </div>
-
-          {/* Right Column / Bottom row: Selected Item Inspector */}
-          <div className="w-full md:w-[220px] bg-zinc-950/50 border-t md:border-t-0 md:border-l border-zinc-850 p-6 flex flex-col justify-between overflow-y-auto">
-            {selectedItem ? (
-              <div className="space-y-6 h-full flex flex-col justify-between">
-                {/* Details */}
-                <div className="space-y-4">
-                  {/* Rarity Tag */}
-                  <span className={`inline-block px-2.5 py-0.5 rounded-full bg-zinc-900 border text-[9px] uppercase tracking-wider font-extrabold ${getRarityStyles(selectedItem.item_details.rarity).text}`}>
-                    {selectedItem.item_details.rarity}
-                  </span>
-
-                  {/* Item Icon & Title */}
-                  <div className="space-y-2">
-                    <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center ${getRarityStyles(selectedItem.item_details.rarity).border} ${getRarityStyles(selectedItem.item_details.rarity).glow}`}>
-                      <ItemIcon itemId={selectedItem.item_details.item_id} size={34} />
-                    </div>
-                    <h3 className="text-sm font-black text-white leading-snug">
-                      {selectedItem.item_details.name}
-                    </h3>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-[11px] text-zinc-400 font-medium leading-relaxed">
-                    {selectedItem.item_details.description}
-                  </p>
-
-                  {/* Quantity Held */}
-                  <div className="text-[10px] text-zinc-400">
-                    Quantity Held: <span className="font-extrabold text-neon-cyan">{selectedItem.quantity}</span>
-                  </div>
-                </div>
-
-                {/* Confirm Overlay / Actions Container */}
-                <div className="space-y-3 pt-4 border-t border-zinc-850 mt-auto">
-                  {showConfirm ? (
-                    <div className="space-y-3 p-3 rounded-xl bg-red-950/20 border border-red-500/20 animate-pulse">
-                      <div className="flex gap-1.5 items-start">
-                        <ShieldAlert className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                        <span className="text-[9.5px] font-bold text-red-200">
-                          Confirm using this high-value token?
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={executeUse}
-                          disabled={isUsing}
-                          className="flex-1 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-black text-[10px] uppercase transition-all flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                          {isUsing ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Yes, Use'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirm(false)}
-                          disabled={isUsing}
-                          className="flex-1 py-1.5 rounded-lg bg-zinc-850 hover:bg-zinc-850 text-zinc-300 font-black text-[10px] uppercase transition-all cursor-pointer"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleUseRequest}
-                      disabled={loading || isUsing}
-                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-neon-cyan to-[#00f3ff] text-zinc-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(34,211,238,0.2)] hover:scale-[1.03] active:scale-100 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                    >
-                      <span>Activate Buff</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="h-full flex flex-col justify-center items-center text-center text-zinc-500 space-y-2">
-                <div className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-zinc-650" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider">Select an Item</p>
-                  <p className="text-[9.5px] leading-snug">Click an item slot to view details and use it.</p>
-                </div>
-              </div>
-            )}
+          <div className="text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
+            {totalCount} Total Items Held
           </div>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }

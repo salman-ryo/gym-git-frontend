@@ -226,8 +226,11 @@ export const getThemeForWorkout = (type?: string, weeklyPlan?: WeeklyPlan): Work
 };
 
 export const getTileBgColor = (hours: number): string => {
-  if (hours <= 0) return 'bg-[#0d1117] border-zinc-900/60 hover:border-zinc-700';
-  return 'bg-gradient-to-br from-[#166534] to-[#22c55e] border-emerald-500/50 text-white';
+  if (hours <= 0) return 'bg-[#0d1117] border-zinc-900/60 hover:border-zinc-700 text-zinc-500';
+  if (hours < 1.0) return 'bg-[#0e4429] border-[#006d32]/80 text-emerald-300';
+  if (hours < 1.5) return 'bg-[#006d32] border-[#26a641]/80 text-emerald-100';
+  if (hours < 2.0) return 'bg-[#26a641] border-[#39d353] text-[#060a0e]';
+  return 'bg-[#39d353] border-[#00ff88] text-[#060a0e] font-black';
 };
 
 export interface DayStyleInfo {
@@ -258,12 +261,31 @@ export const getDayStyleInfo = (
   if (isActiveWorkout) {
     const isFilteredOut = activeFilter !== 'All' && day.workoutType !== activeFilter;
     
-    // Active Workout Day: Dark to vibrant green gradient (#166534 to #22c55e)
-    const baseTile = 'bg-gradient-to-br from-[#166534] to-[#22c55e] border-emerald-500/30 text-white';
+    // Multi-tier green intensity based on logged hours (GitHub-style progressive shades)
+    let baseTile: string;
+    let glowClass: string;
+
+    if (day.hours < 1.0) {
+      // Tier 1: Light session (< 1.0 hr)
+      baseTile = 'bg-[#0e4429] border-[#006d32]/80 text-emerald-300';
+      glowClass = 'shadow-[0_0_6px_rgba(14,68,41,0.4)]';
+    } else if (day.hours < 1.5) {
+      // Tier 2: Moderate session (1.0 - 1.4 hrs)
+      baseTile = 'bg-[#006d32] border-[#26a641]/80 text-emerald-100';
+      glowClass = 'shadow-[0_0_10px_rgba(0,109,50,0.5)]';
+    } else if (day.hours < 2.0) {
+      // Tier 3: Solid session (1.5 - 1.9 hrs)
+      baseTile = 'bg-[#26a641] border-[#39d353] text-[#060a0e]';
+      glowClass = 'shadow-[0_0_14px_rgba(38,166,65,0.6)]';
+    } else {
+      // Tier 4: Beast Mode (2.0+ hrs)
+      baseTile = 'bg-[#39d353] border-[#00ff88] text-[#060a0e] font-black';
+      glowClass = 'shadow-[0_0_18px_rgba(57,211,83,0.75)]';
+    }
     
     return {
       tileClass: isFilteredOut ? 'opacity-20 ' + baseTile : baseTile,
-      glowClass: 'shadow-[0_0_12px_rgba(34,197,94,0.3)]',
+      glowClass,
       ringClass: day.isToday 
         ? 'ring-2 ring-emerald-400 ring-offset-1 ring-offset-zinc-950 shadow-[0_0_15px_#22c55e]'
         : '',
