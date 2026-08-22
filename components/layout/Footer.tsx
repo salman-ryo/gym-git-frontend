@@ -1,6 +1,3 @@
-'use client';
-
-import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -87,8 +84,19 @@ export default function Footer() {
           </div>
 
           <div className="text-center md:text-right flex flex-col items-center md:items-end gap-1">
-            <span className="text-xs text-zinc-500">Gym-Git &copy; {new Date().getFullYear()} — Dynamic Workout Planning</span>
-            <span className="text-[10px] text-zinc-600">Built with Next.js, Go/Gin  &amp; Supabase </span>
+            <span className="text-xs text-zinc-500">
+              Gym-Git &copy; {new Date().getFullYear()} — Dynamic Workout Planning
+            </span>
+            <div className="flex items-center gap-2 text-[10px] text-zinc-600">
+              <span>Built with Next.js, Go/Gin &amp; Supabase</span>
+              <span>•</span>
+              <Link
+                href="/credits"
+                className="text-zinc-500 hover:text-zinc-300 transition-colors underline underline-offset-2"
+              >
+                Credits &amp; Attributions
+              </Link>
+            </div>
           </div>
         </div>
 

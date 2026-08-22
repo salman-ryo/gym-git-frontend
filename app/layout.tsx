@@ -3,8 +3,9 @@ import { Inter, Geist } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { cn } from "@/lib/utils";
+import { LandingBackground } from '@/components/pages/landing';
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const inter = Inter({
   subsets: ['latin'],
@@ -38,6 +39,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("dark", "font-sans", geist.variable)}>
       <body className={`${inter.variable} font-sans antialiased bg-zinc-950 text-zinc-100 min-h-screen`}>
+        <LandingBackground />
+
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

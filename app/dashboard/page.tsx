@@ -35,9 +35,8 @@ export default function DashboardPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[#060a0e] text-[#fafafa] flex flex-col font-sans relative overflow-hidden selection:bg-neon-green/20 selection:text-neon-green">
+      <div className="min-h-screen text-[#fafafa] flex flex-col font-sans relative overflow-hidden selection:bg-neon-green/20 selection:text-neon-green">
         {/* Animated Cyberpunk Background */}
-        <LandingBackground isFrozen={state.stats?.isFrozen} />
 
         <div className="relative z-10 flex flex-col min-h-screen">
           {/* Navigation Header */}
@@ -68,11 +67,11 @@ export default function DashboardPage() {
                       streakWarningEvent: state.stats.streakWarningEvent
                         ? null
                         : {
-                            is_at_risk: true,
-                            hours_remaining: 5,
-                            rest_tokens_left: 0,
-                            message: 'Streak decay imminent! Log a workout before midnight.',
-                          },
+                          is_at_risk: true,
+                          hours_remaining: 5,
+                          rest_tokens_left: 0,
+                          message: 'Streak decay imminent! Log a workout before midnight.',
+                        },
                     });
                   }
                 }}
@@ -86,12 +85,12 @@ export default function DashboardPage() {
                       streakBrokenEvent: state.stats.streakBrokenEvent
                         ? null
                         : {
-                            previous_streak: 15,
-                            broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
-                            restore_shield_available: true,
-                            restore_shields_count: 2,
-                            can_restore_until: new Date().toISOString().split('T')[0],
-                          },
+                          previous_streak: 15,
+                          broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
+                          restore_shield_available: true,
+                          restore_shields_count: 2,
+                          can_restore_until: new Date().toISOString().split('T')[0],
+                        },
                     });
                   }
                 }}

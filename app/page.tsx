@@ -17,8 +17,7 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <div className="landing-page" style={{ position: 'relative', background: '#060a0e' }}>
-      <LandingBackground />
+    <div className="landing-page relative">
       <LandingNavbar />
 
       <main style={{ position: 'relative', zIndex: 1 }}>
