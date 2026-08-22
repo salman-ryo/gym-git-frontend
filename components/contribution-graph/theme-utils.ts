@@ -212,11 +212,9 @@ export const getThemeForWorkout = (type?: string, weeklyPlan?: WeeklyPlan): Work
     if (categoryIndex !== -1) {
       return THEMES[categoryIndex % THEMES.length];
     }
-    // If not matching any category in the active plan, show default green theme
-    return DEFAULT_GREEN_THEME;
   }
 
-  // Fallback deterministic hashing
+  // Fallback deterministic hashing so all workout types get distinct colors
   let hash = 0;
   for (let i = 0; i < type.length; i++) {
     hash = type.charCodeAt(i) + ((hash << 5) - hash);
