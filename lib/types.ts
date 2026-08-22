@@ -74,9 +74,13 @@ export interface CycleInfo {
 
 export interface StreakBrokenEvent {
   previous_streak: number;
+  last_streak_date?: string;
   broken_on: string;
+  missed_days_count?: number;
+  required_shields?: number;
   restore_shield_available: boolean;
   restore_shields_count: number;
+  missed_dates?: string[];
   can_restore_until: string;
 }
 
@@ -160,9 +164,13 @@ export interface RawStreakResponse {
   isFrozen?: boolean;
   streak_broken_event?: {
     previous_streak: number;
+    last_streak_date?: string;
     broken_on: string;
+    missed_days_count?: number;
+    required_shields?: number;
     restore_shield_available: boolean;
     restore_shields_count: number;
+    missed_dates?: string[];
     can_restore_until: string;
   };
   streak_warning_event?: {
@@ -204,9 +212,13 @@ export interface RawStatsResponse {
   isFrozen?: boolean;
   streak_broken_event?: {
     previous_streak: number;
+    last_streak_date?: string;
     broken_on: string;
+    missed_days_count?: number;
+    required_shields?: number;
     restore_shield_available: boolean;
     restore_shields_count: number;
+    missed_dates?: string[];
     can_restore_until: string;
   };
   streak_warning_event?: {

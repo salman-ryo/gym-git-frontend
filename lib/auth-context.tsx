@@ -50,9 +50,13 @@ function mapBackendUser(data: RawAuthMeResponse): User {
       isFrozen: s.is_frozen ?? s.isFrozen ?? false,
       streakBrokenEvent: s.streak_broken_event ? {
         previous_streak: s.streak_broken_event.previous_streak,
+        last_streak_date: s.streak_broken_event.last_streak_date,
         broken_on: s.streak_broken_event.broken_on,
+        missed_days_count: s.streak_broken_event.missed_days_count,
+        required_shields: s.streak_broken_event.required_shields,
         restore_shield_available: s.streak_broken_event.restore_shield_available,
         restore_shields_count: s.streak_broken_event.restore_shields_count,
+        missed_dates: s.streak_broken_event.missed_dates,
         can_restore_until: s.streak_broken_event.can_restore_until,
       } : null,
       streakWarningEvent: s.streak_warning_event ? {

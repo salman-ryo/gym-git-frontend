@@ -162,9 +162,13 @@ export async function fetchDashboardStats(userPlan?: WeeklyPlan): Promise<Stats>
     isFrozen: rawStreak?.is_frozen ?? rawStreak?.isFrozen ?? rawStats?.is_frozen ?? rawStats?.isFrozen ?? false,
     streakBrokenEvent: streakEvent ? {
       previous_streak: streakEvent.previous_streak,
+      last_streak_date: streakEvent.last_streak_date,
       broken_on: streakEvent.broken_on,
+      missed_days_count: streakEvent.missed_days_count,
+      required_shields: streakEvent.required_shields,
       restore_shield_available: streakEvent.restore_shield_available,
       restore_shields_count: streakEvent.restore_shields_count,
+      missed_dates: streakEvent.missed_dates,
       can_restore_until: streakEvent.can_restore_until,
     } : null,
     streakWarningEvent: warningEvent ? {
@@ -186,9 +190,13 @@ export function mapUserStreak(s: RawStreakResponse): UserStreak {
     isFrozen: s.is_frozen ?? s.isFrozen ?? false,
     streakBrokenEvent: s.streak_broken_event ? {
       previous_streak: s.streak_broken_event.previous_streak,
+      last_streak_date: s.streak_broken_event.last_streak_date,
       broken_on: s.streak_broken_event.broken_on,
+      missed_days_count: s.streak_broken_event.missed_days_count,
+      required_shields: s.streak_broken_event.required_shields,
       restore_shield_available: s.streak_broken_event.restore_shield_available,
       restore_shields_count: s.streak_broken_event.restore_shields_count,
+      missed_dates: s.streak_broken_event.missed_dates,
       can_restore_until: s.streak_broken_event.can_restore_until,
     } : null,
     streakWarningEvent: s.streak_warning_event ? {

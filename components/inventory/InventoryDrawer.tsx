@@ -254,8 +254,13 @@ export default function InventoryDrawer({
                         />
 
                         {/* Quantity Counter Badge */}
-                        <div className="absolute top-1.5 right-1.5 z-10 px-1.5 py-0.5 bg-zinc-950/90 border border-zinc-800/90 rounded-md font-black text-[9px] text-neon-cyan shadow-sm font-mono tracking-tight pointer-events-none">
-                          x{item.quantity}
+                        <div className={cn(
+                          "absolute top-1.5 right-1.5 z-10 px-1.5 py-0.5 rounded-md font-black text-[9px] shadow-sm font-mono tracking-tight pointer-events-none border",
+                          item.quantity >= 9
+                            ? "bg-amber-950/90 border-amber-500/50 text-amber-400"
+                            : "bg-zinc-950/90 border-zinc-800/90 text-neon-cyan"
+                        )}>
+                          x{item.quantity >= 9 ? '9 MAX' : item.quantity}
                         </div>
 
                         {/* Loading Spinner during activation */}
@@ -323,7 +328,7 @@ export default function InventoryDrawer({
                         <div className="px-2 py-1 rounded-lg bg-zinc-900/90 border border-zinc-800/80 text-[10px] text-zinc-400 flex items-center gap-1.5">
                           <Package className="w-3 h-3 text-neon-green shrink-0" />
                           <span className="truncate">
-                            In Bag: <strong className="text-white font-black">{item.quantity}</strong>
+                            In Bag: <strong className={cn("font-black", item.quantity >= 9 ? "text-amber-400" : "text-white")}>{Math.min(9, item.quantity)}/9{item.quantity >= 9 ? ' (MAX)' : ''}</strong>
                           </span>
                         </div>
                       </div>

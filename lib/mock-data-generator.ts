@@ -334,11 +334,19 @@ export function generateMockStats(logs: GymLog[], userPlan?: WeeklyPlan): Stats 
     message: 'Streak decay imminent! Log a workout before midnight.'
   };
 
+  const yesterdayStr = new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0];
+  const twoDaysAgoStr = new Date(Date.now() - 2 * 86400 * 1000).toISOString().split('T')[0];
+  const threeDaysAgoStr = new Date(Date.now() - 3 * 86400 * 1000).toISOString().split('T')[0];
+
   const mockBrokenEvent = {
     previous_streak: 15,
-    broken_on: new Date(Date.now() - 86400 * 1000).toISOString().split('T')[0],
+    last_streak_date: threeDaysAgoStr,
+    broken_on: twoDaysAgoStr,
+    missed_days_count: 2,
+    required_shields: 2,
     restore_shield_available: true,
     restore_shields_count: 2,
+    missed_dates: [twoDaysAgoStr, yesterdayStr],
     can_restore_until: new Date().toISOString().split('T')[0]
   };
 
