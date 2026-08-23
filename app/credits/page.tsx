@@ -6,8 +6,9 @@ interface AttributionItem {
     assetDescription: string;
     author: string;
     authorUrl: string;
-    platform: string;
-    platformUrl: string;
+    platform?: string;
+    platformUrl?: string;
+    actionLabel?: string;
 }
 
 /* Add any new icon authors or asset credits to this list */
@@ -19,6 +20,16 @@ const ATTRIBUTIONS: AttributionItem[] = [
         authorUrl: 'https://www.flaticon.com/authors/kerismaker',
         platform: 'Flaticon',
         platformUrl: 'https://www.flaticon.com/',
+        actionLabel: 'View Creator Profile →',
+    },
+    {
+        id: 'magnific',
+        assetDescription: 'AI Image Upscaling & Enhancement',
+        author: 'Magnific',
+        authorUrl: 'https://www.magnific.com/',
+        platform: 'Magnific',
+        platformUrl: 'https://www.magnific.com/',
+        actionLabel: 'Visit Magnific →',
     },
     // {
     //     id: 'freepik-icons',
@@ -75,24 +86,40 @@ export default function CreditsPage() {
                             <div>
                                 <p className="text-sm font-semibold text-zinc-100">{item.assetDescription}</p>
                                 <p className="text-xs text-zinc-400 mt-0.5">
-                                    Created by{' '}
-                                    <a
-                                        href={item.authorUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-teal-300 hover:underline hover:text-teal-200 font-medium"
-                                    >
-                                        {item.author}
-                                    </a>{' '}
-                                    on{' '}
-                                    <a
-                                        href={item.platformUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-zinc-300 hover:underline hover:text-white"
-                                    >
-                                        {item.platform}
-                                    </a>
+                                    {item.platform && item.platformUrl && item.platform !== item.author ? (
+                                        <>
+                                            Created by{' '}
+                                            <a
+                                                href={item.authorUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-teal-300 hover:underline hover:text-teal-200 font-medium"
+                                            >
+                                                {item.author}
+                                            </a>{' '}
+                                            on{' '}
+                                            <a
+                                                href={item.platformUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-zinc-300 hover:underline hover:text-white"
+                                            >
+                                                {item.platform}
+                                            </a>
+                                        </>
+                                    ) : (
+                                        <>
+                                            Provided by{' '}
+                                            <a
+                                                href={item.authorUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-teal-300 hover:underline hover:text-teal-200 font-medium"
+                                            >
+                                                {item.author}
+                                            </a>
+                                        </>
+                                    )}
                                 </p>
                             </div>
 
@@ -102,7 +129,7 @@ export default function CreditsPage() {
                                 rel="noopener noreferrer"
                                 className="text-[11px] px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800/60 text-zinc-300 hover:text-white hover:border-neon-green/40 hover:bg-neon-green/10 transition-all self-start sm:self-auto"
                             >
-                                View Creator Profile &rarr;
+                                {item.actionLabel || (item.platform && item.platform !== item.author ? 'View Creator Profile →' : 'Visit Website →')}
                             </a>
                         </div>
                     ))}

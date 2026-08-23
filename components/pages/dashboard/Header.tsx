@@ -1,10 +1,9 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { LogOut, User as UserIcon, Package } from 'lucide-react';
+import { LogOut, User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
@@ -33,7 +32,7 @@ export default function Header({ currentStreak = 0, onOpenInventory, inventoryCo
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-black tracking-tight bg-gradient-to-r from-neon-green via-teal-300 to-emerald-200 bg-clip-text text-transparent">
+              <span className="text-xl font-black tracking-tight bg-linear-to-r from-neon-green via-teal-300 to-emerald-200 bg-clip-text text-transparent">
                 Gym-Git
               </span>
             </div>
@@ -52,9 +51,9 @@ export default function Header({ currentStreak = 0, onOpenInventory, inventoryCo
                     type="button"
                     onClick={onOpenInventory}
                     aria-label="Open Inventory"
-                    className="relative w-9 h-9 p-0 bg-zinc-950/80 hover:bg-neon-cyan/15 text-zinc-400 hover:text-neon-cyan border border-zinc-800 hover:border-neon-cyan/40 rounded-xl transition-all duration-200 shadow-sm hover:shadow-[0_0_15px_rgba(34,211,238,0.25)] cursor-pointer flex items-center justify-center group/inv"
+                    className='relative'
                   >
-                    <Package className="w-4 h-4 transition-transform duration-200 group-hover/inv:scale-110" />
+                    <img src="/icons/bag.png" alt="Inventory" className="w-4 h-4 md:size-8 transition-transform duration-200 group-hover/inv:scale-110 hover:scale-110" />
                     {inventoryCount > 0 && (
                       <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-neon-cyan px-1 text-[9px] font-black text-zinc-950 shadow-[0_0_8px_rgba(34,211,238,0.6)] animate-pulse">
                         {inventoryCount}
@@ -80,7 +79,7 @@ export default function Header({ currentStreak = 0, onOpenInventory, inventoryCo
                   className="w-7 h-7 rounded-full object-cover bg-zinc-800 border border-neon-green/30 group-hover/user:border-neon-green group-hover/user:shadow-[0_0_8px_#00ff88] transition-all"
                 />
               ) : (
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-neon-green/20 to-neon-cyan/20 border border-neon-green/30 text-neon-green flex items-center justify-center font-black text-xs group-hover/user:border-neon-green group-hover/user:shadow-[0_0_8px_#00ff88] transition-all">
+                <div className="w-7 h-7 rounded-full bg-linear-to-br from-neon-green/20 to-neon-cyan/20 border border-neon-green/30 text-neon-green flex items-center justify-center font-black text-xs group-hover/user:border-neon-green group-hover/user:shadow-[0_0_8px_#00ff88] transition-all">
                   {user.name ? user.name[0].toUpperCase() : <UserIcon className="w-4 h-4" />}
                 </div>
               )}

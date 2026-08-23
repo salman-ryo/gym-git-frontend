@@ -132,11 +132,11 @@ export default function InventoryDrawer({
       maxWidth="lg"
       className="p-5 sm:p-6"
       errorMsg={errorMsg}
-      accentGradient="bg-gradient-to-r from-neon-cyan via-teal-300 to-neon-purple"
+      accentGradient="bg-linear-to-r from-neon-cyan via-teal-300 to-neon-purple"
       title={
         <div className="flex items-center gap-2.5">
-          <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-cyan via-white to-neon-purple bg-clip-text text-transparent">
-            Hero Inventory
+          <h3 className="text-base font-black tracking-wide bg-linear-to-r from-neon-cyan via-white to-neon-purple bg-clip-text text-transparent">
+            Your Inventory
           </h3>
           <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan tracking-wider font-mono">
             {inventoryItems.length} {inventoryItems.length === 1 ? 'Slot' : 'Slots'} Active
@@ -145,9 +145,7 @@ export default function InventoryDrawer({
       }
       subtitle="Hover over any item to inspect stats and lore. Click an item to use its power."
       icon={
-        <div className="w-11 h-11 rounded-2xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-          <Package className="w-5 h-5 text-neon-cyan animate-pulse" />
-        </div>
+        <img src="/icons/bag.png" alt="Inventory" className="w-5 h-5 text-neon-cyan animate-pulse md:size-8" />
       }
     >
       <div className="space-y-4">
@@ -205,10 +203,8 @@ export default function InventoryDrawer({
                   return (
                     <div
                       key={idx}
-                      className="aspect-square rounded-2xl border border-dashed border-zinc-850/80 bg-zinc-950/30 flex items-center justify-center text-zinc-800 transition-colors"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-zinc-900 border border-zinc-800/60" />
-                    </div>
+                      className="aspect-square relative rounded-2xl border border-zinc-800/80 bg-zinc-900/40 flex items-center justify-center"
+                    />
                   );
                 }
 
@@ -223,33 +219,12 @@ export default function InventoryDrawer({
                         onClick={() => handleItemClick(item)}
                         disabled={loading || isSlotUsing}
                         aria-label={`${item.item_details.name} (x${item.quantity})`}
-                        className={cn(
-                          'aspect-square relative rounded-2xl border flex items-center justify-center transition-all duration-200 group/slot cursor-pointer outline-none',
-                          rStyles.border,
-                          rStyles.glow,
-                          'hover:scale-105 active:scale-95 hover:z-10 focus-visible:ring-2 focus-visible:ring-neon-cyan/60'
-                        )}
+                        className="aspect-square relative rounded-2xl border border-zinc-800/80 bg-zinc-900/40 flex items-center justify-center transition-all duration-200 group/slot cursor-pointer outline-none hover:border-zinc-700 hover:scale-105 active:scale-95 hover:z-10 focus-visible:ring-2 focus-visible:ring-neon-cyan/60"
                       >
-                        {/* Glowing background gradient */}
-                        <div
-                          className={cn(
-                            'absolute inset-0 rounded-2xl bg-gradient-to-t pointer-events-none opacity-40 group-hover/slot:opacity-80 transition-opacity duration-300',
-                            rStyles.gradient
-                          )}
-                        />
-
-                        {/* Corner rarity accent dot */}
-                        <span
-                          className={cn(
-                            'absolute top-2 left-2 w-1.5 h-1.5 rounded-full shadow-[0_0_6px_currentColor] pointer-events-none',
-                            rStyles.text
-                          )}
-                        />
-
                         {/* Item Icon */}
                         <ItemIcon
                           itemId={item.item_details.item_id}
-                          size={32}
+                          size={44}
                           className="relative z-10 transition-transform duration-200 group-hover/slot:scale-110"
                         />
 
@@ -307,7 +282,7 @@ export default function InventoryDrawer({
                       </div>
 
                       {/* Divider */}
-                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+                      <div className="h-px w-full bg-linear-to-r from-transparent via-zinc-800 to-transparent" />
 
                       {/* Item Description */}
                       <p className="text-[11px] text-zinc-300 font-medium leading-relaxed">
@@ -346,17 +321,6 @@ export default function InventoryDrawer({
               })}
             </div>
           </TooltipProvider>
-
-          {/* Empty State Banner if 0 items */}
-          {inventoryItems.length === 0 && (
-            <div className="py-6 text-center space-y-2 text-zinc-500">
-              <Sparkles className="w-6 h-6 text-zinc-700 mx-auto" />
-              <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Vault is Empty</p>
-              <p className="text-[11px] text-zinc-500 max-w-[260px] mx-auto">
-                Complete milestones, maintain streaks, and achieve check-ins to unlock power items.
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Footer Summary / Quick Tip */}

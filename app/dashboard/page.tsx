@@ -1,10 +1,8 @@
 'use client';
 
-import React from 'react';
 import AuthGuard from '@/components/AuthGuard';
 import CyberpunkLoader from '@/components/CyberpunkLoader';
 import Footer from '@/components/layout/Footer';
-import { LandingBackground } from '@/components/pages/landing';
 import Header from '@/components/pages/dashboard/Header';
 import StatsOverview from '@/components/pages/dashboard/StatsOverview';
 import FilterBar from '@/components/pages/dashboard/FilterBar';

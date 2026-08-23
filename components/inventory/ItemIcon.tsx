@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Shield, Snowflake, Zap, Target } from 'lucide-react';
 import Image from 'next/image';
 
@@ -11,23 +11,41 @@ interface ItemIconProps {
   size?: number;
 }
 
+export const ITEM_IMAGE_MAP: Record<string, string> = {
+  RESTORE_SHIELD: '/icons/shield.png',
+  STREAK_FREEZE_TOKEN: '/icons/freeze.png',
+  XP_BOOST: '/icons/xp-boost.png',
+  ACCURACY_CHARM: '/icons/charm.png',
+};
+
+export function getItemImageSrc(itemId: string): string {
+  if (ITEM_IMAGE_MAP[itemId]) {
+    return ITEM_IMAGE_MAP[itemId];
+  }
+  return `/icons/${itemId.toLowerCase().replace(/_/g, '-')}.png`;
+}
+
 export default function ItemIcon({ itemId, imageSrc, className = '', size = 24 }: ItemIconProps) {
-  if (imageSrc) {
+  const [imageError, setImageError] = useState(false);
+  const resolvedSrc = imageSrc || getItemImageSrc(itemId);
+
+  if (!imageError && resolvedSrc) {
     return (
-      <div className={`relative flex items-center justify-center ${className}`}>
+      <div className={`relative flex items-center justify-center shrink-0 ${className}`}>
         <Image
-          src={imageSrc}
+          src={resolvedSrc}
           alt={itemId}
           width={size}
           height={size}
           className="object-contain"
+          onError={() => setImageError(true)}
           unoptimized
         />
       </div>
     );
   }
 
-  // Neon Cyberpunk icon renderers
+  // Fallback Lucide icons when PNG asset is not available
   switch (itemId) {
     case 'RESTORE_SHIELD':
       return (
@@ -54,7 +72,6 @@ export default function ItemIcon({ itemId, imageSrc, className = '', size = 24 }
         </div>
       );
     default:
-      // Fallback
       return (
         <div className={`text-zinc-400 ${className}`}>
           <Target size={size} />
