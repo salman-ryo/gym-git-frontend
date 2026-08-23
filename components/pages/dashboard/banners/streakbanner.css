@@ -1,0 +1,126 @@
+/* streakbanner.css */
+.anime-mascot-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    width: 100%;
+    margin: 1rem 0;
+    user-select: none;
+}
+
+/* The core speech bubble structure */
+.manga-speech-bubble {
+    position: relative;
+    background-color: #080c13;
+    /* Deep dark background to match your app */
+    border: 2px solid var(--character-color, #a855f7);
+    border-radius: 24px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 8px 30px -5px color-mix(in srgb, var(--character-color) 25%, transparent);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: left center;
+    flex: 1;
+}
+
+/* The Speech Bubble Tail (< shape) */
+.manga-speech-bubble::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    /* Aligns with the center of the avatar */
+    left: -8px;
+    /* Protrudes outside the left edge */
+    width: 14px;
+    height: 14px;
+    background-color: #080c13;
+    border-left: 2px solid var(--character-color, #a855f7);
+    border-bottom: 2px solid var(--character-color, #a855f7);
+    transform: rotate(45deg);
+    border-bottom-left-radius: 3px;
+    z-index: 2;
+}
+
+/* Patch to hide the main border behind the tail */
+.manga-speech-bubble::after {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 0px;
+    width: 4px;
+    height: 20px;
+    background-color: #080c13;
+    z-index: 3;
+}
+
+/* Collapsed State specifically */
+.manga-speech-bubble.collapsed {
+    cursor: pointer;
+    padding: 1rem 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    height: 64px;
+    max-width: max-content;
+}
+
+.manga-speech-bubble.collapsed:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 35px -5px color-mix(in srgb, var(--character-color) 40%, transparent);
+}
+
+/* Typing Indicator Animation */
+.typing-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    z-index: 4;
+}
+
+.typing-dots span {
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--character-color, #a855f7);
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typingBounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Animated Entrance for Expanded Bubble */
+.bubble-enter {
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+    }
+}
