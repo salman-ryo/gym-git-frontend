@@ -145,7 +145,7 @@ export default function InventoryDrawer({
       }
       subtitle="Hover over any item to inspect stats and lore. Click an item to use its power."
       icon={
-        <img src="/icons/bag.png" alt="Inventory" className="w-5 h-5 text-neon-cyan animate-pulse md:size-8" />
+        <img src="/icons/bag.png" alt="Inventory" className="w-5 h-5 text-neon-cyan  md:size-8" />
       }
     >
       <div className="space-y-4">

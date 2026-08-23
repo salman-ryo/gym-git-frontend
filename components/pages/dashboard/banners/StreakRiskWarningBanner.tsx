@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Flame, Clock, Dumbbell, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Activity, Terminal, X, Radio, AlertOctagon } from 'lucide-react';
 import { StreakWarningEvent } from '@/lib/types';
 
 interface StreakRiskWarningBannerProps {
@@ -39,7 +39,6 @@ export default function StreakRiskWarningBanner({
   useEffect(() => {
     if (!event) return;
 
-    // Tick every second
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
@@ -47,88 +46,95 @@ export default function StreakRiskWarningBanner({
     return () => clearInterval(interval);
   }, [event]);
 
-  // When streak is already 0, do not display warning banner
   if (!event || !event.is_at_risk || (currentStreak !== undefined && currentStreak <= 0)) return null;
 
-  // Collapsed notification pill view
+  // Collapsed State: Minimal Holographic Ping
   if (isCollapsed) {
     return (
-      <div className="w-full flex items-center justify-end">
+      <div className="w-full flex justify-end">
         <button
           onClick={() => setIsCollapsed(false)}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)] cursor-pointer"
+          className="relative group flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#050B14]/80 backdrop-blur-xl border border-cyan-500/50 hover:border-fuchsia-500/80 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.2)]"
         >
-          <AlertTriangle className="w-3.5 h-3.5 animate-pulse text-amber-400" />
-          <span>Streak Decay Warning ({timeLeft})</span>
+          <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+          <span className="font-mono text-[10px] sm:text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400 uppercase tracking-wider">
+            Signal Dropping ({timeLeft})
+          </span>
         </button>
       </div>
     );
   }
 
   return (
-    <aside aria-label="Streak warning" className="w-full relative overflow-hidden rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/80 via-orange-950/60 to-amber-950/80 backdrop-blur-xl p-5 md:p-6 shadow-[0_0_35px_rgba(245,158,11,0.2)]">
-      {/* Background Amber Glow */}
-      <div className="absolute -top-20 -left-20 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-orange-600/20 rounded-full blur-3xl pointer-events-none" />
+    <aside aria-label="Streak warning hologram" className="relative w-full isolate flex flex-col items-center mt-2">
 
-      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        {/* Left Side: Status & Warning Message */}
-        <div className="flex items-start gap-4">
-          <div className="relative p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.3)] flex-shrink-0 animate-bounce">
-            <Flame className="w-7 h-7 fill-amber-500/30" />
+      {/* 1. HOLOGRAPHIC EMITTER BASE (Compressed) */}
+      <div className="absolute -bottom-2 w-1/2 max-w-md h-4 bg-fuchsia-600/30 blur-[20px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 w-1/3 max-w-xs h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_10px_#22d3ee] pointer-events-none" />
+
+      {/* 2. MAIN PROJECTION SCREEN (Slim Profile) */}
+      <div className="relative w-full bg-[#030712]/70 backdrop-blur-2xl border border-white/10 rounded-xl overflow-hidden shadow-[0_4px_25px_rgba(192,38,211,0.1)] p-3 sm:p-4">
+
+        {/* Hologram Scanlines & Overlays */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.04] bg-[linear-gradient(transparent_50%,#ffffff_50%)] bg-[length:100%_4px]" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-cyan-500/5 via-transparent to-fuchsia-500/10" />
+
+        {/* Floating Top-Left Tag & Top-Right Close Button */}
+        <div className="absolute top-2 left-3 flex items-center gap-1.5 text-cyan-400/80 font-mono text-[9px] uppercase tracking-[0.2em]">
+          <Activity className="w-3 h-3 text-fuchsia-500 animate-pulse" />
+          <span>Sys.Override</span>
+        </div>
+        <button
+          onClick={() => setIsCollapsed(true)}
+          className="absolute top-2 right-2 text-cyan-600 hover:text-fuchsia-400 transition-colors p-1 z-20 cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+
+        {/* Core Content Layer */}
+        <div className="relative z-10 flex flex-col items-center text-center gap-2 pt-3">
+
+          {/* Title & Timer (Inlined to save vertical space) */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-1">
+            <h2 className="text-sm sm:text-base font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-cyan-200 to-fuchsia-400 uppercase tracking-wide">
+              {currentStreak !== undefined && currentStreak > 0
+                ? `Neural Link Fading: ${currentStreak} Days`
+                : 'Neural Link Fading'}
+            </h2>
+            <div className="px-3 py-0.5 rounded-full border border-cyan-500/30 bg-[#050B14]/80 text-cyan-300 font-mono text-[10px] sm:text-xs font-bold tracking-widest shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+              T-MINUS {timeLeft}
+            </div>
           </div>
 
-          <div>
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <span className="text-xs font-black tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 uppercase animate-pulse">
-                STREAK AT RISK
-              </span>
-              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-200 bg-amber-950/80 px-2.5 py-0.5 rounded-md border border-amber-800/60">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                <span>{timeLeft} UNTIL MIDNIGHT</span>
-              </div>
-            </div>
-
-            <h3 className="text-base sm:text-lg font-black text-amber-100 tracking-wide">
-              {currentStreak !== undefined && currentStreak > 0
-                ? `Your ${currentStreak}-Day Streak Decays at Midnight!`
-                : 'Your Streak is at Risk of Decaying!'}
-            </h3>
-            <p className="text-xs sm:text-sm text-amber-200/80 max-w-2xl mt-0.5">
-              {event.message ||
-                'No workout logged yet today and 0 Rest Tokens remaining. Log a session before midnight to keep your fire burning!'}
-            </p>
-
+          {/* Warning Text & Rest Tokens (Inlined) */}
+          <div className="text-[10px] sm:text-xs text-cyan-100/60 font-light max-w-2xl mx-auto font-mono leading-tight">
+            <span>{event.message || "> NETWORK INTEGRITY COMPROMISED. UPLOAD WORKOUT DATA MODULE."}</span>
             {event.rest_tokens_left === 0 && (
-              <div className="flex items-center gap-1.5 text-[11px] text-amber-300/90 font-medium mt-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                <span>Rest Tokens: 0 left &bull; Workout required tonight</span>
-              </div>
+              <span className="inline-flex items-center gap-1 text-fuchsia-400 font-bold ml-0 sm:ml-2 mt-1 sm:mt-0 bg-fuchsia-500/10 px-1.5 py-0.5 rounded border border-fuchsia-500/20">
+                <AlertOctagon className="w-3 h-3" /> OVERRIDE DENIED: 0 REST TOKENS
+              </span>
             )}
           </div>
-        </div>
 
-        {/* Right Side: Action Buttons */}
-        <div className="w-full md:w-auto flex flex-row items-center gap-3 self-stretch md:self-center">
-          <button
-            onClick={onLogWorkoutClick}
-            className="flex-1 md:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-zinc-950 transition-all shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)] flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-100"
-          >
-            <Dumbbell className="w-4 h-4" />
-            <span>Log Workout Now</span>
-          </button>
-          <button
-            onClick={() => setIsCollapsed(true)}
-            className="px-3 py-2.5 rounded-xl text-xs font-bold text-amber-400/80 hover:text-amber-200 hover:bg-amber-900/30 transition-all cursor-pointer"
-            title="Dismiss warning"
-          >
-            Dismiss
-          </button>
+          {/* Slim Action Button */}
+          <div className="w-full max-w-sm mt-1">
+            <button
+              onClick={onLogWorkoutClick}
+              className="group relative w-full overflow-hidden rounded-lg p-[1px] cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-cyan-400 opacity-60 group-hover:opacity-100 group-hover:animate-[spin_2s_linear_infinite]" style={{ backgroundSize: '200% 100%' }} />
+
+              <div className="relative flex items-center justify-center gap-2 w-full bg-[#030712] hover:bg-gradient-to-r hover:from-cyan-950/40 hover:to-fuchsia-950/40 px-4 py-2 rounded-lg transition-colors duration-300">
+                <Terminal className="w-4 h-4 text-cyan-400 group-hover:text-fuchsia-400" />
+                <span className="font-mono font-bold text-cyan-400 group-hover:text-white uppercase tracking-[0.15em] text-xs transition-colors">
+                  Initialize_Workout.exe
+                </span>
+              </div>
+            </button>
+          </div>
+
         </div>
       </div>
-
-      {/* Subtle Bottom Accent Indicator */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-60" />
     </aside>
   );
 }
