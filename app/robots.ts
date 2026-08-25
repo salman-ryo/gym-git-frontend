@@ -13,6 +13,7 @@ export default function robots(): MetadataRoute.Robots {
           '/login',
           '/privacy',
           '/terms',
+          '/llms.txt',
         ],
         disallow: [
           '/dashboard',

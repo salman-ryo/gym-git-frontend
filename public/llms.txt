@@ -1,0 +1,22 @@
+# Gym-Git
+
+> GitHub-Style Gym Attendance Tracker & Workout Planner.
+
+Gym-Git helps developers, lifters, and athletes stay consistent in the gym by turning workouts into GitHub-style commit heatmaps, streak analytics, and RPG power progression.
+
+## Core URLs
+- [Homepage](https://gymgit.com/): Main overview of features, motivation engine, and interactive preview.
+- [Sign In / Sign Up](https://gymgit.com/login): Account registration and single sign-on (Email, Google, GitHub).
+- [Credits & Attributions](https://gymgit.com/credits): Open-source icons, vectors, and third-party licenses.
+- [Privacy Policy](https://gymgit.com/privacy): Data protection practices, telemetry handling, and zero data-selling policy.
+- [Terms of Service](https://gymgit.com/terms): Usage agreement, acceptable use, and physical health disclaimers.
+
+## Key Features & Architecture
+- **GitHub-Style Contribution Heatmap**: Visualizes workout attendance as green contribution cells across a 52-week matrix.
+- **Streak Analytics & Protection**: Calculates active streaks with support for planned rest days and streak freeze shields.
+- **RPG Power Rating & Leveling**: Gamifies gym progress with XP gain, power levels, and collectible items.
+- **Developer-Grade Technology Stack**: Next.js App Router, Go/Gin backend API, Supabase Authentication & PostgreSQL.
+
+## Optional & Related Endpoints
+- [Sitemap](https://gymgit.com/sitemap.xml): Search engine index of all public routes.
+- [Robots Configuration](https://gymgit.com/robots.txt): Search crawler rules and indexing directives.
