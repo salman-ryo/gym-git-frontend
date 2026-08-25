@@ -1,7 +1,7 @@
 'use client';
 
 import { Stats } from '@/lib/types';
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { ShieldCheck, CheckCircle2, Trophy, Clock, Snowflake } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import Image from 'next/image';
@@ -37,8 +37,81 @@ interface StatCardProps {
   theme: StatTheme;
 }
 
+const THEME_STREAK_FROZEN: StatTheme = {
+  border: 'border-neon-cyan/25 hover:border-neon-cyan/60',
+  shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+  hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
+  diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
+  diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
+  textUnit: 'text-neon-cyan',
+  textSub: 'text-zinc-400 group-hover:text-zinc-300',
+  accentBar:
+    'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
+  glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
+  imgShadow:
+    'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
+  imageFilter: 'hue-rotate(140deg) brightness(1.2) drop-shadow(0 0 10px rgba(34,211,238,0.5))',
+};
+
+const THEME_STREAK_ACTIVE: StatTheme = {
+  border: 'border-neon-green/15 hover:border-neon-green/60',
+  shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+  hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
+  diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
+  diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
+  textUnit: 'text-neon-green',
+  textSub: 'text-zinc-400 group-hover:text-zinc-300',
+  accentBar:
+    'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
+  glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
+  imgShadow:
+    'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
+};
+
+const THEME_LONGEST_STREAK: StatTheme = {
+  border: 'border-neon-cyan/15 hover:border-neon-cyan/60',
+  shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+  hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
+  diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
+  diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
+  textUnit: 'text-neon-cyan',
+  textSub: 'text-zinc-400 group-hover:text-zinc-300',
+  accentBar:
+    'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
+  glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
+  imgShadow: 'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
+};
+
+const THEME_ADHERENCE: StatTheme = {
+  border: 'border-neon-purple/15 hover:border-neon-purple/60',
+  shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+  hoverShadow: 'hover:shadow-[0_0_30px_rgba(168,85,247,0.22)]',
+  diamondBg: 'bg-neon-purple/70 group-hover:bg-neon-purple',
+  diamondShadow: 'shadow-[0_0_4px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_10px_#a855f7]',
+  textUnit: 'text-neon-purple',
+  textSub: 'text-zinc-400 group-hover:text-zinc-300',
+  accentBar:
+    'bg-gradient-to-r from-neon-purple/25 via-neon-purple/10 to-transparent group-hover:from-neon-purple/60 group-hover:via-neon-purple/30',
+  glowOrb: 'bg-neon-purple/[0.03] group-hover:bg-neon-purple/10',
+  imgShadow: 'drop-shadow-[0_0_8px_rgba(168,85,247,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(168,85,247,0.4)]',
+};
+
+const THEME_HOURS: StatTheme = {
+  border: 'border-teal-400/15 hover:border-teal-400/60',
+  shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
+  hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
+  diamondBg: 'bg-teal-400/70 group-hover:bg-teal-400',
+  diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
+  textUnit: 'text-teal-400',
+  textSub: 'text-zinc-400 group-hover:text-zinc-300',
+  accentBar:
+    'bg-gradient-to-r from-teal-400/25 via-teal-400/10 to-transparent group-hover:from-teal-400/60 group-hover:via-teal-400/30',
+  glowOrb: 'bg-teal-400/[0.03] group-hover:bg-teal-400/10',
+  imgShadow: 'drop-shadow-[0_0_8px_rgba(251,191,36,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(251,191,36,0.4)]',
+};
+
 // Reusable Cyberpunk Stat Card Component
-function StatCard({
+const StatCard = memo(function StatCard({
   title,
   value,
   unit,
@@ -97,153 +170,94 @@ function StatCard({
       </div>
     </div>
   );
-}
+});
 
-export default function StatsOverview({ stats }: StatsOverviewProps) {
+function StatsOverview({ stats }: StatsOverviewProps) {
   const { user } = useAuth();
 
+  const streak = stats?.scientificStreak;
+
+  const statCardsData: StatCardProps[] = useMemo(() => {
+    if (!stats) return [];
+
+    return [
+      {
+        title: 'Current Streak',
+        value: stats.isFrozen ? (
+          <span className="flex items-center gap-1">
+            {stats.currentStreak}
+            <Snowflake className="w-5 h-5 text-neon-cyan shrink-0 animate-pulse" />
+          </span>
+        ) : (
+          stats.currentStreak
+        ),
+        unit: 'Days',
+        subtext: stats.isFrozen ? (
+          <>
+            <Snowflake className="w-3.5 h-3.5 shrink-0 text-neon-cyan animate-pulse" />
+            <span className="text-neon-cyan font-bold">Ice Pause Active</span>
+          </>
+        ) : (
+          <>
+            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-neon-green" />
+            <span>Rest days protected</span>
+          </>
+        ),
+        imageSrc: '/images/icons/fire.svg',
+        imageAlt: 'Streak',
+        theme: stats.isFrozen ? THEME_STREAK_FROZEN : THEME_STREAK_ACTIVE,
+      },
+      {
+        title: 'Longest Streak',
+        value: stats.longestStreak,
+        unit: 'Days Record',
+        subtext: (
+          <>
+            <Trophy className="w-3.5 h-3.5 shrink-0 text-neon-cyan" />
+            <span>Best sequence record</span>
+          </>
+        ),
+        imageSrc: '/images/icons/trophy.svg',
+        imageAlt: 'Longest Streak',
+        theme: THEME_LONGEST_STREAK,
+      },
+      {
+        title: 'Plan Adherence',
+        value: `${streak?.complianceRate || 92}%`,
+        unit: 'Compliance',
+        subtext: (
+          <>
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-neon-purple" />
+            <span>
+              Wk: {streak?.currentWeekDone || 3}/{streak?.currentWeekTarget || 4} ({streak?.currentWeekStatus || 'On Track'})
+            </span>
+          </>
+        ),
+        imageSrc: '/images/icons/check.svg',
+        imageAlt: 'Plan Adherence',
+        contentWidth: 'w-[72%]',
+        theme: THEME_ADHERENCE,
+      },
+      {
+        title: 'Hours Invested',
+        value: stats.totalHours,
+        unit: 'hrs',
+        subtext: (
+          <>
+            <Clock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+            <span>
+              {stats.totalDays} sessions (~{stats.averageHoursPerSession}h avg)
+            </span>
+          </>
+        ),
+        imageSrc: '/images/icons/clock.svg',
+        imageAlt: 'Hours Invested',
+        theme: THEME_HOURS,
+      },
+    ];
+  }, [stats, streak]);
+
   if (!stats) return null;
-
-  const streak = stats.scientificStreak;
-
-  // Data mapping for the cards matching the Landing & Cyberpunk palette
-  const statCardsData: StatCardProps[] = [
-    {
-      title: 'Current Streak',
-      value: stats.isFrozen ? (
-        <span className="flex items-center gap-1">
-          {stats.currentStreak}
-          <Snowflake className="w-5 h-5 text-neon-cyan shrink-0 animate-pulse" />
-        </span>
-      ) : (
-        stats.currentStreak
-      ),
-      unit: 'Days',
-      subtext: stats.isFrozen ? (
-        <>
-          <Snowflake className="w-3.5 h-3.5 shrink-0 text-neon-cyan animate-pulse" />
-          <span className="text-neon-cyan font-bold">Ice Pause Active</span>
-        </>
-      ) : (
-        <>
-          <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-neon-green" />
-          <span>Rest days protected</span>
-        </>
-      ),
-      imageSrc: '/images/icons/fire.svg',
-      imageAlt: 'Streak',
-      theme: stats.isFrozen
-        ? {
-          border: 'border-neon-cyan/25 hover:border-neon-cyan/60',
-          shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-          hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
-          diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
-          diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
-          textUnit: 'text-neon-cyan',
-          textSub: 'text-zinc-400 group-hover:text-zinc-300',
-          accentBar:
-            'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
-          glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
-          imgShadow:
-            'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
-          imageFilter: 'hue-rotate(140deg) brightness(1.2) drop-shadow(0 0 10px rgba(34,211,238,0.5))',
-        }
-        : {
-          border: 'border-neon-green/15 hover:border-neon-green/60',
-          shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-          hoverShadow: 'hover:shadow-[0_0_30px_rgba(0,255,136,0.22)]',
-          diamondBg: 'bg-neon-green/70 group-hover:bg-neon-green',
-          diamondShadow: 'shadow-[0_0_4px_rgba(0,255,136,0.4)] group-hover:shadow-[0_0_10px_#00ff88]',
-          textUnit: 'text-neon-green',
-          textSub: 'text-zinc-400 group-hover:text-zinc-300',
-          accentBar:
-            'bg-gradient-to-r from-neon-green/25 via-neon-green/10 to-transparent group-hover:from-neon-green/60 group-hover:via-neon-green/30',
-          glowOrb: 'bg-neon-green/[0.03] group-hover:bg-neon-green/10',
-          imgShadow:
-            'drop-shadow-[0_0_8px_rgba(0,255,136,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(0,255,136,0.4)]',
-        },
-    },
-    {
-      title: 'Longest Streak',
-      value: stats.longestStreak,
-      unit: 'Days Record',
-      subtext: (
-        <>
-          <Trophy className="w-3.5 h-3.5 shrink-0 text-neon-cyan" />
-          <span>Best sequence record</span>
-        </>
-      ),
-      imageSrc: '/images/icons/trophy.svg',
-      imageAlt: 'Longest Streak',
-      theme: {
-        border: 'border-neon-cyan/15 hover:border-neon-cyan/60',
-        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-        hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
-        diamondBg: 'bg-neon-cyan/70 group-hover:bg-neon-cyan',
-        diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
-        textUnit: 'text-neon-cyan',
-        textSub: 'text-zinc-400 group-hover:text-zinc-300',
-        accentBar: 'bg-gradient-to-r from-neon-cyan/25 via-neon-cyan/10 to-transparent group-hover:from-neon-cyan/60 group-hover:via-neon-cyan/30',
-        glowOrb: 'bg-neon-cyan/[0.03] group-hover:bg-neon-cyan/10',
-        imgShadow: 'drop-shadow-[0_0_8px_rgba(34,211,238,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(34,211,238,0.4)]',
-      },
-    },
-    {
-      title: 'Plan Adherence',
-      value: `${streak?.complianceRate || 92}%`,
-      unit: 'Compliance',
-      subtext: (
-        <>
-          <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-neon-purple" />
-          <span>
-            Wk: {streak?.currentWeekDone || 3}/{streak?.currentWeekTarget || 4} ({streak?.currentWeekStatus || 'On Track'})
-          </span>
-        </>
-      ),
-      imageSrc: '/images/icons/check.svg',
-      imageAlt: 'Plan Adherence',
-      contentWidth: 'w-[72%]',
-      theme: {
-        border: 'border-neon-purple/15 hover:border-neon-purple/60',
-        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-        hoverShadow: 'hover:shadow-[0_0_30px_rgba(168,85,247,0.22)]',
-        diamondBg: 'bg-neon-purple/70 group-hover:bg-neon-purple',
-        diamondShadow: 'shadow-[0_0_4px_rgba(168,85,247,0.4)] group-hover:shadow-[0_0_10px_#a855f7]',
-        textUnit: 'text-neon-purple',
-        textSub: 'text-zinc-400 group-hover:text-zinc-300',
-        accentBar: 'bg-gradient-to-r from-neon-purple/25 via-neon-purple/10 to-transparent group-hover:from-neon-purple/60 group-hover:via-neon-purple/30',
-        glowOrb: 'bg-neon-purple/[0.03] group-hover:bg-neon-purple/10',
-        imgShadow: 'drop-shadow-[0_0_8px_rgba(168,85,247,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(168,85,247,0.4)]',
-      },
-    },
-    {
-      title: 'Hours Invested',
-      value: stats.totalHours,
-      unit: 'hrs',
-      subtext: (
-        <>
-          <Clock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-          <span>
-            {stats.totalDays} sessions (~{stats.averageHoursPerSession}h avg)
-          </span>
-        </>
-      ),
-      imageSrc: '/images/icons/clock.svg',
-      imageAlt: 'Hours Invested',
-      theme: {
-        border: 'border-teal-400/15 hover:border-teal-400/60',
-        shadow: 'shadow-[0_4px_20px_rgba(0,0,0,0.6)]',
-        hoverShadow: 'hover:shadow-[0_0_30px_rgba(34,211,238,0.22)]',
-        diamondBg: 'bg-teal-400/70 group-hover:bg-teal-400',
-        diamondShadow: 'shadow-[0_0_4px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_10px_#22d3ee]',
-        textUnit: 'text-teal-400',
-        textSub: 'text-zinc-400 group-hover:text-zinc-300',
-        accentBar: 'bg-gradient-to-r from-teal-400/25 via-teal-400/10 to-transparent group-hover:from-teal-400/60 group-hover:via-teal-400/30',
-        glowOrb: 'bg-teal-400/[0.03] group-hover:bg-teal-400/10',
-        imgShadow: 'drop-shadow-[0_0_8px_rgba(251,191,36,0.12)] group-hover:drop-shadow-[0_0_22px_rgba(251,191,36,0.4)]',
-      },
-    },
-  ];
 
   return (
     <TooltipProvider delayDuration={50}>
@@ -269,8 +283,10 @@ export default function StatsOverview({ stats }: StatsOverviewProps) {
         </div>
 
         {/* Row 2: Cycle Progress Card — full width */}
-        {user && <CycleProgressCard className='mt-10' stats={stats} user={user} />}
+        {user && <CycleProgressCard className="mt-10" stats={stats} user={user} />}
       </div>
     </TooltipProvider>
   );
 }
+
+export default memo(StatsOverview);

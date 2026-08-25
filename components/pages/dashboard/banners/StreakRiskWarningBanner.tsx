@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Dumbbell, X } from 'lucide-react';
+import { Dumbbell, X, Clock } from 'lucide-react';
 import { StreakWarningEvent } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import './streakbanner.css'; // Import the new advanced CSS
@@ -19,6 +19,17 @@ interface WarningAnimeCharacter {
   image: string;
   themeColor: string; // Used for CSS variables to color the bubble dynamically
   quote: string;
+}
+
+const SNOOZE_STORAGE_KEY = 'gymgit_streak_warning_snooze_until';
+const SNOOZE_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+
+function isTimeEligibleForReminder(): boolean {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  // 11:30 PM is 23:30. Eligible if current time is 11:30 PM or earlier.
+  return hours < 23 || (hours === 23 && minutes <= 30);
 }
 
 const WARNING_ANIME_CHARACTERS: WarningAnimeCharacter[] = [
@@ -124,18 +135,71 @@ export default function StreakRiskWarningBanner({
 }: StreakRiskWarningBannerProps) {
   const [timeLeft, setTimeLeft] = useState<string>(calculateTimeLeft);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [snoozedUntil, setSnoozedUntil] = useState<number | null>(null);
+  const [canRemindLater, setCanRemindLater] = useState<boolean>(isTimeEligibleForReminder);
   const [character] = useState<WarningAnimeCharacter>(() => {
     // Pick a random character on mount
     return WARNING_ANIME_CHARACTERS[Math.floor(Math.random() * WARNING_ANIME_CHARACTERS.length)];
   });
 
+  // Check stored snooze timestamp on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(SNOOZE_STORAGE_KEY);
+      if (stored) {
+        const until = parseInt(stored, 10);
+        if (!isNaN(until) && until > Date.now()) {
+          setSnoozedUntil(until);
+        } else {
+          localStorage.removeItem(SNOOZE_STORAGE_KEY);
+        }
+      }
+    } catch {
+      // ignore storage access restrictions
+    }
+  }, []);
+
+  // Update countdown, snooze status, and reminder eligibility every second
   useEffect(() => {
     if (!event) return;
-    const interval = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-    return () => clearInterval(interval);
-  }, [event]);
+    const interval = setInterval(() => {
+      const now = Date.now();
+      setTimeLeft(calculateTimeLeft());
+      setCanRemindLater(isTimeEligibleForReminder());
 
-  if (!event || !event.is_at_risk || currentStreak <= 0) return null;
+      if (snoozedUntil && now >= snoozedUntil) {
+        setSnoozedUntil(null);
+        try {
+          localStorage.removeItem(SNOOZE_STORAGE_KEY);
+        } catch {
+          // ignore
+        }
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [event, snoozedUntil]);
+
+  const handleRemindMeLater = () => {
+    if (!isTimeEligibleForReminder()) return;
+    const snoozeTime = Date.now() + SNOOZE_DURATION_MS;
+    try {
+      localStorage.setItem(SNOOZE_STORAGE_KEY, snoozeTime.toString());
+    } catch {
+      // ignore
+    }
+    setSnoozedUntil(snoozeTime);
+    setIsExpanded(false);
+  };
+
+  // Hide the anime banner completely if not at risk, no streak, or currently snoozed
+  if (
+    !event ||
+    !event.is_at_risk ||
+    currentStreak <= 0 ||
+    (snoozedUntil !== null && Date.now() < snoozedUntil)
+  ) {
+    return null;
+  }
 
   // Dynamically generate the character's second sentence based on app state
   const getContextualDialogue = () => {
@@ -236,6 +300,15 @@ export default function StreakRiskWarningBanner({
               <Dumbbell className="w-4 h-4" />
               Log Workout Now
             </button>
+            {canRemindLater && (
+              <button
+                onClick={handleRemindMeLater}
+                className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 border border-zinc-800"
+              >
+                <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                Remind Me Later
+              </button>
+            )}
             <button
               onClick={() => setIsExpanded(false)}
               className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs uppercase tracking-wider transition-colors"

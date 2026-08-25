@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 
 interface AttributionItem {
     id: string;
@@ -50,9 +51,17 @@ const ATTRIBUTIONS: AttributionItem[] = [
     // },
 ];
 
-export const metadata = {
-    title: 'Credits & Attributions | Gym-Git',
-    description: 'Third-party asset licenses and icon designer attributions.',
+export const metadata: Metadata = {
+    title: 'Credits & Attributions',
+    description: 'Third-party asset licenses, vector icons, and designer attributions for Gym-Git.',
+    alternates: {
+        canonical: '/credits',
+    },
+    openGraph: {
+        title: 'Credits & Attributions | Gym-Git',
+        description: 'Third-party asset licenses and designer attributions.',
+        url: '/credits',
+    },
 };
 
 export default function CreditsPage() {

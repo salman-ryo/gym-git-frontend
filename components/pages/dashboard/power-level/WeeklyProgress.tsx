@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AnimeTierCard from '../AnimeTierCard';
 import { WeeklyPowerStat, getPowerColorTheme, useInView, useTieredBarAnimation } from './power-chart-utils';
@@ -10,7 +10,7 @@ interface WeeklyProgressProps {
   weeklyPowerStats: WeeklyPowerStat[];
 }
 
-function WeeklyBarColumn({
+const WeeklyBarColumn = memo(function WeeklyBarColumn({
   w,
   idx,
   inView,
@@ -105,9 +105,9 @@ function WeeklyBarColumn({
       </Tooltip>
     </div>
   );
-}
+});
 
-export default function WeeklyProgress({ weeklyPowerStats }: WeeklyProgressProps) {
+function WeeklyProgress({ weeklyPowerStats }: WeeklyProgressProps) {
   const { ref: containerRef, inView } = useInView(0.15);
 
   return (
@@ -129,3 +129,5 @@ export default function WeeklyProgress({ weeklyPowerStats }: WeeklyProgressProps
     </div>
   );
 }
+
+export default memo(WeeklyProgress);

@@ -7,6 +7,8 @@ import React, {
   MouseEvent,
   useState,
   useSyncExternalStore,
+  memo,
+  useCallback,
 } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -18,12 +20,12 @@ type MouseHandlers = {
 
 interface CustomTooltipProps {
   children: ReactElement<MouseHandlers>;
-  content: ReactNode;
+  content: ReactNode | (() => ReactNode);
 }
 
 const emptySubscribe = () => () => {};
 
-export default function CustomTooltip({
+function CustomTooltip({
   children,
   content,
 }: CustomTooltipProps) {
@@ -36,7 +38,7 @@ export default function CustomTooltip({
     () => false
   );
 
-  const updateCoords = (e: MouseEvent<HTMLElement>) => {
+  const updateCoords = useCallback((e: MouseEvent<HTMLElement>) => {
     const x = e.clientX + 15;
     const y = e.clientY + 15;
 
@@ -49,26 +51,30 @@ export default function CustomTooltip({
       x: safeX,
       y: safeY,
     });
-  };
+  }, []);
+
+  const handleMouseEnter = useCallback((e: MouseEvent<HTMLElement>) => {
+    updateCoords(e);
+    setIsVisible(true);
+    children.props.onMouseEnter?.(e);
+  }, [children.props, updateCoords]);
+
+  const handleMouseLeave = useCallback((e: MouseEvent<HTMLElement>) => {
+    setIsVisible(false);
+    children.props.onMouseLeave?.(e);
+  }, [children.props]);
+
+  const handleMouseMove = useCallback((e: MouseEvent<HTMLElement>) => {
+    updateCoords(e);
+    children.props.onMouseMove?.(e);
+  }, [children.props, updateCoords]);
 
   return (
     <>
       {cloneElement(children, {
-        onMouseEnter: (e: MouseEvent<HTMLElement>) => {
-          updateCoords(e);
-          setIsVisible(true);
-          children.props.onMouseEnter?.(e);
-        },
-
-        onMouseLeave: (e: MouseEvent<HTMLElement>) => {
-          setIsVisible(false);
-          children.props.onMouseLeave?.(e);
-        },
-
-        onMouseMove: (e: MouseEvent<HTMLElement>) => {
-          updateCoords(e);
-          children.props.onMouseMove?.(e);
-        },
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave,
+        onMouseMove: handleMouseMove,
       })}
 
       {mounted &&
@@ -82,10 +88,12 @@ export default function CustomTooltip({
               minWidth: 'max-content',
             }}
           >
-            {content}
+            {typeof content === 'function' ? content() : content}
           </div>,
           document.body
         )}
     </>
   );
 }
+
+export default memo(CustomTooltip);

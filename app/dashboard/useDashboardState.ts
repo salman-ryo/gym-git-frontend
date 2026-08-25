@@ -139,16 +139,16 @@ export function useDashboardState() {
           console.warn('Failed to load reward roadmap:', roadmapErr);
         }
       }
-      return fetchedLogs;
+      return { logs: fetchedLogs, stats: fetchedStats };
     } catch (err) {
       console.error('Failed to load dashboard data', err);
-      return [];
+      return { logs: [], stats: null };
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  const handleUseInventoryItem = async (itemId: string, payload?: Record<string, unknown>) => {
+  const handleUseInventoryItem = useCallback(async (itemId: string, payload?: Record<string, unknown>) => {
     try {
       const invData = await consumeInventoryItem(itemId, 1, payload);
       setInventoryItems(invData.inventory || []);
@@ -157,7 +157,7 @@ export function useDashboardState() {
     } catch (err) {
       console.error('Failed to use inventory item:', err);
     }
-  };
+  }, [refreshData]);
 
   const activateMockData = useCallback(() => {
     const mockLogs = generate365MockLogs(365);
@@ -181,7 +181,7 @@ export function useDashboardState() {
     await refreshData();
   }, [refreshData]);
 
-  const handleSeedToBackend = async () => {
+  const handleSeedToBackend = useCallback(async () => {
     setIsSeeding(true);
     setSeedProgress('0%');
     try {
@@ -198,7 +198,7 @@ export function useDashboardState() {
     } finally {
       setIsSeeding(false);
     }
-  };
+  }, [refreshData]);
 
   // Snooze timer management
   const snoozeTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -236,7 +236,7 @@ export function useDashboardState() {
         return;
       }
 
-      const currentLogs = await refreshData();
+      const { logs: currentLogs, stats: currentStats } = await refreshData();
       const todayStr = formatDateKey(new Date());
       setTodayDateStr(todayStr);
 
@@ -244,8 +244,7 @@ export function useDashboardState() {
         setShowPlanModal(true);
         setShowDailyCheckIn(false);
       } else {
-        const fetchedStats = await fetchDashboardStats(user?.weeklyPlan);
-        const isFrozenToday = fetchedStats?.isFrozen;
+        const isFrozenToday = currentStats?.isFrozen;
 
         const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
         const snoozeStatus = user?.checkinSnooze;
@@ -272,7 +271,7 @@ export function useDashboardState() {
     }
   }, [refreshData, user, needsPlanSelection, activateMockData, scheduleSnoozeReminder]);
 
-  const handleDailyCheckInYes = async (
+  const handleDailyCheckInYes = useCallback(async (
     hours: number,
     workoutType: WorkoutType,
     notes?: string
@@ -281,7 +280,7 @@ export function useDashboardState() {
     if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
     await saveGymLog(todayDateStr, hours, workoutType, notes);
     setShowDailyCheckIn(false);
-    const updatedLogs = await refreshData();
+    const { logs: updatedLogs } = await refreshData();
 
     if (hours > 0 && Array.isArray(updatedLogs)) {
       const weekScoreData = calculateCurrentWeekScore(updatedLogs);
@@ -290,17 +289,17 @@ export function useDashboardState() {
         scoreData: weekScoreData,
       });
     }
-  };
+  }, [calculateCurrentWeekScore, refreshData, todayDateStr]);
 
-  const handleDailyCheckInNo = async () => {
+  const handleDailyCheckInNo = useCallback(async () => {
     await clearCheckInSnooze();
     if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
     await saveGymLog(todayDateStr, 0, 'Rest');
     setShowDailyCheckIn(false);
     await refreshData();
-  };
+  }, [refreshData, todayDateStr]);
 
-  const handleDailyCheckInLater = async () => {
+  const handleDailyCheckInLater = useCallback(async () => {
     setShowDailyCheckIn(false);
     try {
       await snoozeCheckIn(todayDateStr);
@@ -308,14 +307,14 @@ export function useDashboardState() {
       console.error('Failed to save checkin snooze to backend', err);
     }
     scheduleSnoozeReminder(SNOOZE_DURATION_MS, todayDateStr);
-  };
+  }, [scheduleSnoozeReminder, todayDateStr]);
 
-  const handleTileClick = (dateStr: string, log?: GymLog) => {
+  const handleTileClick = useCallback((dateStr: string, log?: GymLog) => {
     setEditTileDate(dateStr);
     setEditTileLog(log);
-  };
+  }, []);
 
-  const handleSaveEdit = async (
+  const handleSaveEdit = useCallback(async (
     dateStr: string,
     hours: number,
     workoutType: WorkoutType,
@@ -337,7 +336,7 @@ export function useDashboardState() {
     }
 
     await saveGymLog(dateStr, hours, workoutType, notes);
-    const updatedLogs = await refreshData();
+    const { logs: updatedLogs } = await refreshData();
 
     if (dateStr === todayStr && hours > 0 && Array.isArray(updatedLogs)) {
       const weekScoreData = calculateCurrentWeekScore(updatedLogs);
@@ -346,19 +345,19 @@ export function useDashboardState() {
         scoreData: weekScoreData,
       });
     }
-  };
+  }, [calculateCurrentWeekScore, refreshData]);
 
-  const handleDeleteEdit = async (dateStr: string) => {
+  const handleDeleteEdit = useCallback(async (dateStr: string) => {
     await deleteGymLog(dateStr);
     await refreshData();
-  };
+  }, [refreshData]);
 
-  const handleSavePlan = async (plan: WeeklyPlan) => {
+  const handleSavePlan = useCallback(async (plan: WeeklyPlan) => {
     await updateUserPlan(plan);
     setShowPlanModal(false);
-  };
+  }, [updateUserPlan]);
 
-  return {
+  return useMemo(() => ({
     user,
     inventoryItems,
     activeEffects,
@@ -405,7 +404,44 @@ export function useDashboardState() {
     handleSaveEdit,
     handleDeleteEdit,
     handleSavePlan,
-  };
+  }), [
+    user,
+    inventoryItems,
+    activeEffects,
+    isInventoryOpen,
+    availableFreezeTokens,
+    logs,
+    stats,
+    loading,
+    isMockActive,
+    isSeeding,
+    seedProgress,
+    activeFilter,
+    showDailyCheckIn,
+    showPlanModal,
+    isFreezeModalOpen,
+    todayDateStr,
+    editTileDate,
+    editTileLog,
+    roadmapMilestones,
+    celebrationDetails,
+    powerCelebrationData,
+    hasSeenBrokenModal,
+    availableHistoricalTypes,
+    needsPlanSelection,
+    refreshData,
+    handleUseInventoryItem,
+    activateMockData,
+    resetToRealData,
+    handleSeedToBackend,
+    handleDailyCheckInYes,
+    handleDailyCheckInNo,
+    handleDailyCheckInLater,
+    handleTileClick,
+    handleSaveEdit,
+    handleDeleteEdit,
+    handleSavePlan,
+  ]);
 }
 
 export default useDashboardState;

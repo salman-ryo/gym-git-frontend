@@ -3,7 +3,7 @@
 import { GymLog, MonthlyStat } from '@/lib/types';
 import { formatDateKey } from '@/lib/scientific-streak';
 import { calculateScientificPowerScore } from '@/lib/scientific-power';
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { Swords } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { PowerScoreGuideModal } from '@/components/pages/dashboard/modals';
@@ -16,13 +16,24 @@ interface PowerLevelChartProps {
   logs: GymLog[];
 }
 
-export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartProps) {
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function PowerLevelChart({ monthlyData, logs }: PowerLevelChartProps) {
   void monthlyData;
-  const logsMap = useMemo(() => {
-    const map = new Map<string, GymLog>();
+
+  // Pre-bucket logs by "YYYY-M" key in a single pass O(N)
+  const logsByYearMonth = useMemo(() => {
+    const map = new Map<string, GymLog[]>();
     logs.forEach((log) => {
-      if (log.hours > 0) {
-        map.set(log.date, log);
+      if (log.hours > 0 && log.date) {
+        const [y, m] = log.date.split('-').map(Number);
+        const key = `${y}-${m}`;
+        const existing = map.get(key);
+        if (existing) {
+          existing.push(log);
+        } else {
+          map.set(key, [log]);
+        }
       }
     });
     return map;
@@ -32,7 +43,6 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonthIndex = today.getMonth();
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const result: MonthlyPowerStat[] = [];
 
@@ -40,26 +50,22 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
       const targetDate = new Date(currentYear, currentMonthIndex - i, 1);
       const targetYear = targetDate.getFullYear();
       const targetMonthIndex = targetDate.getMonth();
-
       const daysInMonth = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
 
-      const monthLogs: GymLog[] = [];
+      const key = `${targetYear}-${targetMonthIndex + 1}`;
+      const monthLogs = logsByYearMonth.get(key) || [];
+
       let count = 0;
       let totalHours = 0;
-
-      logsMap.forEach((log) => {
-        const [logY, logM] = log.date.split('-').map(Number);
-        if (logY === targetYear && logM === targetMonthIndex + 1) {
-          monthLogs.push(log);
-          count++;
-          totalHours += log.hours;
-        }
+      monthLogs.forEach((log) => {
+        count++;
+        totalHours += log.hours;
       });
 
       const scoreData = calculateScientificPowerScore(monthLogs, daysInMonth, 4);
 
       result.push({
-        month: monthNames[targetMonthIndex],
+        month: MONTH_NAMES[targetMonthIndex],
         monthIndex: targetMonthIndex,
         year: targetYear,
         count,
@@ -70,10 +76,10 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
     }
 
     return result;
-  }, [logsMap]);
+  }, [logsByYearMonth]);
 
   const weeklyPowerStats = useMemo(() => {
-    if (!logs) return [];
+    if (!logs || logs.length === 0) return [];
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -87,6 +93,13 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
     const diffToMonday = startOfMonth.getDate() - firstDayOfWeek + (firstDayOfWeek === 0 ? -6 : 1);
     const currentWeekStart = new Date(startOfMonth);
     currentWeekStart.setDate(diffToMonday);
+
+    // Filter relevant logs only (current & adjacent months) instead of full history
+    const candidateLogs = [
+      ...(logsByYearMonth.get(`${currentYear}-${currentMonth}`) || []),
+      ...(logsByYearMonth.get(`${currentYear}-${currentMonth + 1}`) || []),
+      ...(logsByYearMonth.get(`${currentYear}-${currentMonth + 2}`) || []),
+    ];
 
     const result: WeeklyPowerStat[] = [];
 
@@ -102,7 +115,7 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
       let count = 0;
       let totalHours = 0;
 
-      logsMap.forEach((log) => {
+      candidateLogs.forEach((log) => {
         if (log.date >= monStr && log.date <= sunStr) {
           weekLogs.push(log);
           count++;
@@ -110,11 +123,8 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
         }
       });
 
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const weekLabel = `${monthNames[mon.getMonth()]} ${mon.getDate()}`;
-
+      const weekLabel = `${MONTH_NAMES[mon.getMonth()]} ${mon.getDate()}`;
       const isCurrentWeek = today >= mon && today <= sun;
-
       const scoreData = calculateScientificPowerScore(weekLogs, 7, 4);
 
       result.push({
@@ -129,7 +139,7 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
     }
 
     return result;
-  }, [logs, logsMap]);
+  }, [logs, logsByYearMonth]);
 
   return (
     <TooltipProvider delayDuration={50}>
@@ -165,3 +175,5 @@ export default function PowerLevelChart({ monthlyData, logs }: PowerLevelChartPr
     </TooltipProvider>
   );
 }
+
+export default memo(PowerLevelChart);

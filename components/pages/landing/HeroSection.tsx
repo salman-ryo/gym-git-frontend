@@ -156,9 +156,16 @@ export default function HeroSection() {
           <SocialProof />
         </div>
 
-        {/* ── Right Column ── */}
         <div className="relative flex justify-center max-w-[600px] lg:max-w-none mx-auto lg:mx-0 w-full rounded-2xl border-2 border-teal-800 overflow-hidden md:h-[50dvh] md:w-auto shadow-md shadow-cyan-400">
-          <Image src="/images/landing/dashboardsection.webp" priority unoptimized width={1080} height={1920} quality={100} alt="Dashboard Mockup" className='object-contain' />
+          <Image
+            src="/images/landing/dashboardsection.webp"
+            priority
+            unoptimized
+            width={1080}
+            height={1920}
+            alt="Gym-Git Dashboard preview showcasing GitHub-style workout contribution heatmap and streak tracker"
+            className="object-contain"
+          />
         </div>
       </div>
     </section>

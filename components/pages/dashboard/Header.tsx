@@ -1,5 +1,6 @@
 'use client';
 
+import React, { memo } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { LogOut, User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -12,7 +13,7 @@ interface HeaderProps {
   inventoryCount?: number;
 }
 
-export default function Header({ currentStreak = 0, onOpenInventory, inventoryCount = 0 }: HeaderProps) {
+function Header({ currentStreak = 0, onOpenInventory, inventoryCount = 0 }: HeaderProps) {
   void currentStreak;
   const { user, logout } = useAuth();
 
@@ -51,7 +52,7 @@ export default function Header({ currentStreak = 0, onOpenInventory, inventoryCo
                     type="button"
                     onClick={onOpenInventory}
                     aria-label="Open Inventory"
-                    className='relative'
+                    className="relative"
                   >
                     <img src="/icons/bag.png" alt="Inventory" className="w-4 h-4 md:size-8 transition-transform duration-200 group-hover/inv:scale-110 hover:scale-110" />
                     {inventoryCount > 0 && (
@@ -116,3 +117,5 @@ export default function Header({ currentStreak = 0, onOpenInventory, inventoryCo
     </header>
   );
 }
+
+export default memo(Header);

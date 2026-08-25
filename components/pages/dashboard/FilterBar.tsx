@@ -1,7 +1,7 @@
 'use client';
 
 import { WorkoutType, WeeklyPlan } from '@/lib/types';
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { SlidersHorizontal, Settings2, Calendar } from 'lucide-react';
 import { getThemeForWorkout } from '@/components/contribution-graph/theme-utils';
 
@@ -13,24 +13,27 @@ interface FilterBarProps {
   availableTypes?: string[];
 }
 
-export default function FilterBar({
+function FilterBar({
   activeFilter,
   onFilterChange,
   weeklyPlan,
   onOpenPlanModal,
 }: FilterBarProps) {
   // Display ONLY the categories defined in the user's active weekly plan
-  const planCategories = weeklyPlan?.categories || ['Push', 'Pull', 'Legs', 'Cardio', 'Custom'];
+  const displayFilterItems = useMemo(() => {
+    const planCategories = weeklyPlan?.categories || ['Push', 'Pull', 'Legs', 'Cardio', 'Custom'];
+    const items: (WorkoutType | 'All')[] = ['All'];
+    const uniqueLabels = new Set<string>(['All']);
 
-  const displayFilterItems: (WorkoutType | 'All')[] = ['All'];
-  const uniqueLabels = new Set<string>(['All']);
+    planCategories.forEach((cat) => {
+      if (cat.toLowerCase() !== 'rest' && !uniqueLabels.has(cat)) {
+        items.push(cat);
+        uniqueLabels.add(cat);
+      }
+    });
 
-  planCategories.forEach((cat) => {
-    if (cat.toLowerCase() !== 'rest' && !uniqueLabels.has(cat)) {
-      displayFilterItems.push(cat);
-      uniqueLabels.add(cat);
-    }
-  });
+    return items;
+  }, [weeklyPlan?.categories]);
 
   return (
     <div className="bg-zinc-950/80 border border-[rgba(0,255,136,0.15)] backdrop-blur-xl rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-[0_4px_25px_rgba(0,0,0,0.6)] mb-6 transition-all duration-300">
@@ -82,3 +85,5 @@ export default function FilterBar({
     </div>
   );
 }
+
+export default memo(FilterBar);

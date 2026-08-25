@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 import { Gift, Award } from 'lucide-react';
 import { RoadmapMilestone } from '@/lib/types';
 import { claimReward } from '@/lib/rewards-service';
@@ -20,7 +20,7 @@ interface RewardRoadmapProps {
   planId?: string;
 }
 
-export default function RewardRoadmap({
+function RewardRoadmap({
   milestones = [],
   longestStreak,
   onClaimSuccess,
@@ -42,7 +42,7 @@ export default function RewardRoadmap({
     return Math.min(100, (longestStreak / maxTarget) * 100);
   }, [sortedMilestones, longestStreak]);
 
-  const handleClaim = async (milestone: RoadmapMilestone) => {
+  const handleClaim = useCallback(async (milestone: RoadmapMilestone) => {
     setClaimLoadingId(milestone.milestone_id);
     try {
       const result = await claimReward(milestone.plan_id || planId, milestone.streak_target, milestone.item_id);
@@ -59,7 +59,7 @@ export default function RewardRoadmap({
     } finally {
       setClaimLoadingId(null);
     }
-  };
+  }, [planId, onClaimSuccess]);
 
   if (sortedMilestones.length === 0) return null;
 
@@ -120,3 +120,5 @@ export default function RewardRoadmap({
     </div>
   );
 }
+
+export default memo(RewardRoadmap);

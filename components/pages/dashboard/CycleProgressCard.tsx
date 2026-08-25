@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Stats, User } from '@/lib/types';
 import { AlertTriangle, Zap, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -22,15 +22,25 @@ function formatDate(dateStr: string): string {
   return `${monthNames[monthIdx]} ${day}`;
 }
 
-export default function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
+function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
   const { ref: containerRef, inView } = useInView(0.15);
   const cycle = stats.cycleInfo;
 
-  if (!cycle) return null;
-
-  const completed = cycle.workouts_completed_in_cycle;
-  const target = cycle.workouts_target_in_cycle;
+  const completed = cycle?.workouts_completed_in_cycle ?? 0;
+  const target = cycle?.workouts_target_in_cycle ?? 0;
   const accuracy = stats.accuracyScore ?? 0;
+
+  const workoutSegments = useMemo(
+    () => Array.from({ length: Math.max(1, target) }),
+    [target]
+  );
+
+  const restTokenSegments = useMemo(
+    () => Array.from({ length: cycle?.rest_tokens_total ?? 0 }),
+    [cycle?.rest_tokens_total]
+  );
+
+  if (!cycle) return null;
 
   const radius = 34;
   const strokeWidth = 6;
@@ -96,7 +106,7 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
 
               {/* Clean Segmented Progress Bar */}
               <div className="flex items-center gap-1.5 w-full h-5">
-                {Array.from({ length: Math.max(1, target) }).map((_, idx) => {
+                {workoutSegments.map((_, idx) => {
                   const isActive = inView && idx < completed;
                   return (
                     <div
@@ -127,7 +137,7 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
 
               {/* Rounded Hardware Battery Pods */}
               <div className="flex items-center gap-2.5 h-6">
-                {Array.from({ length: cycle.rest_tokens_total }).map((_, idx) => {
+                {restTokenSegments.map((_, idx) => {
                   const isActive = inView && idx < cycle.rest_tokens_remaining;
                   return (
                     <div
@@ -230,3 +240,5 @@ export default function CycleProgressCard({ stats, user, className }: CycleProgr
     </div>
   );
 }
+
+export default memo(CycleProgressCard);

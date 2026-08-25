@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Lock, Gift, Check, Loader2 } from 'lucide-react';
 import { RoadmapMilestone } from '@/lib/types';
 import { getRarityStyles } from '@/lib/rarity-theme';
@@ -12,7 +12,7 @@ export interface RoadmapMilestoneNodeProps {
   claimLoadingId: string | null;
 }
 
-export default function RoadmapMilestoneNode({
+function RoadmapMilestoneNode({
   milestone,
   onClaim,
   claimLoadingId,
@@ -139,3 +139,5 @@ export default function RoadmapMilestoneNode({
     </div>
   );
 }
+
+export default memo(RoadmapMilestoneNode);

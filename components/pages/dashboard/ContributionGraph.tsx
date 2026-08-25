@@ -2,7 +2,7 @@
 
 import { GymLog, TimeframeView, WeeklyPlan, WorkoutType } from '@/lib/types';
 import { formatDateKey } from '@/lib/scientific-streak';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 import ContributionGraphHeader from '@/components/contribution-graph/ContributionGraphHeader';
 import YearView from '@/components/contribution-graph/YearView';
 import MonthView from '@/components/contribution-graph/MonthView';
@@ -16,7 +16,7 @@ interface ContributionGraphProps {
   weeklyPlan?: WeeklyPlan;
 }
 
-export default function ContributionGraph({
+function ContributionGraph({
   logs,
   activeFilter,
   onTileClick,
@@ -249,3 +249,5 @@ export default function ContributionGraph({
     </div>
   );
 }
+
+export default memo(ContributionGraph);

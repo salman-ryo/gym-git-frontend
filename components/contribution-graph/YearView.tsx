@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { GymLog, WorkoutType } from '@/lib/types';
 import CustomTooltip from '@/components/CustomTooltip';
-import { WeekColumn, getDayStyleInfo } from './theme-utils';
+import { DayTile, WeekColumn, getDayStyleInfo } from './theme-utils';
 import DayTileTooltip from './DayTileTooltip';
 
 interface YearViewProps {
@@ -13,7 +13,62 @@ interface YearViewProps {
   onTileClick: (dateStr: string, log?: GymLog) => void;
 }
 
-export default function YearView({
+interface YearDayTileProps {
+  day: DayTile;
+  activeFilter: WorkoutType | 'All';
+  onTileClick: (dateStr: string, log?: GymLog) => void;
+}
+
+const YearDayTile = memo(function YearDayTile({
+  day,
+  activeFilter,
+  onTileClick,
+}: YearDayTileProps) {
+  const styleInfo = getDayStyleInfo(day, activeFilter);
+  const isFilteredOut = activeFilter !== 'All' && day.hours > 0 && day.workoutType !== activeFilter;
+
+  const tileColorClass = styleInfo.tileClass;
+  let ringClass = styleInfo.ringClass || '';
+
+  if (day.isToday && !isFilteredOut) {
+    ringClass = 'ring ring-white ring-offset-1 ring-offset-zinc-950 z-10 shadow-[0_0_10px_rgba(255,255,255,0.8)]';
+  }
+
+  const renderTooltip = useCallback(
+    () => <DayTileTooltip day={day} styleInfo={styleInfo} />,
+    [day, styleInfo]
+  );
+
+  const handleClick = useCallback(() => {
+    if (!day.isFuture) {
+      onTileClick(day.dateStr, day.log);
+    }
+  }, [day.dateStr, day.isFuture, day.log, onTileClick]);
+
+  return (
+    <CustomTooltip content={renderTooltip}>
+      <button
+        type="button"
+        disabled={day.isFuture}
+        onClick={handleClick}
+        className={`w-3 h-3 rounded-[4px] transition-all duration-150 border transform relative overflow-hidden
+          ${tileColorClass} 
+          ${!isFilteredOut && styleInfo.glowClass ? styleInfo.glowClass : ''}
+          ${day.isFuture ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer hover:scale-125 hover:z-20'} 
+          ${ringClass}
+        `}
+      >
+        {styleInfo.badgeContent && (
+          <span className="absolute inset-0 flex items-center justify-center text-[6px] select-none pointer-events-none">
+            {styleInfo.badgeContent}
+          </span>
+        )}
+      </button>
+    </CustomTooltip>
+  );
+});
+
+function YearView({
   weeks,
   monthLabels,
   activeFilter,
@@ -45,42 +100,14 @@ export default function YearView({
             <div className="flex gap-1">
               {weeks.map((week) => (
                 <div key={week.weekIndex} className="flex flex-col gap-1">
-                  {week.days.map((day) => {
-                    const styleInfo = getDayStyleInfo(day, activeFilter);
-                    const isFilteredOut = activeFilter !== 'All' && day.hours > 0 && day.workoutType !== activeFilter;
-
-                    const tileColorClass = styleInfo.tileClass;
-                    let ringClass = styleInfo.ringClass || '';
-
-                    if (day.isToday && !isFilteredOut) {
-                      ringClass = 'ring ring-white ring-offset-1 ring-offset-zinc-950 z-10 shadow-[0_0_10px_rgba(255,255,255,0.8)]';
-                    }
-
-                    return (
-                      <CustomTooltip
-                        key={day.dateStr}
-                        content={<DayTileTooltip day={day} styleInfo={styleInfo} />}
-                      >
-                        <button
-                          type="button"
-                          disabled={day.isFuture}
-                          onClick={() => !day.isFuture && onTileClick(day.dateStr, day.log)}
-                          className={`w-3 h-3 rounded-[4px] transition-all duration-150 border transform relative overflow-hidden
-                            ${tileColorClass} 
-                            ${!isFilteredOut && styleInfo.glowClass ? styleInfo.glowClass : ''}
-                            ${day.isFuture ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer hover:scale-125 hover:z-20'} 
-                            ${ringClass}
-                          `}
-                        >
-                          {styleInfo.badgeContent && (
-                            <span className="absolute inset-0 flex items-center justify-center text-[6px] select-none pointer-events-none">
-                              {styleInfo.badgeContent}
-                            </span>
-                          )}
-                        </button>
-                      </CustomTooltip>
-                    );
-                  })}
+                  {week.days.map((day) => (
+                    <YearDayTile
+                      key={day.dateStr}
+                      day={day}
+                      activeFilter={activeFilter}
+                      onTileClick={onTileClick}
+                    />
+                  ))}
                 </div>
               ))}
             </div>
@@ -102,3 +129,5 @@ export default function YearView({
     </div>
   );
 }
+
+export default memo(YearView);

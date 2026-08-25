@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { CalendarRange, Calendar, CalendarDays } from 'lucide-react';
 import { TimeframeView } from '@/lib/types';
 
@@ -23,7 +23,7 @@ export interface ContributionGraphHeaderProps {
   };
 }
 
-export default function ContributionGraphHeader({
+function ContributionGraphHeader({
   timeframe,
   setTimeframe,
   yearData,
@@ -101,3 +101,5 @@ export default function ContributionGraphHeader({
     </div>
   );
 }
+
+export default memo(ContributionGraphHeader);

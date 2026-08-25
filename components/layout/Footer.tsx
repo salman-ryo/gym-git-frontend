@@ -87,14 +87,26 @@ export default function Footer() {
             <span className="text-xs text-zinc-500">
               Gym-Git &copy; {new Date().getFullYear()} — Dynamic Workout Planning
             </span>
-            <div className="flex items-center gap-2 text-[10px] text-zinc-600">
-              <span>Built with Next.js, Go/Gin &amp; Supabase</span>
+            <div className="flex items-center flex-wrap justify-center md:justify-end gap-2 text-[10px] text-zinc-500">
+              <Link
+                href="/privacy"
+                className="hover:text-zinc-300 transition-colors underline underline-offset-2"
+              >
+                Privacy Policy
+              </Link>
+              <span>•</span>
+              <Link
+                href="/terms"
+                className="hover:text-zinc-300 transition-colors underline underline-offset-2"
+              >
+                Terms of Service
+              </Link>
               <span>•</span>
               <Link
                 href="/credits"
-                className="text-zinc-500 hover:text-zinc-300 transition-colors underline underline-offset-2"
+                className="hover:text-zinc-300 transition-colors underline underline-offset-2"
               >
-                Credits &amp; Attributions
+                Credits
               </Link>
             </div>
           </div>

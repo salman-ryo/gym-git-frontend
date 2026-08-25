@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useMemo, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import AuthGuard from '@/components/AuthGuard';
 import CyberpunkLoader from '@/components/CyberpunkLoader';
 import Footer from '@/components/layout/Footer';
@@ -9,27 +11,75 @@ import FilterBar from '@/components/pages/dashboard/FilterBar';
 import ContributionGraph from '@/components/pages/dashboard/ContributionGraph';
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import RewardRoadmap from '@/components/pages/dashboard/rewards/RewardRoadmap';
-import ClaimCelebrationModal from '@/components/pages/dashboard/rewards/ClaimCelebrationModal';
-import PowerLevelCelebrationModal from '@/components/pages/dashboard/power-level/PowerLevelCelebrationModal';
-import InventoryDrawer from '@/components/inventory/InventoryDrawer';
 import ActiveEffectsBar from '@/components/inventory/ActiveEffectsBar';
-import {
-  DailyCheckInModal,
-  EditLogModal,
-  FreezeModal,
-  StreakBrokenModal,
-  WeeklyPlanModal,
-} from '@/components/pages/dashboard/modals';
 import {
   FrozenStateBanner,
   StreakRiskWarningBanner,
 } from '@/components/pages/dashboard/banners';
-import { MockTestingToolbar } from '@/components/pages/dashboard/toolbar';
 import { enable_mock_data } from '@/lib/flags';
 import { useDashboardState } from './useDashboardState';
 
+// Dynamically import heavyweight modals & drawers to optimize initial page bundle & hydration
+const ClaimCelebrationModal = dynamic(
+  () => import('@/components/pages/dashboard/rewards/ClaimCelebrationModal'),
+  { ssr: false }
+);
+const PowerLevelCelebrationModal = dynamic(
+  () => import('@/components/pages/dashboard/power-level/PowerLevelCelebrationModal'),
+  { ssr: false }
+);
+const InventoryDrawer = dynamic(
+  () => import('@/components/inventory/InventoryDrawer'),
+  { ssr: false }
+);
+const DailyCheckInModal = dynamic(
+  () => import('@/components/pages/dashboard/modals').then((mod) => mod.DailyCheckInModal),
+  { ssr: false }
+);
+const EditLogModal = dynamic(
+  () => import('@/components/pages/dashboard/modals').then((mod) => mod.EditLogModal),
+  { ssr: false }
+);
+const FreezeModal = dynamic(
+  () => import('@/components/pages/dashboard/modals').then((mod) => mod.FreezeModal),
+  { ssr: false }
+);
+const StreakBrokenModal = dynamic(
+  () => import('@/components/pages/dashboard/modals').then((mod) => mod.StreakBrokenModal),
+  { ssr: false }
+);
+const WeeklyPlanModal = dynamic(
+  () => import('@/components/pages/dashboard/modals').then((mod) => mod.WeeklyPlanModal),
+  { ssr: false }
+);
+const MockTestingToolbar = dynamic(
+  () => import('@/components/pages/dashboard/toolbar').then((mod) => mod.MockTestingToolbar),
+  { ssr: false }
+);
+
 export default function DashboardPage() {
   const state = useDashboardState();
+
+  const inventoryCount = useMemo(
+    () => state.inventoryItems.reduce((acc, curr) => acc + curr.quantity, 0),
+    [state.inventoryItems]
+  );
+
+  const handleOpenInventory = useCallback(() => {
+    state.setIsInventoryOpen(true);
+  }, [state]);
+
+  const handleLogWorkoutClick = useCallback(() => {
+    state.setShowDailyCheckIn(true);
+  }, [state]);
+
+  const handleOpenPlanModal = useCallback(() => {
+    state.setShowPlanModal(true);
+  }, [state]);
+
+  const handleRefresh = useCallback(async () => {
+    await state.refreshData();
+  }, [state]);
 
   return (
     <AuthGuard>
@@ -40,8 +90,8 @@ export default function DashboardPage() {
           {/* Navigation Header */}
           <Header
             currentStreak={state.stats?.currentStreak || 0}
-            onOpenInventory={() => state.setIsInventoryOpen(true)}
-            inventoryCount={state.inventoryItems.reduce((acc, curr) => acc + curr.quantity, 0)}
+            onOpenInventory={handleOpenInventory}
+            inventoryCount={inventoryCount}
           />
 
           {/* Dashboard Main Content */}
@@ -107,9 +157,7 @@ export default function DashboardPage() {
                   <FrozenStateBanner
                     isFrozen={state.stats.isFrozen}
                     activeEffects={state.activeEffects}
-                    onUnfreezeSuccess={async () => {
-                      await state.refreshData();
-                    }}
+                    onUnfreezeSuccess={handleRefresh}
                   />
                 )}
 
@@ -118,7 +166,7 @@ export default function DashboardPage() {
                   <StreakRiskWarningBanner
                     event={state.stats.streakWarningEvent}
                     currentStreak={state.stats.currentStreak}
-                    onLogWorkoutClick={() => state.setShowDailyCheckIn(true)}
+                    onLogWorkoutClick={handleLogWorkoutClick}
                   />
                 )}
 
@@ -136,7 +184,7 @@ export default function DashboardPage() {
                   activeFilter={state.activeFilter}
                   onFilterChange={state.setActiveFilter}
                   weeklyPlan={state.user?.weeklyPlan}
-                  onOpenPlanModal={() => state.setShowPlanModal(true)}
+                  onOpenPlanModal={handleOpenPlanModal}
                 />
 
                 {/* Flexible Contribution Graph (Year / Month / Week views) */}
@@ -170,15 +218,17 @@ export default function DashboardPage() {
 
           <Footer />
 
-          {/* Modals */}
-          <DailyCheckInModal
-            dateStr={state.todayDateStr}
-            isOpen={state.showDailyCheckIn}
-            onCheckInYes={state.handleDailyCheckInYes}
-            onCheckInNo={state.handleDailyCheckInNo}
-            onCheckInLater={state.handleDailyCheckInLater}
-            availableWorkoutTypes={state.user?.weeklyPlan?.categories}
-          />
+          {/* On-Demand Modals (Mounted only when active) */}
+          {state.showDailyCheckIn && (
+            <DailyCheckInModal
+              dateStr={state.todayDateStr}
+              isOpen={state.showDailyCheckIn}
+              onCheckInYes={state.handleDailyCheckInYes}
+              onCheckInNo={state.handleDailyCheckInNo}
+              onCheckInLater={state.handleDailyCheckInLater}
+              availableWorkoutTypes={state.user?.weeklyPlan?.categories}
+            />
+          )}
 
           {state.editTileDate && (
             <EditLogModal
@@ -192,55 +242,61 @@ export default function DashboardPage() {
             />
           )}
 
-          <WeeklyPlanModal
-            currentPlan={state.user?.weeklyPlan}
-            isOpen={state.showPlanModal || state.needsPlanSelection}
-            onClose={() => state.setShowPlanModal(false)}
-            onSavePlan={state.handleSavePlan}
-            preventClose={state.needsPlanSelection}
-          />
+          {(state.showPlanModal || state.needsPlanSelection) && (
+            <WeeklyPlanModal
+              currentPlan={state.user?.weeklyPlan}
+              isOpen={state.showPlanModal || state.needsPlanSelection}
+              onClose={() => state.setShowPlanModal(false)}
+              onSavePlan={state.handleSavePlan}
+              preventClose={state.needsPlanSelection}
+            />
+          )}
 
-          <InventoryDrawer
-            isOpen={state.isInventoryOpen}
-            onClose={() => state.setIsInventoryOpen(false)}
-            inventoryItems={state.inventoryItems}
-            onUseItem={state.handleUseInventoryItem}
-            onRequestFreeze={() => {
-              state.setIsInventoryOpen(false);
-              state.setIsFreezeModalOpen(true);
-            }}
-          />
+          {state.isInventoryOpen && (
+            <InventoryDrawer
+              isOpen={state.isInventoryOpen}
+              onClose={() => state.setIsInventoryOpen(false)}
+              inventoryItems={state.inventoryItems}
+              onUseItem={state.handleUseInventoryItem}
+              onRequestFreeze={() => {
+                state.setIsInventoryOpen(false);
+                state.setIsFreezeModalOpen(true);
+              }}
+            />
+          )}
 
-          <FreezeModal
-            isOpen={state.isFreezeModalOpen}
-            onClose={() => state.setIsFreezeModalOpen(false)}
-            availableTokens={state.availableFreezeTokens}
-            onSuccess={async () => {
-              await state.refreshData();
-            }}
-          />
+          {state.isFreezeModalOpen && (
+            <FreezeModal
+              isOpen={state.isFreezeModalOpen}
+              onClose={() => state.setIsFreezeModalOpen(false)}
+              availableTokens={state.availableFreezeTokens}
+              onSuccess={handleRefresh}
+            />
+          )}
 
-          <ClaimCelebrationModal
-            isOpen={!!state.celebrationDetails}
-            rewardDetails={state.celebrationDetails}
-            onClose={() => state.setCelebrationDetails(null)}
-          />
+          {state.celebrationDetails && (
+            <ClaimCelebrationModal
+              isOpen={!!state.celebrationDetails}
+              rewardDetails={state.celebrationDetails}
+              onClose={() => state.setCelebrationDetails(null)}
+            />
+          )}
 
-          <StreakBrokenModal
-            isOpen={!!state.stats?.streakBrokenEvent && !state.hasSeenBrokenModal}
-            event={state.stats?.streakBrokenEvent || null}
-            onClose={() => state.setHasSeenBrokenModal(true)}
-            onRestoreSuccess={async () => {
-              await state.refreshData();
-            }}
-            onOpenRoadmap={() => {
-              state.setHasSeenBrokenModal(true);
-              const roadmapEl = document.getElementById('reward-roadmap');
-              if (roadmapEl) {
-                roadmapEl.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          />
+          {state.stats?.streakBrokenEvent && !state.hasSeenBrokenModal && (
+            <StreakBrokenModal
+              isOpen={true}
+              event={state.stats.streakBrokenEvent}
+              onClose={() => state.setHasSeenBrokenModal(true)}
+              onRestoreSuccess={handleRefresh}
+              onOpenRoadmap={() => {
+                state.setHasSeenBrokenModal(true);
+                const roadmapEl = document.getElementById('reward-roadmap');
+                if (roadmapEl) {
+                  roadmapEl.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+            />
+          )}
 
           {state.powerCelebrationData && (
             <PowerLevelCelebrationModal

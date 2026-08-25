@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AnimeTierCard from '../AnimeTierCard';
 import { MonthlyPowerStat, getPowerColorTheme, useInView, useTieredBarAnimation } from './power-chart-utils';
@@ -10,7 +10,7 @@ interface MonthlyProgressProps {
   monthlyPowerStats: MonthlyPowerStat[];
 }
 
-function MonthlyBarColumn({
+const MonthlyBarColumn = memo(function MonthlyBarColumn({
   m,
   idx,
   inView,
@@ -106,9 +106,9 @@ function MonthlyBarColumn({
       </Tooltip>
     </div>
   );
-}
+});
 
-export default function MonthlyProgress({ monthlyPowerStats }: MonthlyProgressProps) {
+function MonthlyProgress({ monthlyPowerStats }: MonthlyProgressProps) {
   const { ref: containerRef, inView } = useInView(0.15);
 
   return (
@@ -130,3 +130,5 @@ export default function MonthlyProgress({ monthlyPowerStats }: MonthlyProgressPr
     </div>
   );
 }
+
+export default memo(MonthlyProgress);
