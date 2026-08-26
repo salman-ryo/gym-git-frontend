@@ -1,5 +1,12 @@
 import { StreakAnalysis } from './scientific-streak';
 
+export interface SectionQueryState<T> {
+  data: T;
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
 export type WorkoutType = string;
 
 export interface WeeklyPlan {

@@ -15,6 +15,7 @@
 - [x] **Task 4.2:** Centralized feature flags control in `lib/flags.ts` with `enable_mock_data` and `auto_load_mock_on_startup` booleans, conditionally controlling mock UI and logic.
 - [x] **Task 5.1:** Comprehensive 9-phase master responsive overhaul (Shell, Banners, StatsOverview, FilterBar, Heatmap Year/Month/Week views, Power Level charts, Reward Roadmap, Modals & Dialogs, Touch Target & Typography QA).
 - [x] **Task 5.2:** Zero horizontal viewport spill guarantee with `overflow-x: hidden` and `max-width: 100vw` in `app/globals.css`.
+- [x] **Task 6.1:** Decoupled dashboard data loading into 4 isolated query channels (`statsQuery`, `logsQuery`, `inventoryQuery`, `roadmapQuery`) with custom Cyberpunk-themed shimmer skeletons and section-level error boundaries with retry mechanisms (`components/pages/dashboard/skeletons/`, `CyberpunkSectionError.tsx`, `useDashboardState.ts`, `app/dashboard/page.tsx`).
 
 ---
 
@@ -59,6 +60,9 @@
 | `2026-08-26T17:15:00Z` | `Responsive Phase 5` | Refactored `ContributionGraphHeader.tsx` (grid-cols-3 segmented control on mobile), `YearView.tsx` (touch-momentum scroll and responsive legend), `MonthView.tsx` (eliminated tile text cutoffs on small phones), `WeekView.tsx` (balanced 2-column mobile card layout), and `CustomTooltip.tsx` (touch-safe boundary clamping) | `npx tsc --noEmit`, `npm run lint`, and `npm run build` passed with 0 errors |
 | `2026-08-26T17:17:00Z` | `Responsive Phase 6` | Refactored `WeeklyProgress.tsx` (responsive mascot sizing & label truncation), `MonthlyProgress.tsx` (touch-scroll momentum with `.no-scrollbar` and scaled bar columns), `AnimeTierCard.tsx` (mobile max-width constraints and compact stat breakdown), and `PowerScoreGuideModal.tsx` | `npx tsc --noEmit`, `npm run lint`, and `npm run build` passed with 0 errors |
 | `2026-08-26T17:29:00Z` | `Responsive Phase 8` | Refactored `ModalShell.tsx` (responsive padding & scrollbars), `CheckInPromptStep.tsx`, `AnimeCheckInCutscene.tsx`, `InventoryDrawer.tsx` (Next.js Image integration), and `Header.tsx` (Image optimization) | `npx tsc --noEmit`, `npm run lint` (0 warnings), and `npm run build` passed with 0 errors |
+| `2026-08-26T17:57:00Z` | `YearView Mobile Scroll & Padding` | Added mobile autoscroll to current day tile (`todayTileRef` + `scrollContainerRef`) and responsive horizontal & vertical padding (`px-3.5 sm:px-0 py-1`, `min-w-max`) to `components/contribution-graph/YearView.tsx` | Verified responsive boundary clipping prevention and small-screen autoscroll logic |
+| `2026-08-26T18:05:00Z` | `Decoupled Skeletons & Resilient Loading` | Decoupled dashboard into 4 independent query channels (`statsQuery`, `logsQuery`, `inventoryQuery`, `roadmapQuery`), created `CyberpunkSkeletonBase`, section skeletons (`StatsOverviewSkeleton`, `ContributionGraphSkeleton`, `PowerLevelChartSkeleton`, `RewardRoadmapSkeleton`), and `CyberpunkSectionError` with retry buttons | `npx tsc --noEmit` and `npm run lint` both passed with 0 errors and 0 warnings |
+
 
 
 

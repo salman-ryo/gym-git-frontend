@@ -3,7 +3,6 @@
 import React, { useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import AuthGuard from '@/components/AuthGuard';
-import CyberpunkLoader from '@/components/CyberpunkLoader';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/pages/dashboard/Header';
 import StatsOverview from '@/components/pages/dashboard/StatsOverview';
@@ -12,6 +11,13 @@ import ContributionGraph from '@/components/pages/dashboard/ContributionGraph';
 import PowerLevelChart from '@/components/pages/dashboard/PowerLevelChart';
 import RewardRoadmap from '@/components/pages/dashboard/rewards/RewardRoadmap';
 import ActiveEffectsBar from '@/components/inventory/ActiveEffectsBar';
+import CyberpunkSectionError from '@/components/ui/CyberpunkSectionError';
+import {
+  StatsOverviewSkeleton,
+  ContributionGraphSkeleton,
+  PowerLevelChartSkeleton,
+  RewardRoadmapSkeleton,
+} from '@/components/pages/dashboard/skeletons';
 import {
   FrozenStateBanner,
   StreakRiskWarningBanner,
@@ -87,7 +93,7 @@ export default function DashboardPage() {
         {/* Animated Cyberpunk Background */}
 
         <div className="relative z-10 flex flex-col min-h-screen">
-          {/* Navigation Header */}
+          {/* Navigation Header - Rendered immediately without blocking */}
           <Header
             currentStreak={state.stats?.currentStreak || 0}
             onOpenInventory={handleOpenInventory}
@@ -148,72 +154,107 @@ export default function DashboardPage() {
               />
             )}
 
-            {state.loading ? (
-              <CyberpunkLoader text="Summoning your stats" />
-            ) : (
-              <>
-                {/* Frozen State Banner */}
-                {state.stats?.isFrozen && (
-                  <FrozenStateBanner
-                    isFrozen={state.stats.isFrozen}
-                    activeEffects={state.activeEffects}
-                    onUnfreezeSuccess={handleRefresh}
-                  />
-                )}
-
-                {/* Streak Decay Imminent Risk Warning Banner */}
-                {state.stats?.streakWarningEvent?.is_at_risk && (state.stats?.currentStreak ?? 0) > 0 && (
-                  <StreakRiskWarningBanner
-                    event={state.stats.streakWarningEvent}
-                    currentStreak={state.stats.currentStreak}
-                    onLogWorkoutClick={handleLogWorkoutClick}
-                  />
-                )}
-
-                {/* Active Buffs / Effects HUD Bar */}
-                <ActiveEffectsBar
-                  key={state.activeEffects.map((e) => `${e.item_id}-${e.remaining_seconds}`).join(',') || 'empty'}
-                  activeEffects={state.activeEffects}
-                />
-
-                {/* Analytics & Streaks Overview */}
-                <StatsOverview stats={state.stats} />
-
-                {/* Dynamic Workout Filter Controls */}
-                <FilterBar
-                  activeFilter={state.activeFilter}
-                  onFilterChange={state.setActiveFilter}
-                  weeklyPlan={state.user?.weeklyPlan}
-                  onOpenPlanModal={handleOpenPlanModal}
-                />
-
-                {/* Flexible Contribution Graph (Year / Month / Week views) */}
-                <ContributionGraph
-                  logs={state.logs}
-                  activeFilter={state.activeFilter}
-                  onTileClick={state.handleTileClick}
-                  weeklyPlan={state.user?.weeklyPlan}
-                />
-
-                {/* Monthly Attendance Bar Chart */}
-                {state.stats?.monthlyData && (
-                  <PowerLevelChart monthlyData={state.stats.monthlyData} logs={state.logs} />
-                )}
-
-                {/* Streak Reward Roadmap */}
-                {state.roadmapMilestones.length > 0 && (
-                  <RewardRoadmap
-                    milestones={state.roadmapMilestones}
-                    longestStreak={state.stats?.longestStreak ?? 0}
-                    planId={state.user?.weeklyPlan?.id}
-                    onClaimSuccess={async (details) => {
-                      state.setCelebrationDetails(details);
-                      await state.refreshData();
-                    }}
-                  />
-                )}
-              </>
+            {/* Frozen State Banner */}
+            {state.stats?.isFrozen && (
+              <FrozenStateBanner
+                isFrozen={state.stats.isFrozen}
+                activeEffects={state.activeEffects}
+                onUnfreezeSuccess={handleRefresh}
+              />
             )}
+
+            {/* Streak Decay Imminent Risk Warning Banner */}
+            {state.stats?.streakWarningEvent?.is_at_risk && (state.stats?.currentStreak ?? 0) > 0 && (
+              <StreakRiskWarningBanner
+                event={state.stats.streakWarningEvent}
+                currentStreak={state.stats.currentStreak}
+                onLogWorkoutClick={handleLogWorkoutClick}
+              />
+            )}
+
+            {/* Active Buffs / Effects HUD Bar */}
+            {state.activeEffects.length > 0 && (
+              <ActiveEffectsBar
+                key={state.activeEffects.map((e) => `${e.item_id}-${e.remaining_seconds}`).join(',') || 'empty'}
+                activeEffects={state.activeEffects}
+              />
+            )}
+
+            {/* Section 1: Grind Stats & Analytics Overview */}
+            {state.statsQuery.isLoading ? (
+              <StatsOverviewSkeleton />
+            ) : state.statsQuery.error ? (
+              <CyberpunkSectionError
+                title="Grind Stats Link Severed"
+                message={state.statsQuery.error}
+                onRetry={state.statsQuery.refetch}
+              />
+            ) : state.statsQuery.data ? (
+              <StatsOverview stats={state.statsQuery.data} />
+            ) : null}
+
+            {/* Section 2: Dynamic Workout Filter Controls */}
+            <FilterBar
+              activeFilter={state.activeFilter}
+              onFilterChange={state.setActiveFilter}
+              weeklyPlan={state.user?.weeklyPlan}
+              onOpenPlanModal={handleOpenPlanModal}
+            />
+
+            {/* Section 3: Flexible Contribution Graph (Year / Month / Week views) */}
+            {state.logsQuery.isLoading ? (
+              <ContributionGraphSkeleton />
+            ) : state.logsQuery.error ? (
+              <CyberpunkSectionError
+                title="Consistency Heatmap Matrix Offline"
+                message={state.logsQuery.error}
+                onRetry={state.logsQuery.refetch}
+              />
+            ) : (
+              <ContributionGraph
+                logs={state.logsQuery.data}
+                activeFilter={state.activeFilter}
+                onTileClick={state.handleTileClick}
+                weeklyPlan={state.user?.weeklyPlan}
+              />
+            )}
+
+            {/* Section 4: Monthly Attendance & Power Level Bar Chart */}
+            {state.logsQuery.isLoading ? (
+              <PowerLevelChartSkeleton />
+            ) : state.logsQuery.error ? (
+              <CyberpunkSectionError
+                title="Power Level Telemetry Offline"
+                message={state.logsQuery.error}
+                onRetry={state.logsQuery.refetch}
+              />
+            ) : (
+              <PowerLevelChart
+                monthlyData={state.statsQuery.data?.monthlyData || []}
+                logs={state.logsQuery.data}
+              />
+            )}
+
+            {/* Section 5: Streak Reward Roadmap */}
+            {state.roadmapQuery.isLoading ? (
+              <RewardRoadmapSkeleton />
+            ) : state.roadmapQuery.error ? (
+              <CyberpunkSectionError
+                title="Streak Reward Roadmap Offline"
+                message={state.roadmapQuery.error}
+                onRetry={state.roadmapQuery.refetch}
+              />
+            ) : state.roadmapQuery.data.length > 0 ? (
+              <RewardRoadmap
+                milestones={state.roadmapQuery.data}
+                longestStreak={state.statsQuery.data?.longestStreak ?? 0}
+                planId={state.user?.weeklyPlan?.id}
+                onClaimSuccess={async (details) => {
+                  state.setCelebrationDetails(details);
+                  await state.refreshData();
+                }}
+              />
+            ) : null}
           </main>
 
           <Footer />

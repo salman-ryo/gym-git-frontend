@@ -23,6 +23,7 @@ import {
   UserInventoryItem,
   ActiveItemEffect,
   RoadmapMilestone,
+  SectionQueryState,
 } from '@/lib/types';
 import { fetchUserInventory, consumeInventoryItem } from '@/lib/inventory-service';
 import { fetchRewardRoadmap } from '@/lib/rewards-service';
@@ -37,19 +38,29 @@ import {
 export function useDashboardState() {
   const { user, updateUserPlan } = useAuth();
 
-  // Inventory states
+  // 1. Stats Query State
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [isStatsLoading, setIsStatsLoading] = useState<boolean>(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
+
+  // 2. Logs Query State
+  const [logs, setLogs] = useState<GymLog[]>([]);
+  const [isLogsLoading, setIsLogsLoading] = useState<boolean>(true);
+  const [logsError, setLogsError] = useState<string | null>(null);
+
+  // 3. Inventory Query State
   const [inventoryItems, setInventoryItems] = useState<UserInventoryItem[]>([]);
   const [activeEffects, setActiveEffects] = useState<ActiveItemEffect[]>([]);
+  const [isInventoryLoading, setIsInventoryLoading] = useState<boolean>(true);
+  const [inventoryError, setInventoryError] = useState<string | null>(null);
   const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
 
-  const availableFreezeTokens = useMemo(() => {
-    const item = inventoryItems.find((i) => i.item_details.item_id === 'STREAK_FREEZE_TOKEN');
-    return item ? item.quantity : 0;
-  }, [inventoryItems]);
+  // 4. Rewards Roadmap Query State
+  const [roadmapMilestones, setRoadmapMilestones] = useState<RoadmapMilestone[]>([]);
+  const [isRoadmapLoading, setIsRoadmapLoading] = useState<boolean>(true);
+  const [roadmapError, setRoadmapError] = useState<string | null>(null);
 
-  const [logs, setLogs] = useState<GymLog[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Mock Toolbar & Seeding State
   const [isMockActive, setIsMockActive] = useState<boolean>(false);
   const [isSeeding, setIsSeeding] = useState<boolean>(false);
   const [seedProgress, setSeedProgress] = useState<string>('');
@@ -67,8 +78,7 @@ export function useDashboardState() {
   const [editTileDate, setEditTileDate] = useState<string | null>(null);
   const [editTileLog, setEditTileLog] = useState<GymLog | undefined>(undefined);
 
-  // Rewards & Celebration state
-  const [roadmapMilestones, setRoadmapMilestones] = useState<RoadmapMilestone[]>([]);
+  // Celebration state
   const [celebrationDetails, setCelebrationDetails] = useState<{
     itemName: string;
     itemId: string;
@@ -84,6 +94,11 @@ export function useDashboardState() {
 
   // Streak Lifecycle state
   const [hasSeenBrokenModal, setHasSeenBrokenModal] = useState<boolean>(false);
+
+  const availableFreezeTokens = useMemo(() => {
+    const item = inventoryItems.find((i) => i.item_details.item_id === 'STREAK_FREEZE_TOKEN');
+    return item ? item.quantity : 0;
+  }, [inventoryItems]);
 
   // Extract all workout types present across historical logs
   const availableHistoricalTypes = useMemo(() => {
@@ -114,50 +129,98 @@ export function useDashboardState() {
     return calculateScientificPowerScore(weekLogs, 7, 4);
   }, []);
 
-  // Fetch all logs & stats from backend API
-  const refreshData = useCallback(async () => {
+  // --- Independent Fetch Controllers ---
+
+  const fetchStatsOnly = useCallback(async (targetPlan?: WeeklyPlan) => {
+    setIsStatsLoading(true);
+    setStatsError(null);
     try {
-      const fetchedLogs = await fetchGymLogs();
-      const fetchedStats = await fetchDashboardStats(user?.weeklyPlan);
-      setLogs(fetchedLogs);
-      setStats(fetchedStats);
-
-      if (user) {
-        try {
-          const invData = await fetchUserInventory();
-          setInventoryItems(invData.inventory || []);
-          setActiveEffects(invData.active_effects || []);
-        } catch (invErr) {
-          console.warn('Failed to load inventory:', invErr);
-        }
-
-        try {
-          const planId = user.weeklyPlan?.id;
-          const roadmap = await fetchRewardRoadmap(planId);
-          setRoadmapMilestones(Array.isArray(roadmap) ? roadmap : []);
-        } catch (roadmapErr) {
-          console.warn('Failed to load reward roadmap:', roadmapErr);
-        }
-      }
-      return { logs: fetchedLogs, stats: fetchedStats };
-    } catch (err) {
-      console.error('Failed to load dashboard data', err);
-      return { logs: [], stats: null };
+      const plan = targetPlan ?? user?.weeklyPlan;
+      const res = await fetchDashboardStats(plan);
+      setStats(res);
+      return res;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to synchronize grind statistics.';
+      setStatsError(msg);
+      return null;
     } finally {
-      setLoading(false);
+      setIsStatsLoading(false);
     }
   }, [user]);
+
+  const fetchLogsOnly = useCallback(async () => {
+    setIsLogsLoading(true);
+    setLogsError(null);
+    try {
+      const res = await fetchGymLogs();
+      const logsData = Array.isArray(res) ? res : [];
+      setLogs(logsData);
+      return logsData;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to retrieve consistency heatmap logs.';
+      setLogsError(msg);
+      return [];
+    } finally {
+      setIsLogsLoading(false);
+    }
+  }, []);
+
+  const fetchInventoryOnly = useCallback(async () => {
+    setIsInventoryLoading(true);
+    setInventoryError(null);
+    try {
+      const invData = await fetchUserInventory();
+      setInventoryItems(invData.inventory || []);
+      setActiveEffects(invData.active_effects || []);
+      return invData;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to load RPG inventory and active buffs.';
+      setInventoryError(msg);
+      return { inventory: [], active_effects: [] };
+    } finally {
+      setIsInventoryLoading(false);
+    }
+  }, []);
+
+  const fetchRoadmapOnly = useCallback(async (targetPlanId?: string) => {
+    setIsRoadmapLoading(true);
+    setRoadmapError(null);
+    try {
+      const planId = targetPlanId ?? user?.weeklyPlan?.id;
+      const roadmap = await fetchRewardRoadmap(planId);
+      const items = Array.isArray(roadmap) ? roadmap : [];
+      setRoadmapMilestones(items);
+      return items;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to synchronize streak reward roadmap.';
+      setRoadmapError(msg);
+      return [];
+    } finally {
+      setIsRoadmapLoading(false);
+    }
+  }, [user]);
+
+  // Combined Refresh (dispatches all in parallel via Promise.allSettled)
+  const refreshData = useCallback(async () => {
+    await Promise.allSettled([
+      fetchStatsOnly(),
+      fetchLogsOnly(),
+      fetchInventoryOnly(),
+      fetchRoadmapOnly(),
+    ]);
+  }, [fetchStatsOnly, fetchLogsOnly, fetchInventoryOnly, fetchRoadmapOnly]);
 
   const handleUseInventoryItem = useCallback(async (itemId: string, payload?: Record<string, unknown>) => {
     try {
       const invData = await consumeInventoryItem(itemId, 1, payload);
       setInventoryItems(invData.inventory || []);
       setActiveEffects(invData.active_effects || []);
-      await refreshData();
+      // Targeted refetch of stats
+      await fetchStatsOnly();
     } catch (err) {
       console.error('Failed to use inventory item:', err);
     }
-  }, [refreshData]);
+  }, [fetchStatsOnly]);
 
   const activateMockData = useCallback(() => {
     const mockLogs = generate365MockLogs(365);
@@ -171,13 +234,22 @@ export function useDashboardState() {
     setRoadmapMilestones(mockStats.mockMilestones || []);
     setInventoryItems(mockStats.mockInventory || []);
     setActiveEffects(mockStats.mockActiveEffects || []);
+
+    setIsLogsLoading(false);
+    setIsStatsLoading(false);
+    setIsInventoryLoading(false);
+    setIsRoadmapLoading(false);
+
+    setLogsError(null);
+    setStatsError(null);
+    setInventoryError(null);
+    setRoadmapError(null);
+
     setIsMockActive(true);
-    setLoading(false);
   }, [user?.weeklyPlan]);
 
   const resetToRealData = useCallback(async () => {
     setIsMockActive(false);
-    setLoading(true);
     await refreshData();
   }, [refreshData]);
 
@@ -229,6 +301,7 @@ export function useDashboardState() {
 
   const needsPlanSelection = !!(user && !user.weeklyPlan);
 
+  // Concurrent Initial Mounting
   useEffect(() => {
     async function initDashboard() {
       if (enable_mock_data && auto_load_mock_on_startup) {
@@ -236,16 +309,19 @@ export function useDashboardState() {
         return;
       }
 
-      const { logs: currentLogs, stats: currentStats } = await refreshData();
       const todayStr = formatDateKey(new Date());
       setTodayDateStr(todayStr);
 
       if (needsPlanSelection) {
         setShowPlanModal(true);
         setShowDailyCheckIn(false);
-      } else {
-        const isFrozenToday = currentStats?.isFrozen;
+        return;
+      }
 
+      // Fire queries in parallel without blocking each other
+      fetchStatsOnly();
+
+      fetchLogsOnly().then((currentLogs) => {
         const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
         const snoozeStatus = user?.checkinSnooze;
         const isSnoozed = !!(
@@ -254,22 +330,33 @@ export function useDashboardState() {
           snoozeStatus.remaining_seconds > 0
         );
 
-        if (!hasTodayLog && !isFrozenToday) {
-          if (!isSnoozed) {
-            setShowDailyCheckIn(true);
-          } else {
-            const remainingMs = (snoozeStatus?.remaining_seconds ?? 0) * 1000;
-            if (remainingMs > 0) {
-              scheduleSnoozeReminder(remainingMs, todayStr);
-            }
+        if (!hasTodayLog && !isSnoozed) {
+          setShowDailyCheckIn(true);
+        } else if (isSnoozed) {
+          const remainingMs = (snoozeStatus?.remaining_seconds ?? 0) * 1000;
+          if (remainingMs > 0) {
+            scheduleSnoozeReminder(remainingMs, todayStr);
           }
         }
+      });
+
+      if (user) {
+        fetchInventoryOnly();
+        fetchRoadmapOnly(user.weeklyPlan?.id);
       }
     }
-    if (user) {
-      initDashboard();
-    }
-  }, [refreshData, user, needsPlanSelection, activateMockData, scheduleSnoozeReminder]);
+
+    initDashboard();
+  }, [
+    user,
+    needsPlanSelection,
+    activateMockData,
+    fetchStatsOnly,
+    fetchLogsOnly,
+    fetchInventoryOnly,
+    fetchRoadmapOnly,
+    scheduleSnoozeReminder,
+  ]);
 
   const handleDailyCheckInYes = useCallback(async (
     hours: number,
@@ -280,24 +367,29 @@ export function useDashboardState() {
     if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
     await saveGymLog(todayDateStr, hours, workoutType, notes);
     setShowDailyCheckIn(false);
-    const { logs: updatedLogs } = await refreshData();
 
-    if (hours > 0 && Array.isArray(updatedLogs)) {
-      const weekScoreData = calculateCurrentWeekScore(updatedLogs);
+    // Targeted parallel refetch of logs and stats
+    const [logsRes] = await Promise.all([
+      fetchLogsOnly(),
+      fetchStatsOnly(),
+    ]);
+
+    if (hours > 0 && Array.isArray(logsRes)) {
+      const weekScoreData = calculateCurrentWeekScore(logsRes);
       setPowerCelebrationData({
         targetScore: weekScoreData.totalScore,
         scoreData: weekScoreData,
       });
     }
-  }, [calculateCurrentWeekScore, refreshData, todayDateStr]);
+  }, [calculateCurrentWeekScore, fetchLogsOnly, fetchStatsOnly, todayDateStr]);
 
   const handleDailyCheckInNo = useCallback(async () => {
     await clearCheckInSnooze();
     if (snoozeTimerRef.current) clearTimeout(snoozeTimerRef.current);
     await saveGymLog(todayDateStr, 0, 'Rest');
     setShowDailyCheckIn(false);
-    await refreshData();
-  }, [refreshData, todayDateStr]);
+    await Promise.all([fetchLogsOnly(), fetchStatsOnly()]);
+  }, [fetchLogsOnly, fetchStatsOnly, todayDateStr]);
 
   const handleDailyCheckInLater = useCallback(async () => {
     setShowDailyCheckIn(false);
@@ -330,13 +422,13 @@ export function useDashboardState() {
 
       if (diffDays >= 1 && diffDays <= 3) {
         await restoreStreak(dateStr, workoutType, hours);
-        await refreshData();
+        await Promise.all([fetchLogsOnly(), fetchStatsOnly()]);
         return;
       }
     }
 
     await saveGymLog(dateStr, hours, workoutType, notes);
-    const { logs: updatedLogs } = await refreshData();
+    const [updatedLogs] = await Promise.all([fetchLogsOnly(), fetchStatsOnly()]);
 
     if (dateStr === todayStr && hours > 0 && Array.isArray(updatedLogs)) {
       const weekScoreData = calculateCurrentWeekScore(updatedLogs);
@@ -345,32 +437,84 @@ export function useDashboardState() {
         scoreData: weekScoreData,
       });
     }
-  }, [calculateCurrentWeekScore, refreshData]);
+  }, [calculateCurrentWeekScore, fetchLogsOnly, fetchStatsOnly]);
 
   const handleDeleteEdit = useCallback(async (dateStr: string) => {
     await deleteGymLog(dateStr);
-    await refreshData();
-  }, [refreshData]);
+    await Promise.all([fetchLogsOnly(), fetchStatsOnly()]);
+  }, [fetchLogsOnly, fetchStatsOnly]);
 
   const handleSavePlan = useCallback(async (plan: WeeklyPlan) => {
     await updateUserPlan(plan);
     setShowPlanModal(false);
-  }, [updateUserPlan]);
+    await Promise.all([fetchStatsOnly(plan), fetchRoadmapOnly(plan.id)]);
+  }, [updateUserPlan, fetchStatsOnly, fetchRoadmapOnly]);
+
+  // Construct Section Query States
+  const statsQuery: SectionQueryState<Stats | null> = useMemo(() => ({
+    data: stats,
+    isLoading: isStatsLoading,
+    error: statsError,
+    refetch: async () => {
+      await fetchStatsOnly();
+    },
+  }), [stats, isStatsLoading, statsError, fetchStatsOnly]);
+
+  const logsQuery: SectionQueryState<GymLog[]> = useMemo(() => ({
+    data: logs,
+    isLoading: isLogsLoading,
+    error: logsError,
+    refetch: async () => {
+      await fetchLogsOnly();
+    },
+  }), [logs, isLogsLoading, logsError, fetchLogsOnly]);
+
+  const inventoryQuery: SectionQueryState<{
+    inventory: UserInventoryItem[];
+    activeEffects: ActiveItemEffect[];
+  }> = useMemo(() => ({
+    data: {
+      inventory: inventoryItems,
+      activeEffects,
+    },
+    isLoading: isInventoryLoading,
+    error: inventoryError,
+    refetch: async () => {
+      await fetchInventoryOnly();
+    },
+  }), [inventoryItems, activeEffects, isInventoryLoading, inventoryError, fetchInventoryOnly]);
+
+  const roadmapQuery: SectionQueryState<RoadmapMilestone[]> = useMemo(() => ({
+    data: roadmapMilestones,
+    isLoading: isRoadmapLoading,
+    error: roadmapError,
+    refetch: async () => {
+      await fetchRoadmapOnly();
+    },
+  }), [roadmapMilestones, isRoadmapLoading, roadmapError, fetchRoadmapOnly]);
 
   return useMemo(() => ({
     user,
+    // Direct states
+    stats,
+    setStats,
+    logs,
     inventoryItems,
     activeEffects,
     isInventoryOpen,
     setIsInventoryOpen,
     availableFreezeTokens,
-    logs,
-    stats,
-    setStats,
-    loading,
+    roadmapMilestones,
+    // Granular Query Objects
+    statsQuery,
+    logsQuery,
+    inventoryQuery,
+    roadmapQuery,
+    // Mock / Seeding state
     isMockActive,
     isSeeding,
     seedProgress,
+    // Modals & Filters
     activeFilter,
     setActiveFilter,
     showDailyCheckIn,
@@ -383,7 +527,6 @@ export function useDashboardState() {
     editTileDate,
     setEditTileDate,
     editTileLog,
-    roadmapMilestones,
     celebrationDetails,
     setCelebrationDetails,
     powerCelebrationData,
@@ -392,7 +535,12 @@ export function useDashboardState() {
     setHasSeenBrokenModal,
     availableHistoricalTypes,
     needsPlanSelection,
+    // Actions & Refetchers
     refreshData,
+    fetchStatsOnly,
+    fetchLogsOnly,
+    fetchInventoryOnly,
+    fetchRoadmapOnly,
     handleUseInventoryItem,
     activateMockData,
     resetToRealData,
@@ -406,13 +554,17 @@ export function useDashboardState() {
     handleSavePlan,
   }), [
     user,
+    stats,
+    logs,
     inventoryItems,
     activeEffects,
     isInventoryOpen,
     availableFreezeTokens,
-    logs,
-    stats,
-    loading,
+    roadmapMilestones,
+    statsQuery,
+    logsQuery,
+    inventoryQuery,
+    roadmapQuery,
     isMockActive,
     isSeeding,
     seedProgress,
@@ -423,13 +575,16 @@ export function useDashboardState() {
     todayDateStr,
     editTileDate,
     editTileLog,
-    roadmapMilestones,
     celebrationDetails,
     powerCelebrationData,
     hasSeenBrokenModal,
     availableHistoricalTypes,
     needsPlanSelection,
     refreshData,
+    fetchStatsOnly,
+    fetchLogsOnly,
+    fetchInventoryOnly,
+    fetchRoadmapOnly,
     handleUseInventoryItem,
     activateMockData,
     resetToRealData,

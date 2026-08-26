@@ -264,3 +264,9 @@ input[type="radio"],
     transform: translateX(120%);
   }
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
