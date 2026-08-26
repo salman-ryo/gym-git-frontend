@@ -17,12 +17,14 @@ interface YearDayTileProps {
   day: DayTile;
   activeFilter: WorkoutType | 'All';
   onTileClick: (dateStr: string, log?: GymLog) => void;
+  tileRef?: React.Ref<HTMLButtonElement>;
 }
 
 const YearDayTile = memo(function YearDayTile({
   day,
   activeFilter,
   onTileClick,
+  tileRef,
 }: YearDayTileProps) {
   const styleInfo = getDayStyleInfo(day, activeFilter);
   const isFilteredOut = activeFilter !== 'All' && day.hours > 0 && day.workoutType !== activeFilter;
@@ -48,6 +50,7 @@ const YearDayTile = memo(function YearDayTile({
   return (
     <CustomTooltip content={renderTooltip}>
       <button
+        ref={tileRef}
         type="button"
         disabled={day.isFuture}
         onClick={handleClick}
@@ -74,11 +77,51 @@ function YearView({
   activeFilter,
   onTileClick,
 }: YearViewProps) {
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const todayTileRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Only apply autoscroll behavior on smaller screens (mobile / tablet < 768px)
+    const isSmallScreen = window.innerWidth < 768;
+    if (!isSmallScreen) return;
+
+    const scrollToToday = () => {
+      const container = scrollContainerRef.current;
+      const todayEl = todayTileRef.current;
+
+      if (container && todayEl) {
+        const containerRect = container.getBoundingClientRect();
+        const todayRect = todayEl.getBoundingClientRect();
+
+        // Calculate scroll position to center the today tile in the visible container viewport
+        const targetScrollLeft =
+          container.scrollLeft +
+          (todayRect.left - containerRect.left) -
+          container.clientWidth / 2 +
+          todayRect.width / 2;
+
+        container.scrollTo({
+          left: Math.max(0, targetScrollLeft),
+          behavior: 'smooth',
+        });
+      }
+    };
+
+    // Small delay to ensure layout and bounding rects are fully computed after render/tab switch
+    const timer = setTimeout(scrollToToday, 50);
+    return () => clearTimeout(timer);
+  }, [weeks]);
+
   return (
     <div className="animate-in fade-in duration-300 relative">
       {/* Scrollable Graph Container */}
-      <div className="overflow-x-auto no-scrollbar sm:scrollbar-thin sm:scrollbar-thumb-zinc-800 sm:scrollbar-track-transparent pb-2 -webkit-overflow-scrolling-touch">
-        <div className="min-w-[760px] w-full">
+      <div
+        ref={scrollContainerRef}
+        className="overflow-x-auto no-scrollbar sm:scrollbar-thin sm:scrollbar-thumb-zinc-800 sm:scrollbar-track-transparent pb-2 -webkit-overflow-scrolling-touch"
+      >
+        <div className="min-w-max w-full px-3.5 sm:px-0 py-1">
           <div className="relative h-4 text-[9px] uppercase tracking-widest font-bold text-zinc-500 mb-2 ml-8">
             {monthLabels.map((m, idx) => (
               <span
@@ -107,6 +150,7 @@ function YearView({
                       day={day}
                       activeFilter={activeFilter}
                       onTileClick={onTileClick}
+                      tileRef={day.isToday ? todayTileRef : undefined}
                     />
                   ))}
                 </div>
