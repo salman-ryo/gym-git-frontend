@@ -14,6 +14,7 @@
 - [x] **Task 4.1:** Dynamic Streak Reward Roadmap timeline, milestone state engine (Locked/Claimable/Claimed), and ClaimCelebrationModal drop popup ([04-reward-roadmap.md](file:///.agent/features/gamification-and-rewards/04-reward-roadmap.md))
 - [x] **Task 5.1:** Streak broken recovery modal (Restore Shield redemption), Streak risk warning banner (midnight countdown) ([05-streak-lifecycle.md](file:///.agent/features/gamification-and-rewards/05-streak-lifecycle.md))
 - [x] **Task 6.1:** Heatmap tile theme refactor (Active green, Icy blue frost, Rest token slate, Missed dark) ([06-heatmap-and-theme.md](file:///.agent/features/gamification-and-rewards/06-heatmap-and-theme.md))
+- [x] **Task 7.1:** Gamification responsive overhaul (CycleProgressCard responsive SVG radar, InventoryDrawer 4-column grid, RewardRoadmap touch-scroll rail, StreakRiskWarningBanner mobile speech bubble & actions, FrozenStateBanner responsive layout).
 
 ---
 

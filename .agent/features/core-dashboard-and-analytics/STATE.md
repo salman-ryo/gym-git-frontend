@@ -13,6 +13,8 @@
 - [x] **Task 3.1:** Daily check-in modal prompt, onboarding weekly plan selector, and historical tile edit/delete modal ([03-modals-and-plans.md](file:///.agent/features/core-dashboard-and-analytics/03-modals-and-plans.md))
 - [x] **Task 4.1:** 365-Day mock data testing suite with `<2h` workout generator, instant preview toolbar, and backend database seeder (`lib/mock-data-generator.ts`, `scripts/seedMockLogs.mjs`, `app/dashboard/page.tsx`).
 - [x] **Task 4.2:** Centralized feature flags control in `lib/flags.ts` with `enable_mock_data` and `auto_load_mock_on_startup` booleans, conditionally controlling mock UI and logic.
+- [x] **Task 5.1:** Comprehensive 9-phase master responsive overhaul (Shell, Banners, StatsOverview, FilterBar, Heatmap Year/Month/Week views, Power Level charts, Reward Roadmap, Modals & Dialogs, Touch Target & Typography QA).
+- [x] **Task 5.2:** Zero horizontal viewport spill guarantee with `overflow-x: hidden` and `max-width: 100vw` in `app/globals.css`.
 
 ---
 
