@@ -15,6 +15,7 @@
 - [x] **Task 5.1:** Streak broken recovery modal (Restore Shield redemption), Streak risk warning banner (midnight countdown) ([05-streak-lifecycle.md](file:///.agent/features/gamification-and-rewards/05-streak-lifecycle.md))
 - [x] **Task 6.1:** Heatmap tile theme refactor (Active green, Icy blue frost, Rest token slate, Missed dark) ([06-heatmap-and-theme.md](file:///.agent/features/gamification-and-rewards/06-heatmap-and-theme.md))
 - [x] **Task 7.1:** Gamification responsive overhaul (CycleProgressCard responsive SVG radar, InventoryDrawer 4-column grid, RewardRoadmap touch-scroll rail, StreakRiskWarningBanner mobile speech bubble & actions, FrozenStateBanner responsive layout).
+- [x] **Task 8.1:** Centralized Inventory Context & Shared State Engine (`lib/inventory-context.tsx`, `useInventory` hook, optimistic item claiming in `RewardRoadmap`, real-time item consumption across `FreezeModal`, `StreakBrokenModal`, `EditLogModal`, `InventoryDrawer`, and shared ticking timer in `ActiveEffectsBar`).
 
 ---
 
@@ -35,3 +36,4 @@
 | `2026-08-26T17:21:00Z` | `Responsive Phase 7` | Refactored `RewardRoadmap.tsx` (touch-momentum scrolling with `.no-scrollbar`, responsive header alignment) and `RoadmapMilestoneNode.tsx` (claim button touch target >= 44px min height and safe popover boundaries) | `npx tsc --noEmit`, `npm run lint`, and `npm run build` passed cleanly |
 | `2026-08-26T17:29:00Z` | `Responsive Phase 8` | Refactored `InventoryDrawer.tsx` (Next.js Image integration, 4-col responsive slot grid) and `ModalShell.tsx` (mobile responsive viewport clamping) | `npx tsc --noEmit`, `npm run lint` (0 warnings), and `npm run build` passed cleanly |
 | `2026-08-26T17:32:00Z` | `Responsive Phase 9` | Touch target ergonomics verification (>= 44px boundaries across all buttons and controls), typography scaling audit across mobile breakpoints (320px-1440px), and guaranteed zero horizontal body spill via `overflow-x: hidden` & `max-width: 100vw` | `npx tsc --noEmit`, `npm run lint` (0 warnings), and `npm run build` passed cleanly |
+| `2026-08-26T18:40:00Z` | `Centralized Inventory State` | Created `lib/inventory-context.tsx` (`InventoryProvider`, `useInventory`), integrated into `app/layout.tsx`, connected `Header`, `InventoryDrawer`, `ActiveEffectsBar`, `RewardRoadmap`, `FreezeModal`, `StreakBrokenModal`, and `useDashboardState` with shared live state and synchronized claims/consumption | `npx tsc --noEmit`, `npm run lint` (0 errors, 0 warnings), and `npm run build` all verified cleanly |

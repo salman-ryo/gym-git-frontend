@@ -10,11 +10,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Package, Sparkles, ShieldAlert, Loader2, Clock, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { useInventory } from '@/lib/inventory-context';
+
 export interface InventoryDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  inventoryItems: UserInventoryItem[];
-  onUseItem: (itemId: string, payload?: Record<string, unknown>) => Promise<void>;
+  isOpen?: boolean;
+  onClose?: () => void;
+  inventoryItems?: UserInventoryItem[];
+  onUseItem?: (itemId: string, payload?: Record<string, unknown>) => Promise<void>;
   loading?: boolean;
   onRequestFreeze?: (availableTokens: number) => void;
 }
@@ -69,13 +71,20 @@ function getTooltipGlowClass(rarity?: string | null): string {
 }
 
 export default function InventoryDrawer({
-  isOpen,
-  onClose,
-  inventoryItems,
-  onUseItem,
-  loading = false,
+  isOpen: propIsOpen,
+  onClose: propOnClose,
+  inventoryItems: propInventoryItems,
+  onUseItem: propOnUseItem,
+  loading: propLoading,
   onRequestFreeze,
 }: InventoryDrawerProps) {
+  const context = useInventory();
+  const isOpen = propIsOpen !== undefined ? propIsOpen : context.isInventoryOpen;
+  const onClose = propOnClose || (() => context.setIsInventoryOpen(false));
+  const inventoryItems = propInventoryItems || context.inventoryItems;
+  const onUseItem = propOnUseItem || context.useItem;
+  const loading = propLoading !== undefined ? propLoading : context.isLoading;
+
   const [confirmingItem, setConfirmingItem] = useState<UserInventoryItem | null>(null);
   const [isUsingItemId, setIsUsingItemId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

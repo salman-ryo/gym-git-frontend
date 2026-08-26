@@ -2,6 +2,7 @@
 
 import React, { memo } from 'react';
 import { useAuth } from '@/lib/auth-context';
+import { useInventory } from '@/lib/inventory-context';
 import { LogOut, User as UserIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,9 +14,13 @@ interface HeaderProps {
   inventoryCount?: number;
 }
 
-function Header({ currentStreak = 0, onOpenInventory, inventoryCount = 0 }: HeaderProps) {
+function Header({ currentStreak = 0, onOpenInventory, inventoryCount: propInventoryCount }: HeaderProps) {
   void currentStreak;
   const { user, logout } = useAuth();
+  const { inventoryCount: contextCount, setIsInventoryOpen } = useInventory();
+
+  const inventoryCount = propInventoryCount !== undefined ? propInventoryCount : contextCount;
+  const handleOpen = onOpenInventory || (() => setIsInventoryOpen(true));
 
   return (
     <header className="sticky top-0 z-30 bg-[#060a0e]/80 backdrop-blur-xl border-b border-zinc-800/80 px-3 sm:px-4 lg:px-8 py-2.5 sm:py-3 transition-all">
@@ -44,13 +49,13 @@ function Header({ currentStreak = 0, onOpenInventory, inventoryCount = 0 }: Head
         {/* User Navigation & Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Inventory Access Button */}
-          {user && onOpenInventory && (
+          {user && (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    onClick={onOpenInventory}
+                    onClick={handleOpen}
                     aria-label="Open Inventory"
                     className="relative p-1.5 sm:p-2 rounded-xl hover:bg-zinc-900/50 transition-all flex items-center justify-center min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] cursor-pointer"
                   >

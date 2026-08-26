@@ -7,6 +7,8 @@ import { restoreStreak } from '@/lib/streak-service';
 import { formatFullDate } from '@/lib/date-utils';
 import ModalShell from '@/components/ui/modal-shell';
 
+import { useInventory } from '@/lib/inventory-context';
+
 export interface StreakBrokenModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,6 +24,7 @@ export default function StreakBrokenModal({
   onRestoreSuccess,
   onOpenRoadmap,
 }: StreakBrokenModalProps) {
+  const { consumeItem } = useInventory();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -49,6 +52,7 @@ export default function StreakBrokenModal({
       const targetPayload = missed_dates && missed_dates.length > 0 ? missed_dates : [broken_on];
       const res = await restoreStreak(targetPayload);
       if (res.success) {
+        consumeItem('RESTORE_SHIELD', required_shields);
         setSuccess(true);
         setTimeout(async () => {
           await onRestoreSuccess();

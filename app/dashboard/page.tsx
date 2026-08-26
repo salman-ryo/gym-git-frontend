@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import AuthGuard from '@/components/AuthGuard';
 import Footer from '@/components/layout/Footer';
@@ -66,11 +66,6 @@ const MockTestingToolbar = dynamic(
 export default function DashboardPage() {
   const state = useDashboardState();
 
-  const inventoryCount = useMemo(
-    () => state.inventoryItems.reduce((acc, curr) => acc + curr.quantity, 0),
-    [state.inventoryItems]
-  );
-
   const handleOpenInventory = useCallback(() => {
     state.setIsInventoryOpen(true);
   }, [state]);
@@ -97,7 +92,6 @@ export default function DashboardPage() {
           <Header
             currentStreak={state.stats?.currentStreak || 0}
             onOpenInventory={handleOpenInventory}
-            inventoryCount={inventoryCount}
           />
 
           {/* Dashboard Main Content */}
@@ -173,12 +167,7 @@ export default function DashboardPage() {
             )}
 
             {/* Active Buffs / Effects HUD Bar */}
-            {state.activeEffects.length > 0 && (
-              <ActiveEffectsBar
-                key={state.activeEffects.map((e) => `${e.item_id}-${e.remaining_seconds}`).join(',') || 'empty'}
-                activeEffects={state.activeEffects}
-              />
-            )}
+            <ActiveEffectsBar />
 
             {/* Section 1: Grind Stats & Analytics Overview */}
             {state.statsQuery.isLoading ? (

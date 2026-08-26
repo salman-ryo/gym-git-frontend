@@ -6,6 +6,7 @@ import { RoadmapMilestone } from '@/lib/types';
 import { claimReward } from '@/lib/rewards-service';
 import RoadmapMilestoneNode from './RoadmapMilestoneNode';
 
+import { useInventory } from '@/lib/inventory-context';
 import { useInView } from '../power-level/power-chart-utils';
 
 interface RewardRoadmapProps {
@@ -26,6 +27,7 @@ function RewardRoadmap({
   onClaimSuccess,
   planId = 'ppl-standard',
 }: RewardRoadmapProps) {
+  const { grantItem } = useInventory();
   const [claimLoadingId, setClaimLoadingId] = useState<string | null>(null);
   const { ref: containerRef, inView } = useInView(0.15);
 
@@ -47,6 +49,13 @@ function RewardRoadmap({
     try {
       const result = await claimReward(milestone.plan_id || planId, milestone.streak_target, milestone.item_id);
       if (result.success) {
+        // Optimistically grant into centralized inventory state immediately
+        grantItem(milestone.item_id, milestone.quantity, {
+          name: milestone.item_name,
+          rarity: milestone.rarity as 'common' | 'rare' | 'epic' | 'legendary',
+          icon: milestone.item_icon,
+        });
+
         await onClaimSuccess({
           itemName: milestone.item_name,
           itemId: milestone.item_id,
@@ -59,7 +68,7 @@ function RewardRoadmap({
     } finally {
       setClaimLoadingId(null);
     }
-  }, [planId, onClaimSuccess]);
+  }, [planId, grantItem, onClaimSuccess]);
 
   if (sortedMilestones.length === 0) return null;
 

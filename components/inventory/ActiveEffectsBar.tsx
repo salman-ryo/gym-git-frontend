@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ActiveItemEffect } from '@/lib/types';
 import { formatTimeRemaining } from '@/lib/date-utils';
+import { useInventory } from '@/lib/inventory-context';
 import ItemIcon from './ItemIcon';
 import { Shield } from 'lucide-react';
 
 export interface ActiveEffectsBarProps {
-  activeEffects: ActiveItemEffect[];
+  activeEffects?: ActiveItemEffect[];
 }
 
 function getEffectLabel(itemId: string): string {
@@ -25,26 +26,9 @@ function getEffectLabel(itemId: string): string {
   }
 }
 
-export default function ActiveEffectsBar({ activeEffects }: ActiveEffectsBarProps) {
-  const [effects, setEffects] = useState<ActiveItemEffect[]>(() => activeEffects);
-
-  // Live ticking timer
-  useEffect(() => {
-    if (effects.length === 0) return;
-
-    const timer = setInterval(() => {
-      setEffects((prev) =>
-        prev
-          .map((eff) => ({
-            ...eff,
-            remaining_seconds: Math.max(0, eff.remaining_seconds - 1),
-          }))
-          .filter((eff) => eff.remaining_seconds > 0)
-      );
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [effects.length]);
+export default function ActiveEffectsBar({ activeEffects: propEffects }: ActiveEffectsBarProps) {
+  const { activeEffects: contextEffects } = useInventory();
+  const effects = propEffects && propEffects.length > 0 ? propEffects : contextEffects;
 
   if (effects.length === 0) return null;
 

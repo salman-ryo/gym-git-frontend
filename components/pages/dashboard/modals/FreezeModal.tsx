@@ -5,10 +5,12 @@ import { Snowflake, ShieldAlert } from 'lucide-react';
 import { freezeStreak } from '@/lib/streak-service';
 import ModalShell from '@/components/ui/modal-shell';
 
+import { useInventory } from '@/lib/inventory-context';
+
 export interface FreezeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  availableTokens: number;
+  availableTokens?: number;
   onSuccess: () => Promise<void>;
 }
 
@@ -22,9 +24,11 @@ const PRESET_REASONS = [
 export default function FreezeModal({
   isOpen,
   onClose,
-  availableTokens,
+  availableTokens: propTokens,
   onSuccess,
 }: FreezeModalProps) {
+  const { availableFreezeTokens, consumeItem } = useInventory();
+  const availableTokens = propTokens !== undefined ? propTokens : availableFreezeTokens;
   const maxDays = Math.min(7, availableTokens);
   const [selectedDuration, setSelectedDuration] = useState<number>(maxDays > 0 ? 1 : 0);
   const [selectedReasonId, setSelectedReasonId] = useState<string>('sick');
@@ -60,6 +64,7 @@ export default function FreezeModal({
     setErrorMsg(null);
     try {
       await freezeStreak(selectedDuration, finalReason);
+      consumeItem('STREAK_FREEZE_TOKEN', selectedDuration);
       await onSuccess();
       onClose();
     } catch (err: unknown) {
