@@ -10,15 +10,19 @@ interface WeeklyProgressProps {
   weeklyPowerStats: WeeklyPowerStat[];
 }
 
+interface WeeklyBarColumnProps {
+  w: WeeklyPowerStat;
+  idx: number;
+  inView: boolean;
+  columnRef?: React.Ref<HTMLDivElement>;
+}
+
 const WeeklyBarColumn = memo(function WeeklyBarColumn({
   w,
   idx,
   inView,
-}: {
-  w: WeeklyPowerStat;
-  idx: number;
-  inView: boolean;
-}) {
+  columnRef,
+}: WeeklyBarColumnProps) {
   const targetScore = w.scoreData.totalScore;
   const { currentScore, continuousScore, currentCharacter, isAnimating, tierJustChanged } = useTieredBarAnimation({
     targetScore,
@@ -31,7 +35,10 @@ const WeeklyBarColumn = memo(function WeeklyBarColumn({
   const theme = getPowerColorTheme(currentScore, w.isCurrentWeek);
 
   return (
-    <div className="flex-1 flex flex-col items-center h-full justify-end group relative">
+    <div
+      ref={columnRef}
+      className="flex-1 flex flex-col items-center h-full justify-end group relative"
+    >
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="w-full flex flex-col items-center cursor-pointer relative z-10">
@@ -109,6 +116,42 @@ const WeeklyBarColumn = memo(function WeeklyBarColumn({
 
 function WeeklyProgress({ weeklyPowerStats }: WeeklyProgressProps) {
   const { ref: containerRef, inView } = useInView(0.15);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const currentWeekRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Only apply autoscroll behavior on smaller screens (mobile / tablet < 768px)
+    const isSmallScreen = window.innerWidth < 768;
+    if (!isSmallScreen) return;
+
+    const scrollToCurrentWeek = () => {
+      const container = scrollContainerRef.current;
+      const currentWeekEl = currentWeekRef.current;
+
+      if (container && currentWeekEl) {
+        const containerRect = container.getBoundingClientRect();
+        const currentRect = currentWeekEl.getBoundingClientRect();
+
+        // Calculate scroll position to center the current week in the visible container viewport
+        const targetScrollLeft =
+          container.scrollLeft +
+          (currentRect.left - containerRect.left) -
+          container.clientWidth / 2 +
+          currentRect.width / 2;
+
+        container.scrollTo({
+          left: Math.max(0, targetScrollLeft),
+          behavior: 'smooth',
+        });
+      }
+    };
+
+    // Small delay to ensure layout and bounding rects are fully computed after render
+    const timer = setTimeout(scrollToCurrentWeek, 60);
+    return () => clearTimeout(timer);
+  }, [weeklyPowerStats]);
 
   return (
     <div ref={containerRef} className="w-full lg:w-1/3 flex flex-col gap-4 sm:gap-6">
@@ -116,15 +159,21 @@ function WeeklyProgress({ weeklyPowerStats }: WeeklyProgressProps) {
         Weekly Progress
       </h4>
 
-      <div className="h-56 sm:h-64 flex items-end justify-between gap-1.5 sm:gap-2 px-1 sm:px-2">
-        {weeklyPowerStats.map((w, idx) => (
-          <WeeklyBarColumn
-            key={`${w.weekLabel}-${idx}`}
-            w={w}
-            idx={idx}
-            inView={inView}
-          />
-        ))}
+      <div
+        ref={scrollContainerRef}
+        className="w-full overflow-x-auto no-scrollbar sm:custom-scrollbar pb-2 -webkit-overflow-scrolling-touch"
+      >
+        <div className="min-w-[260px] sm:min-w-0 h-56 sm:h-64 flex items-end justify-between gap-1.5 sm:gap-2 px-1 sm:px-2">
+          {weeklyPowerStats.map((w, idx) => (
+            <WeeklyBarColumn
+              key={`${w.weekLabel}-${idx}`}
+              w={w}
+              idx={idx}
+              inView={inView}
+              columnRef={w.isCurrentWeek ? currentWeekRef : undefined}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

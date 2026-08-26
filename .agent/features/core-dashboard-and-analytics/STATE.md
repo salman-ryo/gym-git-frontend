@@ -62,6 +62,7 @@
 | `2026-08-26T17:29:00Z` | `Responsive Phase 8` | Refactored `ModalShell.tsx` (responsive padding & scrollbars), `CheckInPromptStep.tsx`, `AnimeCheckInCutscene.tsx`, `InventoryDrawer.tsx` (Next.js Image integration), and `Header.tsx` (Image optimization) | `npx tsc --noEmit`, `npm run lint` (0 warnings), and `npm run build` passed with 0 errors |
 | `2026-08-26T17:57:00Z` | `YearView Mobile Scroll & Padding` | Added mobile autoscroll to current day tile (`todayTileRef` + `scrollContainerRef`) and responsive horizontal & vertical padding (`px-3.5 sm:px-0 py-1`, `min-w-max`) to `components/contribution-graph/YearView.tsx` | Verified responsive boundary clipping prevention and small-screen autoscroll logic |
 | `2026-08-26T18:05:00Z` | `Decoupled Skeletons & Resilient Loading` | Decoupled dashboard into 4 independent query channels (`statsQuery`, `logsQuery`, `inventoryQuery`, `roadmapQuery`), created `CyberpunkSkeletonBase`, section skeletons (`StatsOverviewSkeleton`, `ContributionGraphSkeleton`, `PowerLevelChartSkeleton`, `RewardRoadmapSkeleton`), and `CyberpunkSectionError` with retry buttons | `npx tsc --noEmit` and `npm run lint` both passed with 0 errors and 0 warnings |
+| `2026-08-26T18:19:00Z` | `Power Levels Mobile Autoscroll` | Added mobile autoscroll to current week (`WeeklyProgress.tsx`) and current month (`MonthlyProgress.tsx`) with container centering and viewport checks (<768px) matching `YearView.tsx` logic | `npx tsc --noEmit` and `npm run lint` both passed with 0 errors and 0 warnings |
 
 
 
