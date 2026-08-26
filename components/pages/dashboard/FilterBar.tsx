@@ -36,7 +36,7 @@ function FilterBar({
   }, [weeklyPlan?.categories]);
 
   return (
-    <div className="bg-zinc-950/80 border border-[rgba(0,255,136,0.15)] backdrop-blur-xl rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 shadow-[0_4px_25px_rgba(0,0,0,0.6)] mb-4 sm:mb-6 transition-all duration-300">
+    <div className="bg-zinc-950/80 border border-[rgba(0,255,136,0.15)] backdrop-blur-xl rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 shadow-[0_4px_25px_rgba(0,0,0,0.6)] transition-all duration-300">
       <div className="flex items-center justify-between w-full sm:w-auto gap-2 min-w-0">
         <div className="flex items-center gap-1.5 sm:gap-2 text-neon-green shrink-0">
           <SlidersHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />

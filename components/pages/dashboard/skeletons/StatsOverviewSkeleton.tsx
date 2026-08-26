@@ -51,7 +51,7 @@ function StatCardSkeleton({ accent = 'green' }: { accent?: 'green' | 'cyan' | 'p
 
 function CycleProgressCardSkeleton() {
   return (
-    <div className="relative w-full mt-6 sm:mt-10">
+    <div className="relative w-full mt-5 sm:mt-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 relative z-10">
         {/* Left 8 Columns */}
         <div className="lg:col-span-8 flex flex-col gap-2 sm:gap-3">
@@ -128,7 +128,7 @@ function CycleProgressCardSkeleton() {
 
 export function StatsOverviewSkeleton() {
   return (
-    <div className="w-full mt-4 sm:mt-6 mb-6 sm:mb-10 space-y-4 sm:space-y-6">
+    <div className="w-full space-y-4 sm:space-y-6">
       {/* GRIND STATS Cyberpunk Header Skeleton */}
       <div className="flex justify-center items-center relative">
         <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-neon-green/20 to-neon-cyan/40" />

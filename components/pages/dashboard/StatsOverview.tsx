@@ -266,7 +266,7 @@ function StatsOverview({ stats }: StatsOverviewProps) {
 
   return (
     <TooltipProvider delayDuration={50}>
-      <div className="w-full mt-4 sm:mt-6 mb-6 sm:mb-10 space-y-4 sm:space-y-6">
+      <div className="w-full space-y-4 sm:space-y-6">
         {/* GRIND STATS Cyberpunk Header */}
         <div className="flex justify-center items-center relative">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-neon-green/30 to-neon-cyan/60" />
@@ -288,7 +288,7 @@ function StatsOverview({ stats }: StatsOverviewProps) {
         </div>
 
         {/* Row 2: Cycle Progress Card — full width */}
-        {user && <CycleProgressCard className="mt-6 sm:mt-10" stats={stats} user={user} />}
+        {user && <CycleProgressCard className="mt-5 sm:mt-8" stats={stats} user={user} />}
       </div>
     </TooltipProvider>
   );
