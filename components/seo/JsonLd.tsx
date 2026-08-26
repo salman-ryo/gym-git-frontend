@@ -1,4 +1,5 @@
 import React from 'react';
+import { socialLinks } from '@/lib/links';
 
 interface JsonLdProps {
   data: Record<string, unknown>;
@@ -22,8 +23,8 @@ export const organizationJsonLd = {
   description:
     'Gym-Git is a developer-focused fitness tracker that transforms workout logs into GitHub-style contribution graphs and streak analytics.',
   sameAs: [
-    'https://github.com',
-    'https://twitter.com',
+    socialLinks.github,
+    socialLinks.linkedin,
   ],
 };
 
