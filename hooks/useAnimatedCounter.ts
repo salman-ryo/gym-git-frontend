@@ -23,6 +23,7 @@ export function useAnimatedCounter(
   targetValue: number,
   optionsOrDuration: number | UseAnimatedCounterOptions = {}
 ) {
+  const safeTarget = typeof targetValue === 'number' && !isNaN(targetValue) ? Math.max(0, targetValue) : 0;
   const options: UseAnimatedCounterOptions =
     typeof optionsOrDuration === 'number'
       ? { duration: optionsOrDuration, inView: true }
@@ -38,7 +39,7 @@ export function useAnimatedCounter(
   const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
-    if (!inView || targetValue <= 0) {
+    if (!inView || safeTarget <= 0) {
       return;
     }
 
@@ -50,14 +51,14 @@ export function useAnimatedCounter(
         const elapsed = currentTime - startTime;
         const progress = Math.min(1, elapsed / duration);
         const easedProgress = easing(progress);
-        const currentVal = Math.round(targetValue * easedProgress);
+        const currentVal = Math.round(safeTarget * easedProgress);
 
-        setCount(currentVal);
+        setCount(isNaN(currentVal) ? 0 : currentVal);
 
         if (progress < 1) {
           animFrame = requestAnimationFrame(step);
         } else {
-          setCount(targetValue);
+          setCount(safeTarget);
         }
       };
 
@@ -68,13 +69,13 @@ export function useAnimatedCounter(
       clearTimeout(timeoutId);
       cancelAnimationFrame(animFrame);
     };
-  }, [targetValue, inView, duration, delay, easing]);
+  }, [safeTarget, inView, duration, delay, easing]);
 
-  if (!inView || targetValue <= 0) {
+  if (!inView || safeTarget <= 0) {
     return 0;
   }
 
-  return count;
+  return isNaN(count) ? 0 : count;
 }
 
 export interface AnimatedCounterProps {

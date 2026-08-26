@@ -26,9 +26,21 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
   const { ref: containerRef, inView } = useInView(0.15);
   const cycle = stats.cycleInfo;
 
-  const completed = cycle?.workouts_completed_in_cycle ?? 0;
-  const target = cycle?.workouts_target_in_cycle ?? 0;
-  const accuracy = stats.accuracyScore ?? 0;
+  const completed = typeof cycle?.workouts_completed_in_cycle === 'number' && !isNaN(cycle.workouts_completed_in_cycle)
+    ? cycle.workouts_completed_in_cycle
+    : 0;
+  const target = typeof cycle?.workouts_target_in_cycle === 'number' && !isNaN(cycle.workouts_target_in_cycle)
+    ? cycle.workouts_target_in_cycle
+    : 0;
+  const accuracy = typeof stats.accuracyScore === 'number' && !isNaN(stats.accuracyScore)
+    ? stats.accuracyScore
+    : 0;
+  const restTokensTotal = typeof cycle?.rest_tokens_total === 'number' && !isNaN(cycle.rest_tokens_total)
+    ? cycle.rest_tokens_total
+    : 0;
+  const restTokensRemaining = typeof cycle?.rest_tokens_remaining === 'number' && !isNaN(cycle.rest_tokens_remaining)
+    ? cycle.rest_tokens_remaining
+    : 0;
 
   const workoutSegments = useMemo(
     () => Array.from({ length: Math.max(1, target) }),
@@ -36,8 +48,8 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
   );
 
   const restTokenSegments = useMemo(
-    () => Array.from({ length: cycle?.rest_tokens_total ?? 0 }),
-    [cycle?.rest_tokens_total]
+    () => Array.from({ length: restTokensTotal }),
+    [restTokensTotal]
   );
 
   if (!cycle) return null;
@@ -131,14 +143,14 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
                   Rest Tokens
                 </span>
                 <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">
-                  <AnimatedScoreCounter value={cycle.rest_tokens_remaining} inView={inView} duration={800} /> Available
+                  <AnimatedScoreCounter value={restTokensRemaining} inView={inView} duration={800} /> Available
                 </span>
               </div>
 
               {/* Rounded Hardware Battery Pods */}
               <div className="flex items-center gap-1.5 sm:gap-2.5 h-5 sm:h-6">
                 {restTokenSegments.map((_, idx) => {
-                  const isActive = inView && idx < cycle.rest_tokens_remaining;
+                  const isActive = inView && idx < restTokensRemaining;
                   return (
                     <div
                       key={idx}

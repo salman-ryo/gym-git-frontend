@@ -66,6 +66,7 @@ export function useTieredBarAnimation({
   delay = 0,
   stepDuration = 380,
 }: UseTieredBarAnimationOptions) {
+  const safeTargetScore = typeof targetScore === 'number' && !isNaN(targetScore) ? Math.max(0, targetScore) : 0;
   const [currentScore, setCurrentScore] = React.useState<number>(0);
   const [continuousScore, setContinuousScore] = React.useState<number>(0);
   const [isCompleted, setIsCompleted] = React.useState<boolean>(false);
@@ -96,20 +97,20 @@ export function useTieredBarAnimation({
   }, [currentCharacter.id]);
 
   React.useEffect(() => {
-    if (!inView || targetScore <= 0) {
+    if (!inView || safeTargetScore <= 0) {
       return;
     }
 
-    // Build milestone checkpoints: [0, ...intermediate tiers < targetScore, targetScore]
+    // Build milestone checkpoints: [0, ...intermediate tiers < safeTargetScore, safeTargetScore]
     const milestones: number[] = [0];
     sortedTiers
       .map((t) => t.minPower)
-      .filter((p) => p > 0 && p < targetScore)
+      .filter((p) => p > 0 && p < safeTargetScore)
       .forEach((p) => {
         if (!milestones.includes(p)) milestones.push(p);
       });
-    if (!milestones.includes(targetScore)) {
-      milestones.push(targetScore);
+    if (!milestones.includes(safeTargetScore)) {
+      milestones.push(safeTargetScore);
     }
 
     const numSegments = milestones.length - 1;
@@ -125,8 +126,8 @@ export function useTieredBarAnimation({
         const elapsed = currentTime - startTime;
 
         if (elapsed >= totalDuration) {
-          setCurrentScore(targetScore);
-          setContinuousScore(targetScore);
+          setCurrentScore(safeTargetScore);
+          setContinuousScore(safeTargetScore);
           setIsCompleted(true);
           setIsAnimating(false);
           return;
@@ -146,8 +147,9 @@ export function useTieredBarAnimation({
         const waveProgress = u - (alpha / (2 * Math.PI)) * Math.sin(2 * Math.PI * u);
         const scoreFloat = startVal + (endVal - startVal) * waveProgress;
 
-        setCurrentScore(Math.round(scoreFloat));
-        setContinuousScore(scoreFloat);
+        const rounded = Math.round(scoreFloat);
+        setCurrentScore(isNaN(rounded) ? 0 : rounded);
+        setContinuousScore(isNaN(scoreFloat) ? 0 : scoreFloat);
         animFrame = requestAnimationFrame(animate);
       };
 
@@ -159,11 +161,14 @@ export function useTieredBarAnimation({
       cancelAnimationFrame(animFrame);
       setIsAnimating(false);
     };
-  }, [inView, targetScore, delay, stepDuration, sortedTiers]);
+  }, [inView, safeTargetScore, delay, stepDuration, sortedTiers]);
+
+  const finalScore = isNaN(currentScore) ? 0 : currentScore;
+  const finalContinuous = isNaN(continuousScore) ? 0 : continuousScore;
 
   return {
-    currentScore: inView ? currentScore : 0,
-    continuousScore: inView ? continuousScore : 0,
+    currentScore: inView ? finalScore : 0,
+    continuousScore: inView ? finalContinuous : 0,
     currentCharacter,
     isCompleted: inView ? isCompleted : false,
     isAnimating: inView ? isAnimating : false,
@@ -186,6 +191,7 @@ export function AnimatedScoreCounter({
   delay = 0,
   className,
 }: AnimatedScoreCounterProps) {
+  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
   const [displayValue, setDisplayValue] = React.useState(0);
 
   React.useEffect(() => {
@@ -197,13 +203,14 @@ export function AnimatedScoreCounter({
 
     const startTimeout = setTimeout(() => {
       const startTime = performance.now();
-      const endValue = value;
+      const endValue = safeValue;
 
       const step = (now: number) => {
         const elapsed = now - startTime;
         const progress = Math.min(1, elapsed / duration);
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        setDisplayValue(Math.round(endValue * easeOut));
+        const computed = Math.round(endValue * easeOut);
+        setDisplayValue(isNaN(computed) ? 0 : computed);
 
         if (progress < 1) {
           animFrame = requestAnimationFrame(step);
@@ -219,7 +226,8 @@ export function AnimatedScoreCounter({
       clearTimeout(startTimeout);
       cancelAnimationFrame(animFrame);
     };
-  }, [inView, value, duration, delay]);
+  }, [inView, safeValue, duration, delay]);
 
-  return React.createElement('span', { className }, inView ? displayValue : 0);
+  const outputValue = isNaN(displayValue) ? 0 : displayValue;
+  return React.createElement('span', { className }, inView ? outputValue : 0);
 }

@@ -150,12 +150,17 @@ export async function fetchDashboardStats(userPlan?: WeeklyPlan): Promise<Stats>
   const streakEvent = rawStreak?.streak_broken_event || rawStats?.streak_broken_event;
   const warningEvent = rawStreak?.streak_warning_event || rawStats?.streak_warning_event;
 
+  const rawAvg = rawStats?.averageHoursPerSession ?? rawStats?.avg_session_duration;
+  const computedAvg = typeof rawAvg === 'number' && !isNaN(rawAvg)
+    ? rawAvg
+    : (totalLogsCount > 0 ? Number((totalHoursCount / totalLogsCount).toFixed(1)) : 0);
+
   return {
-    currentStreak: rawStreak?.current_streak ?? rawStreak?.currentStreak ?? rawStats?.current_streak ?? rawStats?.currentStreak ?? 0,
-    longestStreak: rawStreak?.longest_streak ?? rawStreak?.longestStreak ?? rawStats?.longest_streak ?? rawStats?.longestStreak ?? 0,
-    totalDays: rawStats?.totalDays ?? rawStats?.total_sessions ?? totalLogsCount,
-    totalHours: rawStats?.totalHours ?? rawStats?.total_hours ?? Math.round(totalHoursCount * 10) / 10,
-    averageHoursPerSession: rawStats?.averageHoursPerSession ?? rawStats?.avg_session_duration ?? (totalLogsCount > 0 ? Number((totalHoursCount / totalLogsCount).toFixed(1)) : 0),
+    currentStreak: Number(rawStreak?.current_streak ?? rawStreak?.currentStreak ?? rawStats?.current_streak ?? rawStats?.currentStreak) || 0,
+    longestStreak: Number(rawStreak?.longest_streak ?? rawStreak?.longestStreak ?? rawStats?.longest_streak ?? rawStats?.longestStreak) || 0,
+    totalDays: Number(rawStats?.totalDays ?? rawStats?.total_sessions ?? totalLogsCount) || 0,
+    totalHours: Number(rawStats?.totalHours ?? rawStats?.total_hours ?? (Math.round(totalHoursCount * 10) / 10)) || 0,
+    averageHoursPerSession: isNaN(computedAvg) ? 0 : computedAvg,
     monthlyData: dynamicMonthlyData,
     cycleInfo: rawStreak?.cycle_info || rawStats?.cycle_info,
     accuracyScore: rawStreak?.accuracy_score ?? rawStreak?.accuracyScore ?? rawStats?.accuracy_score ?? rawStats?.accuracyScore ?? rawSplitAccuracy,

@@ -179,16 +179,23 @@ function StatsOverview({ stats }: StatsOverviewProps) {
   const statCardsData: StatCardProps[] = useMemo(() => {
     if (!stats) return [];
 
+    const currentStreak = typeof stats.currentStreak === 'number' && !isNaN(stats.currentStreak) ? stats.currentStreak : 0;
+    const longestStreak = typeof stats.longestStreak === 'number' && !isNaN(stats.longestStreak) ? stats.longestStreak : 0;
+    const totalHours = typeof stats.totalHours === 'number' && !isNaN(stats.totalHours) ? stats.totalHours : 0;
+    const totalDays = typeof stats.totalDays === 'number' && !isNaN(stats.totalDays) ? stats.totalDays : 0;
+    const avgHours = typeof stats.averageHoursPerSession === 'number' && !isNaN(stats.averageHoursPerSession) ? stats.averageHoursPerSession : 0;
+    const complianceRate = typeof streak?.complianceRate === 'number' && !isNaN(streak.complianceRate) ? streak.complianceRate : 92;
+
     return [
       {
         title: 'Current Streak',
         value: stats.isFrozen ? (
           <span className="flex items-center gap-1">
-            {stats.currentStreak}
+            {currentStreak}
             <Snowflake className="w-4 h-4 sm:w-5 sm:h-5 text-neon-cyan shrink-0 animate-pulse" />
           </span>
         ) : (
-          stats.currentStreak
+          currentStreak
         ),
         unit: 'Days',
         subtext: stats.isFrozen ? (
@@ -208,7 +215,7 @@ function StatsOverview({ stats }: StatsOverviewProps) {
       },
       {
         title: 'Longest Streak',
-        value: stats.longestStreak,
+        value: longestStreak,
         unit: 'Days Record',
         subtext: (
           <>
@@ -222,7 +229,7 @@ function StatsOverview({ stats }: StatsOverviewProps) {
       },
       {
         title: 'Plan Adherence',
-        value: `${streak?.complianceRate || 92}%`,
+        value: `${complianceRate}%`,
         unit: 'Rate',
         subtext: (
           <>
@@ -238,13 +245,13 @@ function StatsOverview({ stats }: StatsOverviewProps) {
       },
       {
         title: 'Hours Invested',
-        value: stats.totalHours,
+        value: totalHours,
         unit: 'hrs',
         subtext: (
           <>
             <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-amber-400" />
             <span className="truncate">
-              {stats.totalDays} sess (~{stats.averageHoursPerSession}h)
+              {totalDays} sess (~{avgHours}h)
             </span>
           </>
         ),
