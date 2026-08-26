@@ -79,7 +79,7 @@ const MonthDayTile = memo(function MonthDayTile({
         type="button"
         disabled={day.isFuture}
         onClick={handleClick}
-        className={`h-16 rounded-xl p-2 flex flex-col justify-between text-left transition-all border relative overflow-hidden group cursor-pointer 
+        className={`h-13 sm:h-16 rounded-lg sm:rounded-xl p-1 sm:p-2 flex flex-col justify-between text-left transition-all border relative overflow-hidden group cursor-pointer 
           ${tileClass} 
           ${isFilteredOut && !day.isFuture ? 'opacity-20' : ''} 
           ${ringClass}
@@ -87,7 +87,7 @@ const MonthDayTile = memo(function MonthDayTile({
       >
         <div className="flex items-center justify-between w-full relative z-10">
           <span
-            className={`text-xs font-black transition-colors ${
+            className={`text-[10px] sm:text-xs font-black transition-colors ${
               day.isFuture
                 ? 'text-zinc-700'
                 : isFreeze
@@ -102,21 +102,21 @@ const MonthDayTile = memo(function MonthDayTile({
             {day.dayOfMonth}
           </span>
           {isActiveWorkout && day.hours > 0 && (
-            <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full border shadow-sm ${theme.pillWeek}`}>
+            <span className={`text-[7.5px] sm:text-[9px] font-black px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded-full border shadow-sm ${theme.pillWeek}`}>
               {day.hours}h
             </span>
           )}
           {isFreeze && day.hours > 0 && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-400">
+            <span className="text-[7.5px] sm:text-[9px] font-black px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-400">
               {day.hours}h
             </span>
           )}
         </div>
 
-        <div className="relative z-10 w-full">
+        <div className="relative z-10 w-full min-w-0">
           {day.workoutType && (
             <span
-              className={`text-[9px] font-black truncate block uppercase tracking-wide transition-colors ${
+              className={`hidden min-[400px]:block text-[8px] sm:text-[9px] font-black truncate uppercase tracking-tight sm:tracking-wide transition-colors ${
                 isFreeze
                   ? 'text-sky-400 drop-shadow-[0_0_5px_rgba(56,189,248,0.8)]'
                   : isRest
@@ -131,7 +131,7 @@ const MonthDayTile = memo(function MonthDayTile({
 
         {/* Badge Overlay for special states */}
         {styleInfo.badgeContent && (
-          <span className="absolute bottom-1.5 right-1.5 text-base select-none pointer-events-none opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
+          <span className="absolute bottom-1 sm:bottom-1.5 right-1 sm:right-1.5 text-xs sm:text-base select-none pointer-events-none opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
             {styleInfo.badgeContent}
           </span>
         )}
@@ -139,7 +139,7 @@ const MonthDayTile = memo(function MonthDayTile({
         {/* Neon dot indicator for Today */}
         {day.isToday && !styleInfo.badgeContent && (
           <div
-            className={`absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full animate-pulse ${
+            className={`absolute bottom-1 sm:bottom-1.5 right-1 sm:right-1.5 w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full animate-pulse ${
               isActiveWorkout ? theme.todayDot : 'bg-zinc-400 shadow-[0_0_8px_#ffffff]'
             }`}
           />
@@ -165,14 +165,20 @@ function MonthView({
   weeklyPlan,
 }: MonthViewProps) {
   return (
-    <div className="space-y-4 animate-in fade-in duration-300">
-      <div className="grid grid-cols-7 gap-2 text-center text-[10px] font-black uppercase tracking-widest text-white mb-2">
-        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    <div className="space-y-3 sm:space-y-4 animate-in fade-in duration-300">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[9px] sm:text-[10px] font-black uppercase tracking-wider sm:tracking-widest text-zinc-300 mb-1.5 sm:mb-2">
+        <span><span className="sm:hidden">S</span><span className="hidden sm:inline">Sun</span></span>
+        <span><span className="sm:hidden">M</span><span className="hidden sm:inline">Mon</span></span>
+        <span><span className="sm:hidden">T</span><span className="hidden sm:inline">Tue</span></span>
+        <span><span className="sm:hidden">W</span><span className="hidden sm:inline">Wed</span></span>
+        <span><span className="sm:hidden">T</span><span className="hidden sm:inline">Thu</span></span>
+        <span><span className="sm:hidden">F</span><span className="hidden sm:inline">Fri</span></span>
+        <span><span className="sm:hidden">S</span><span className="hidden sm:inline">Sat</span></span>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2">
         {Array.from({ length: startPadding }).map((_, i) => (
-          <div key={`pad-${i}`} className="h-16 rounded-xl bg-zinc-900/20 border border-zinc-800/30" />
+          <div key={`pad-${i}`} className="h-13 sm:h-16 rounded-lg sm:rounded-xl bg-zinc-900/20 border border-zinc-800/30" />
         ))}
 
         {days.map((day) => (

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Dumbbell, X, Clock } from 'lucide-react';
 import { StreakWarningEvent } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import './streakbanner.css'; // Import the new advanced CSS
 
 interface StreakRiskWarningBannerProps {
@@ -30,6 +29,23 @@ function isTimeEligibleForReminder(): boolean {
   const minutes = now.getMinutes();
   // 11:30 PM is 23:30. Eligible if current time is 11:30 PM or earlier.
   return hours < 23 || (hours === 23 && minutes <= 30);
+}
+
+function getInitialSnooze(): { snoozedUntil: number | null; isSnoozed: boolean } {
+  if (typeof window === 'undefined') return { snoozedUntil: null, isSnoozed: false };
+  try {
+    const stored = localStorage.getItem(SNOOZE_STORAGE_KEY);
+    if (stored) {
+      const until = parseInt(stored, 10);
+      if (!isNaN(until) && until > Date.now()) {
+        return { snoozedUntil: until, isSnoozed: true };
+      }
+      localStorage.removeItem(SNOOZE_STORAGE_KEY);
+    }
+  } catch {
+    // ignore
+  }
+  return { snoozedUntil: null, isSnoozed: false };
 }
 
 const WARNING_ANIME_CHARACTERS: WarningAnimeCharacter[] = [
@@ -135,29 +151,12 @@ export default function StreakRiskWarningBanner({
 }: StreakRiskWarningBannerProps) {
   const [timeLeft, setTimeLeft] = useState<string>(calculateTimeLeft);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [snoozedUntil, setSnoozedUntil] = useState<number | null>(null);
+  const [snoozeState, setSnoozeState] = useState<{ snoozedUntil: number | null; isSnoozed: boolean }>(getInitialSnooze);
   const [canRemindLater, setCanRemindLater] = useState<boolean>(isTimeEligibleForReminder);
   const [character] = useState<WarningAnimeCharacter>(() => {
     // Pick a random character on mount
     return WARNING_ANIME_CHARACTERS[Math.floor(Math.random() * WARNING_ANIME_CHARACTERS.length)];
   });
-
-  // Check stored snooze timestamp on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(SNOOZE_STORAGE_KEY);
-      if (stored) {
-        const until = parseInt(stored, 10);
-        if (!isNaN(until) && until > Date.now()) {
-          setSnoozedUntil(until);
-        } else {
-          localStorage.removeItem(SNOOZE_STORAGE_KEY);
-        }
-      }
-    } catch {
-      // ignore storage access restrictions
-    }
-  }, []);
 
   // Update countdown, snooze status, and reminder eligibility every second
   useEffect(() => {
@@ -167,17 +166,19 @@ export default function StreakRiskWarningBanner({
       setTimeLeft(calculateTimeLeft());
       setCanRemindLater(isTimeEligibleForReminder());
 
-      if (snoozedUntil && now >= snoozedUntil) {
-        setSnoozedUntil(null);
-        try {
-          localStorage.removeItem(SNOOZE_STORAGE_KEY);
-        } catch {
-          // ignore
+      if (snoozeState.snoozedUntil) {
+        if (now >= snoozeState.snoozedUntil) {
+          setSnoozeState({ snoozedUntil: null, isSnoozed: false });
+          try {
+            localStorage.removeItem(SNOOZE_STORAGE_KEY);
+          } catch {
+            // ignore
+          }
         }
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [event, snoozedUntil]);
+  }, [event, snoozeState.snoozedUntil]);
 
   const handleRemindMeLater = () => {
     if (!isTimeEligibleForReminder()) return;
@@ -187,7 +188,7 @@ export default function StreakRiskWarningBanner({
     } catch {
       // ignore
     }
-    setSnoozedUntil(snoozeTime);
+    setSnoozeState({ snoozedUntil: snoozeTime, isSnoozed: true });
     setIsExpanded(false);
   };
 
@@ -196,7 +197,7 @@ export default function StreakRiskWarningBanner({
     !event ||
     !event.is_at_risk ||
     currentStreak <= 0 ||
-    (snoozedUntil !== null && Date.now() < snoozedUntil)
+    snoozeState.isSnoozed
   ) {
     return null;
   }
@@ -224,13 +225,13 @@ export default function StreakRiskWarningBanner({
       >
         {/* Glow effect behind avatar */}
         <div
-          className="absolute -inset-2 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity duration-300"
+          className="absolute -inset-1.5 sm:-inset-2 rounded-full blur-lg sm:blur-xl opacity-40 group-hover:opacity-70 transition-opacity duration-300"
           style={{ backgroundColor: character.themeColor }}
         />
 
         {/* Avatar Image */}
         <div
-          className="relative w-16 h-16 rounded-full border-2 bg-zinc-950 overflow-hidden shadow-xl transition-transform duration-300 group-hover:scale-105"
+          className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 bg-zinc-950 overflow-hidden shadow-xl transition-transform duration-300 group-hover:scale-105"
           style={{ borderColor: character.themeColor }}
         >
           <Image
@@ -243,7 +244,7 @@ export default function StreakRiskWarningBanner({
         </div>
 
         {/* Notification Badge */}
-        <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-600 border-2 border-[#080c13] flex items-center justify-center text-white shadow-md animate-bounce">
+        <span className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-600 border-2 border-[#080c13] flex items-center justify-center text-[10px] sm:text-xs text-white shadow-md animate-bounce">
           🔥
         </span>
       </button>
@@ -269,49 +270,50 @@ export default function StreakRiskWarningBanner({
           {/* Close Button placed discreetly in the corner of the bubble */}
           <button
             onClick={() => setIsExpanded(false)}
-            className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-200 p-1 rounded-full transition-colors z-10"
+            aria-label="Close dialog"
+            className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 text-zinc-500 hover:text-zinc-200 p-1.5 rounded-full transition-colors z-10 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
 
           {/* Dialogue Content */}
-          <div className="relative z-10 space-y-3 pb-4">
-            <p className="text-[15px] font-semibold text-zinc-100 italic leading-relaxed">
-              "{character.quote}"
+          <div className="relative z-10 space-y-1.5 sm:space-y-3 pb-2 sm:pb-4 pr-6 sm:pr-0">
+            <p className="text-xs sm:text-sm font-medium text-zinc-100 italic leading-relaxed">
+              &ldquo;{character.quote}&rdquo;
             </p>
 
             {/* Contextual stat warning spoken by the character */}
-            <p className="text-sm text-zinc-300 leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
               {getContextualDialogue()}
             </p>
 
-            <span className="block pt-1 text-xs font-bold uppercase tracking-widest text-zinc-500">
+            <span className="block pt-0.5 sm:pt-1 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-zinc-500">
               — {character.name}
             </span>
           </div>
 
           {/* App-level Action Buttons contained inside the bubble */}
-          <div className="pt-4 mt-2 border-t border-zinc-800/60 flex flex-col sm:flex-row gap-3 relative z-10">
+          <div className="pt-3 sm:pt-4 mt-1 sm:mt-2 border-t border-zinc-800/60 flex flex-col sm:flex-row gap-2 sm:gap-3 relative z-10">
             <button
               onClick={onLogWorkoutClick}
-              className="flex-1 py-2.5 rounded-xl bg-white text-zinc-950 font-black text-xs uppercase tracking-wider transition-transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+              className="flex-1 py-2 sm:py-2.5 px-3 min-h-[40px] sm:min-h-[44px] rounded-xl bg-white text-zinc-950 font-black text-xs uppercase tracking-wider transition-transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer shadow-md"
               style={{ boxShadow: `0 0 15px ${character.themeColor}40` }}
             >
-              <Dumbbell className="w-4 h-4" />
-              Log Workout Now
+              <Dumbbell className="w-4 h-4 shrink-0" />
+              <span>Log Workout Now</span>
             </button>
             {canRemindLater && (
               <button
                 onClick={handleRemindMeLater}
-                className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 border border-zinc-800"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 border border-zinc-800 cursor-pointer"
               >
-                <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                Remind Me Later
+                <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                <span>Remind Me Later</span>
               </button>
             )}
             <button
               onClick={() => setIsExpanded(false)}
-              className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs uppercase tracking-wider transition-colors"
+              className="px-4 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center cursor-pointer"
             >
               Dismiss
             </button>

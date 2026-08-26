@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { ArrowLeft, GitCommit, Home } from 'lucide-react';
+import { GitCommit, Home } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {

@@ -39,13 +39,14 @@ function CustomTooltip({
   );
 
   const updateCoords = useCallback((e: MouseEvent<HTMLElement>) => {
-    const x = e.clientX + 15;
-    const y = e.clientY + 15;
+    const x = e.clientX + 12;
+    const y = e.clientY + 12;
 
-    const safeX =
-      x > window.innerWidth - 220 ? e.clientX - 220 : x;
-    const safeY =
-      y > window.innerHeight - 100 ? e.clientY - 80 : y;
+    const winWidth = typeof window !== 'undefined' ? window.innerWidth : 400;
+    const winHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+
+    const safeX = Math.max(8, Math.min(x, winWidth - 230));
+    const safeY = Math.max(8, Math.min(y, winHeight - 90));
 
     setCoords({
       x: safeX,

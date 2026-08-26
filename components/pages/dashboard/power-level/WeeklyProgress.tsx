@@ -40,7 +40,7 @@ const WeeklyBarColumn = memo(function WeeklyBarColumn({
                 style={{
                   bottom: `calc(${heightPercent}% * 0.76 + 16px)`,
                 }}
-                className={`absolute w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center overflow-visible z-20 pointer-events-none transition-transform duration-200 ${
+                className={`absolute w-7 h-7 sm:w-8 sm:h-8 sm:w-10 sm:h-10 flex items-center justify-center overflow-visible z-20 pointer-events-none transition-transform duration-200 ${
                   tierJustChanged
                     ? 'scale-135 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]'
                     : 'group-hover:scale-125'
@@ -62,12 +62,12 @@ const WeeklyBarColumn = memo(function WeeklyBarColumn({
                 />
               </div>
             )}
-            <span className={theme.scoreText}>
+            <span className={`text-[10px] sm:text-xs font-black ${theme.scoreText}`}>
               {currentScore}
             </span>
 
             <div
-              className={`w-full max-w-[36px] bg-zinc-900/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-36 p-0.5 border transition-colors duration-200 relative ${theme.container}`}
+              className={`w-full max-w-[32px] sm:max-w-[36px] bg-zinc-900/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 sm:h-36 p-0.5 border transition-colors duration-200 relative ${theme.container}`}
             >
               <div
                 style={{
@@ -86,7 +86,7 @@ const WeeklyBarColumn = memo(function WeeklyBarColumn({
                 )}
               </div>
             </div>
-            <span className={`text-[9px] uppercase tracking-wider mt-2.5 truncate max-w-[40px] text-center ${theme.text}`}>
+            <span className={`text-[8px] sm:text-[9px] uppercase tracking-wider mt-1.5 sm:mt-2.5 truncate max-w-[44px] sm:max-w-[54px] text-center ${theme.text}`}>
               {w.weekLabel}
             </span>
           </div>
@@ -111,12 +111,12 @@ function WeeklyProgress({ weeklyPowerStats }: WeeklyProgressProps) {
   const { ref: containerRef, inView } = useInView(0.15);
 
   return (
-    <div ref={containerRef} className="w-full lg:w-1/3 flex flex-col gap-6">
-      <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center border-b border-zinc-800 pb-3">
+    <div ref={containerRef} className="w-full lg:w-1/3 flex flex-col gap-4 sm:gap-6">
+      <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center border-b border-zinc-800 pb-2.5 sm:pb-3">
         Weekly Progress
       </h4>
 
-      <div className="h-64 flex items-end justify-between gap-2 px-2">
+      <div className="h-56 sm:h-64 flex items-end justify-between gap-1.5 sm:gap-2 px-1 sm:px-2">
         {weeklyPowerStats.map((w, idx) => (
           <WeeklyBarColumn
             key={`${w.weekLabel}-${idx}`}

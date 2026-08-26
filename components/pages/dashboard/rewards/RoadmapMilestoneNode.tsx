@@ -28,7 +28,7 @@ function RoadmapMilestoneNode({
 
   return (
     <div
-      className="flex-shrink-0 w-[200px] relative flex flex-col items-center select-none group opacity-100"
+      className="flex-shrink-0 w-[160px] sm:w-[200px] relative flex flex-col items-center select-none group opacity-100"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -45,7 +45,7 @@ function RoadmapMilestoneNode({
       </div>
 
       {/* Target Days Indicator */}
-      <div className="text-[11px] font-bold tracking-wide mb-9 text-center h-4 flex items-center justify-center w-full">
+      <div className="text-[10px] sm:text-[11px] font-bold tracking-wide mb-9 text-center h-4 flex items-center justify-center w-full">
         {status === 'CLAIMED' ? (
           <span className="text-emerald-400">✓ Day {streak_target}</span>
         ) : status === 'CLAIMABLE' ? (
@@ -57,21 +57,21 @@ function RoadmapMilestoneNode({
 
       {/* Milestone Card */}
       <div
-        className={`w-full p-4 rounded-2xl border flex flex-col justify-between items-center text-center gap-3 transition-all duration-300 min-h-[165px] ${styles.border
+        className={`w-full p-3 sm:p-4 rounded-2xl border flex flex-col justify-between items-center text-center gap-2.5 sm:gap-3 transition-all duration-300 min-h-[150px] sm:min-h-[165px] ${styles.border
           } ${styles.glow} ${status === 'LOCKED' ? 'opacity-85' : 'hover:-translate-y-1'
           }`}
       >
         {/* Item Icon Frame */}
         <div className="relative">
           <div
-            className={`w-12 h-12 rounded-xl border flex items-center justify-center shadow-inner ${styles.iconBg} ${status === 'LOCKED' ? 'opacity-60' : ''
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center shadow-inner ${styles.iconBg} ${status === 'LOCKED' ? 'opacity-60' : ''
               }`}
           >
-            <ItemIcon itemId={item_id} size={24} />
+            <ItemIcon itemId={item_id} size={20} />
           </div>
           {status === 'LOCKED' && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-md">
-              <Lock className="w-3 h-3 text-zinc-500" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-md">
+              <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-zinc-500" />
             </div>
           )}
         </div>
@@ -93,7 +93,7 @@ function RoadmapMilestoneNode({
         {/* Claim / Locked Actions */}
         <div className={`w-full pt-3 border-t ${status === 'LOCKED' ? 'border-zinc-800/30' : 'border-zinc-800/50'}`}>
           {status === 'CLAIMED' ? (
-            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-400">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-400 min-h-[38px]">
               <Check className="w-4 h-4" />
               <span>Claimed</span>
             </div>
@@ -102,7 +102,7 @@ function RoadmapMilestoneNode({
               type="button"
               onClick={() => onClaim(milestone)}
               disabled={isClaiming}
-              className="w-full py-2 rounded-xl bg-neon-cyan hover:bg-neon-cyan/90 text-[#05080c] text-[11px] font-bold uppercase tracking-wide transition-all shadow-[0_0_10px_rgba(34,211,238,0.2)] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-2 min-h-[38px] rounded-xl bg-neon-cyan hover:bg-neon-cyan/90 text-[#05080c] text-[11px] font-bold uppercase tracking-wide transition-all shadow-[0_0_10px_rgba(34,211,238,0.2)] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] cursor-pointer flex items-center justify-center gap-1.5"
             >
               {isClaiming ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -114,7 +114,7 @@ function RoadmapMilestoneNode({
               )}
             </button>
           ) : (
-            <div className={`flex items-center justify-center gap-1.5 text-[11px] font-medium ${styles.lockedText}`}>
+            <div className={`flex items-center justify-center gap-1.5 text-[11px] font-medium min-h-[38px] ${styles.lockedText}`}>
               <Lock className="w-3 h-3 shrink-0" />
               <span>Locked</span>
             </div>
@@ -124,12 +124,12 @@ function RoadmapMilestoneNode({
 
       {/* Rarity Tooltip Popover */}
       {showTooltip && description && (
-        <div className="absolute top-[80px] z-50 w-[180px] p-3 rounded-xl border border-zinc-800/80 bg-zinc-900/95 shadow-xl pointer-events-none text-left space-y-1.5 animate-in fade-in duration-200">
+        <div className="absolute top-[80px] z-50 w-[180px] sm:w-[200px] max-w-[calc(100vw-32px)] p-3 rounded-xl border border-zinc-800/80 bg-zinc-900/95 shadow-xl pointer-events-none text-left space-y-1.5 animate-in fade-in duration-200">
           <div className="flex items-center justify-between border-b border-zinc-800/60 pb-1.5">
-            <span className="text-[10px] font-bold text-zinc-100 uppercase tracking-wide">
+            <span className="text-[10px] font-bold text-zinc-100 uppercase tracking-wide truncate">
               {item_name}
             </span>
-            <span className={`text-[9px] uppercase font-bold ${styles.title}`}>
+            <span className={`text-[9px] uppercase font-bold shrink-0 ml-1.5 ${styles.title}`}>
               {rarity}
             </span>
           </div>

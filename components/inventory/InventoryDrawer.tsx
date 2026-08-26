@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { UserInventoryItem } from '@/lib/types';
 import { getRarityStyles, normalizeRarity } from '@/lib/rarity-theme';
 import ItemIcon from './ItemIcon';
@@ -145,7 +146,7 @@ export default function InventoryDrawer({
       }
       subtitle="Hover over any item to inspect stats and lore. Click an item to use its power."
       icon={
-        <img src="/icons/bag.png" alt="Inventory" className="w-5 h-5 text-neon-cyan  md:size-8" />
+        <Image src="/icons/bag.png" alt="Inventory" width={32} height={32} unoptimized className="size-6 md:size-8" />
       }
     >
       <div className="space-y-4">
@@ -195,15 +196,15 @@ export default function InventoryDrawer({
         )}
 
         {/* The Cyberpunk Inventory Grid Box */}
-        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 shadow-inner relative overflow-hidden">
+        <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-3 sm:p-5 shadow-inner relative overflow-hidden">
           <TooltipProvider delayDuration={50} skipDelayDuration={0}>
-            <div className="grid grid-cols-4 gap-3 sm:gap-3.5">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3.5">
               {slots.map((item, idx) => {
                 if (!item) {
                   return (
                     <div
                       key={idx}
-                      className="aspect-square relative rounded-2xl border border-zinc-800/80 bg-zinc-900/40 flex items-center justify-center"
+                      className="aspect-square relative rounded-xl sm:rounded-2xl border border-zinc-800/80 bg-zinc-900/40 flex items-center justify-center"
                     />
                   );
                 }
@@ -219,18 +220,23 @@ export default function InventoryDrawer({
                         onClick={() => handleItemClick(item)}
                         disabled={loading || isSlotUsing}
                         aria-label={`${item.item_details.name} (x${item.quantity})`}
-                        className="aspect-square relative rounded-2xl border border-zinc-800/80 bg-zinc-900/40 flex items-center justify-center transition-all duration-200 group/slot cursor-pointer outline-none hover:border-zinc-700 hover:scale-105 active:scale-95 hover:z-10 focus-visible:ring-2 focus-visible:ring-neon-cyan/60"
+                        className="aspect-square relative rounded-xl sm:rounded-2xl border border-zinc-800/80 bg-zinc-900/40 flex items-center justify-center transition-all duration-200 group/slot cursor-pointer outline-none hover:border-zinc-700 hover:scale-105 active:scale-95 hover:z-10 focus-visible:ring-2 focus-visible:ring-neon-cyan/60"
                       >
                         {/* Item Icon */}
                         <ItemIcon
                           itemId={item.item_details.item_id}
+                          size={32}
+                          className="relative z-10 sm:hidden transition-transform duration-200 group-hover/slot:scale-110"
+                        />
+                        <ItemIcon
+                          itemId={item.item_details.item_id}
                           size={44}
-                          className="relative z-10 transition-transform duration-200 group-hover/slot:scale-110"
+                          className="relative z-10 hidden sm:block transition-transform duration-200 group-hover/slot:scale-110"
                         />
 
                         {/* Quantity Counter Badge */}
                         <div className={cn(
-                          "absolute top-1.5 right-1.5 z-10 px-1.5 py-0.5 rounded-md font-black text-[9px] shadow-sm font-mono tracking-tight pointer-events-none border",
+                          "absolute top-1 sm:top-1.5 right-1 sm:right-1.5 z-10 px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded font-black text-[8px] sm:text-[9px] shadow-sm font-mono tracking-tight pointer-events-none border",
                           item.quantity >= 9
                             ? "bg-amber-950/90 border-amber-500/50 text-amber-400"
                             : "bg-zinc-950/90 border-zinc-800/90 text-neon-cyan"
@@ -240,8 +246,8 @@ export default function InventoryDrawer({
 
                         {/* Loading Spinner during activation */}
                         {isSlotUsing && (
-                          <div className="absolute inset-0 z-20 rounded-2xl bg-zinc-950/85 backdrop-blur-[1px] flex items-center justify-center animate-in fade-in duration-150">
-                            <Loader2 className="w-5 h-5 text-neon-cyan animate-spin" />
+                          <div className="absolute inset-0 z-20 rounded-xl sm:rounded-2xl bg-zinc-950/85 backdrop-blur-[1px] flex items-center justify-center animate-in fade-in duration-150">
+                            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 text-neon-cyan animate-spin" />
                           </div>
                         )}
                       </button>
@@ -251,7 +257,7 @@ export default function InventoryDrawer({
                       side="top"
                       sideOffset={10}
                       className={cn(
-                        'z-50 w-72 p-3.5 rounded-2xl bg-[#060a0f]/95 backdrop-blur-xl border custom-scrollbar space-y-2.5',
+                        'z-50 w-64 sm:w-72 max-w-[88vw] p-3 sm:p-3.5 rounded-2xl bg-[#060a0f]/95 backdrop-blur-xl border custom-scrollbar space-y-2 sm:space-y-2.5',
                         getTooltipGlowClass(item.item_details.rarity)
                       )}
                     >

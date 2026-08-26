@@ -143,28 +143,30 @@ function PowerLevelChart({ monthlyData, logs }: PowerLevelChartProps) {
 
   return (
     <TooltipProvider delayDuration={50}>
-      <div className="bg-zinc-950/80 border border-zinc-800 p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] space-y-6 relative overflow-hidden">
+      <div className="bg-zinc-950/80 border border-zinc-800 p-3.5 sm:p-6 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] space-y-4 sm:space-y-6 relative overflow-hidden">
 
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-4 border-b border-zinc-800">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 pb-3 sm:pb-4 border-b border-zinc-800">
           <div className="w-full">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-2.5 sm:gap-3 mb-1 sm:mb-2">
               <div className="w-2 h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
-              <h2 className="text-xs font-black bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase tracking-[0.25em] drop-shadow-[0_0_10px_rgba(0,255,136,0.3)] flex items-center gap-2">
-                <Swords className="w-4 h-4 text-neon-green" />
+              <h2 className="text-xs font-black bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase tracking-[0.2em] sm:tracking-[0.25em] drop-shadow-[0_0_10px_rgba(0,255,136,0.3)] flex items-center gap-2">
+                <Swords className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neon-green" />
                 <span>Power Levels</span>
               </h2>
               <div className="h-[1px] flex-1 bg-gradient-to-r from-neon-green/30 to-transparent ml-2" />
             </div>
 
-            <p className="text-[11px] text-zinc-400 mt-2 font-medium tracking-wide">
-              Sci-scored (0-100) based on consistency, duration quality &amp; split balance. Hover over bars to view Anime Tiers.
+            <p className="text-[10px] sm:text-[11px] text-zinc-400 mt-1 sm:mt-2 font-medium tracking-wide">
+              Sci-scored (0-100) based on consistency, duration quality &amp; split balance. Hover/tap bars to view Anime Tiers.
             </p>
           </div>
 
-          <PowerScoreGuideModal />
+          <div className="shrink-0">
+            <PowerScoreGuideModal />
+          </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 pt-4">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 pt-2 sm:pt-4">
           <WeeklyProgress weeklyPowerStats={weeklyPowerStats} />
 
           <div className="hidden lg:block w-px bg-zinc-800/50" />

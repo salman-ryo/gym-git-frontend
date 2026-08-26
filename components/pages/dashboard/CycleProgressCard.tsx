@@ -61,28 +61,28 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
         <div className="lg:col-span-8 flex flex-col gap-2 sm:gap-3">
 
           {/* PANEL 1: Cycle Readout */}
-          <div className="bg-zinc-950/80 border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-wrap items-center justify-between gap-3 relative overflow-hidden">
+          <div className="bg-zinc-950/80 border border-zinc-800 p-2.5 sm:p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-teal-400/80" />
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pl-2 w-full">
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 bg-zinc-900 rounded-lg">
-                  <Activity className="w-4 h-4 text-teal-300" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 pl-1.5 sm:pl-2 w-full">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div className="p-1.5 bg-zinc-900 rounded-lg shrink-0">
+                  <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-300" />
                 </div>
-                <div>
-                  <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-0.5">
+                <div className="min-w-0">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-0.5">
                     Cycle Range
                   </span>
-                  <span className="text-sm font-bold text-zinc-200 tracking-wider">
+                  <span className="text-xs sm:text-sm font-bold text-zinc-200 tracking-wider truncate block">
                     {formatDate(cycle.cycle_start_date)} — {formatDate(cycle.cycle_end_date)}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 bg-teal-400/10 border border-neon-cyan/20 px-3 py-1.5 rounded-lg">
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-teal-400/10 border border-neon-cyan/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg self-start sm:self-auto shrink-0">
                 <div className="w-1.5 h-1.5 bg-teal-400 rounded-full animate-pulse" />
-                <span className="text-[11px] font-bold text-neon-cyan uppercase tracking-widest">
-                  {cycle.days_remaining_in_cycle} {cycle.days_remaining_in_cycle === 1 ? 'Day' : 'Days'} Remaining
+                <span className="text-[9.5px] sm:text-[11px] font-bold text-neon-cyan uppercase tracking-widest">
+                  {cycle.days_remaining_in_cycle} {cycle.days_remaining_in_cycle === 1 ? 'Day' : 'Days'} Left
                 </span>
               </div>
             </div>
@@ -92,9 +92,9 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 flex-1">
 
             {/* PANEL 2: Workout Progress */}
-            <div className="bg-zinc-950/80 border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-col justify-center">
-              <div className="flex justify-between items-end mb-3">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+            <div className="bg-zinc-950/80 border border-zinc-800 p-2.5 sm:p-4 rounded-xl flex flex-col justify-center">
+              <div className="flex justify-between items-end mb-2 sm:mb-3">
+                <span className="text-[9.5px] sm:text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                   Workout Progress
                 </span>
                 <span className="text-xs font-medium text-zinc-400">
@@ -105,7 +105,7 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
               </div>
 
               {/* Clean Segmented Progress Bar */}
-              <div className="flex items-center gap-1.5 w-full h-5">
+              <div className="flex items-center gap-1 sm:gap-1.5 w-full h-4 sm:h-5">
                 {workoutSegments.map((_, idx) => {
                   const isActive = inView && idx < completed;
                   return (
@@ -125,18 +125,18 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
             </div>
 
             {/* PANEL 3: Rest Tokens */}
-            <div className="bg-zinc-950/80 border border-zinc-800 p-3 sm:p-4 rounded-xl flex flex-col justify-center">
-              <div className="flex justify-between items-end mb-3">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+            <div className="bg-zinc-950/80 border border-zinc-800 p-2.5 sm:p-4 rounded-xl flex flex-col justify-center">
+              <div className="flex justify-between items-end mb-2 sm:mb-3">
+                <span className="text-[9.5px] sm:text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
                   Rest Tokens
                 </span>
-                <span className="text-[11px] font-medium text-zinc-400">
+                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">
                   <AnimatedScoreCounter value={cycle.rest_tokens_remaining} inView={inView} duration={800} /> Available
                 </span>
               </div>
 
               {/* Rounded Hardware Battery Pods */}
-              <div className="flex items-center gap-2.5 h-6">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 h-5 sm:h-6">
                 {restTokenSegments.map((_, idx) => {
                   const isActive = inView && idx < cycle.rest_tokens_remaining;
                   return (
@@ -151,9 +151,9 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
                         }`}
                     >
                       {isActive ? (
-                        <Zap className="w-3.5 h-3.5 text-neon-cyan drop-shadow-[0_0_5px_#22d3ee]" />
+                        <Zap className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-neon-cyan drop-shadow-[0_0_5px_#22d3ee]" />
                       ) : (
-                        <Zap className="w-3 h-3 text-zinc-600" />
+                        <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-zinc-600" />
                       )}
                     </div>
                   );
@@ -164,14 +164,14 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
         </div>
 
         {/* RIGHT COLUMN: 4 Spans - Diagnostics Accuracy Radar */}
-        <div className="lg:col-span-4 bg-zinc-950/80 border border-zinc-800 min-h-[140px] rounded-xl relative flex flex-col items-center justify-center p-4">
+        <div className="lg:col-span-4 bg-zinc-950/80 border border-zinc-800 min-h-[120px] sm:min-h-[140px] rounded-xl relative flex flex-col items-center justify-center p-3 sm:p-4">
 
-          <span className="absolute top-4 inset-x-0 text-center text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+          <span className="absolute top-2.5 sm:top-4 inset-x-0 text-center text-[9.5px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
             Diagnostics
           </span>
 
-          <div className="relative flex items-center justify-center w-24 h-24 mt-4">
-            <svg className="w-full h-full rotate-[-90deg]">
+          <div className="relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mt-4 sm:mt-4">
+            <svg className="w-full h-full rotate-[-90deg]" viewBox="0 0 96 96">
               {/* Outer faint dashed ring */}
               <circle
                 cx="48"
@@ -208,12 +208,12 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
             </svg>
 
             {/* Center Readout */}
-            <div className="absolute flex flex-col items-center justify-center bg-[#05080c] w-14 h-14 rounded-full border border-zinc-800 shadow-inner">
-              <span className="text-lg font-black text-white tracking-tighter leading-none mt-1">
+            <div className="absolute flex flex-col items-center justify-center bg-[#05080c] w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-zinc-800 shadow-inner">
+              <span className="text-base sm:text-lg font-black text-white tracking-tighter leading-none mt-0.5 sm:mt-1">
                 <AnimatedScoreCounter value={accuracy} inView={inView} duration={1000} />
-                <span className="text-xs text-neon-cyan font-semibold ml-0.5">%</span>
+                <span className="text-[10px] sm:text-xs text-neon-cyan font-semibold ml-0.5">%</span>
               </span>
-              <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-wider mt-1">
+              <span className="text-[7px] sm:text-[8px] font-bold text-zinc-500 uppercase tracking-wider mt-0.5 sm:mt-1">
                 Accuracy
               </span>
             </div>
@@ -223,15 +223,15 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
 
       {/* Queued Weekly Plan Banner */}
       {user.queuedWeeklyPlanId && (
-        <div className="mt-2 sm:mt-3 bg-neon-purple/10 border border-neon-purple/20 p-3 rounded-xl flex items-start sm:items-center gap-3 relative overflow-hidden">
+        <div className="mt-2 sm:mt-3 bg-neon-purple/10 border border-neon-purple/20 p-2.5 sm:p-3 rounded-xl flex items-start sm:items-center gap-2.5 sm:gap-3 relative overflow-hidden">
           <div className="p-1.5 bg-neon-purple/20 rounded-lg shrink-0 relative z-10">
             <AlertTriangle className="w-4 h-4 text-neon-purple" />
           </div>
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 w-full">
-            <span className="text-[10px] font-bold text-neon-purple uppercase tracking-widest">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 w-full min-w-0">
+            <span className="text-[10px] font-bold text-neon-purple uppercase tracking-widest shrink-0">
               Update:
             </span>
-            <span className="text-[11px] text-zinc-300 font-medium tracking-wide">
+            <span className="text-[11px] text-zinc-300 font-medium tracking-wide break-words min-w-0">
               Your new plan: [ <span className="text-white font-bold">{user.queuedWeeklyPlanId}</span> ] will start from next week.
             </span>
           </div>

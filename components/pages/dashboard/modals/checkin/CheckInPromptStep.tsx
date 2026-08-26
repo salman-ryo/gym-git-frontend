@@ -29,7 +29,7 @@ export function CheckInPromptStep({
   return (
     <div className="text-center py-4 relative z-10">
       {/* Mascot Asking with anime bounce and interactive aura */}
-      <div className="relative w-24 h-24 mx-auto mb-3 group">
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-2 sm:mb-3 group">
         <div
           className="absolute inset-0 rounded-full blur-xl transition-all duration-300 group-hover:scale-125 opacity-70"
           style={{ background: questionMascot.glowColor }}
@@ -42,44 +42,44 @@ export function CheckInPromptStep({
           unoptimized
           className="w-full h-full object-contain relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]"
         />
-        <span className="absolute -top-1 -right-1 text-2xl font-black text-neon-green drop-shadow-[0_0_8px_rgba(0,255,136,0.6)] animate-bounce select-none z-20">
+        <span className="absolute -top-1 -right-1 text-xl sm:text-2xl font-black text-neon-green drop-shadow-[0_0_8px_rgba(0,255,136,0.6)] animate-bounce select-none z-20">
           ?
         </span>
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 text-base text-emerald-400 font-semibold mb-2">
+      <div className="flex items-center justify-center gap-1.5 text-sm sm:text-base text-emerald-400 font-semibold mb-1.5 sm:mb-2">
         <Image
           src="/images/icons/today.png"
           alt="Today"
           width={100}
           height={100}
           unoptimized
-          className="size-5"
+          className="size-4 sm:size-5"
         />
         <span>{formattedDate}</span>
       </div>
 
-      <h2 className="text-2xl font-black text-zinc-100 tracking-tight mb-1.5">
+      <h2 className="text-xl sm:text-2xl font-black text-zinc-100 tracking-tight mb-1 sm:mb-1.5">
         Did you hit the gym today?
       </h2>
-      <p className="text-zinc-400 text-xs italic mb-4 max-w-xs mx-auto">
+      <p className="text-zinc-400 text-[11px] sm:text-xs italic mb-3 sm:mb-4 max-w-xs mx-auto">
         &ldquo;{questionMascot.questionQuote}&rdquo;
       </p>
 
       {/* Late Night Impending Midnight Banner */}
       {isLateNightRisk && (
-        <div className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 text-[11px] font-bold mb-3.5 animate-pulse max-w-xs mx-auto">
+        <div className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 text-[10.5px] sm:text-[11px] font-bold mb-3 animate-pulse max-w-xs mx-auto">
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
           <span>Past 11:30 PM — Midnight deadline approaching!</span>
         </div>
       )}
 
       {/* Action Buttons with Anime Hype Triggers */}
-      <div className="grid grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5">
         <button
           type="button"
           onClick={onTriggerYes}
-          className="w-full bg-gradient-to-r from-neon-green via-[#00e077] to-teal-400 text-[#060a0e] font-extrabold py-2.5 px-4 rounded-2xl text-base flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] active:scale-95 shadow-lg shadow-emerald-500/10 hover:shadow-[0_0_25px_rgba(0,255,136,0.55)] cursor-pointer group relative overflow-hidden"
+          className="w-full min-h-[44px] bg-gradient-to-r from-neon-green via-[#00e077] to-teal-400 text-[#060a0e] font-extrabold py-2 sm:py-2.5 px-3 sm:px-4 rounded-2xl text-sm sm:text-base flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] active:scale-95 shadow-lg shadow-emerald-500/10 hover:shadow-[0_0_25px_rgba(0,255,136,0.55)] cursor-pointer group relative overflow-hidden"
         >
           {/* Highlight shimmer */}
           <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />

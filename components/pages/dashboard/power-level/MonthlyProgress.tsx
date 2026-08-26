@@ -41,7 +41,7 @@ const MonthlyBarColumn = memo(function MonthlyBarColumn({
                 style={{
                   bottom: `calc(${heightPercent}% * 0.76 + 16px)`,
                 }}
-                className={`absolute w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center overflow-visible z-20 pointer-events-none transition-transform duration-200 ${
+                className={`absolute w-6 h-6 sm:w-7 sm:h-7 sm:w-10 sm:h-10 flex items-center justify-center overflow-visible z-20 pointer-events-none transition-transform duration-200 ${
                   tierJustChanged
                     ? 'scale-135 drop-shadow-[0_0_12px_rgba(250,204,21,0.9)]'
                     : 'group-hover:scale-125'
@@ -63,12 +63,12 @@ const MonthlyBarColumn = memo(function MonthlyBarColumn({
                 />
               </div>
             )}
-            <span className={theme.scoreText}>
+            <span className={`text-[9px] sm:text-xs font-black ${theme.scoreText}`}>
               {currentScore}
             </span>
 
             <div
-              className={`w-full max-w-[36px] bg-zinc-900/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-36 p-0.5 border transition-colors duration-200 relative ${theme.container}`}
+              className={`w-full max-w-[28px] sm:max-w-[36px] bg-zinc-900/60 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 sm:h-36 p-0.5 border transition-colors duration-200 relative ${theme.container}`}
             >
               <div
                 style={{
@@ -87,7 +87,7 @@ const MonthlyBarColumn = memo(function MonthlyBarColumn({
                 )}
               </div>
             </div>
-            <span className={`text-[9px] uppercase tracking-widest mt-2.5 ${theme.text}`}>
+            <span className={`text-[8.5px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest mt-1.5 sm:mt-2.5 ${theme.text}`}>
               {m.month.slice(0, 3)}
             </span>
           </div>
@@ -112,20 +112,24 @@ function MonthlyProgress({ monthlyPowerStats }: MonthlyProgressProps) {
   const { ref: containerRef, inView } = useInView(0.15);
 
   return (
-    <div ref={containerRef} className="w-full lg:w-2/3 flex flex-col gap-6">
-      <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center border-b border-zinc-800 pb-3">
-        Last 12 Months
-      </h4>
+    <div ref={containerRef} className="w-full lg:w-2/3 flex flex-col gap-4 sm:gap-6">
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5 sm:pb-3">
+        <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center flex-1">
+          Last 12 Months
+        </h4>
+      </div>
 
-      <div className="h-64 flex items-end justify-between gap-1.5 px-2">
-        {monthlyPowerStats.map((m, idx) => (
-          <MonthlyBarColumn
-            key={`${m.year}-${m.monthIndex}-${idx}`}
-            m={m}
-            idx={idx}
-            inView={inView}
-          />
-        ))}
+      <div className="w-full overflow-x-auto no-scrollbar sm:custom-scrollbar pb-2 -webkit-overflow-scrolling-touch">
+        <div className="min-w-[440px] sm:min-w-0 h-56 sm:h-64 flex items-end justify-between gap-1 sm:gap-1.5 px-1 sm:px-2">
+          {monthlyPowerStats.map((m, idx) => (
+            <MonthlyBarColumn
+              key={`${m.year}-${m.monthIndex}-${idx}`}
+              m={m}
+              idx={idx}
+              inView={inView}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

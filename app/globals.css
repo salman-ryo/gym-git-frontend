@@ -37,6 +37,15 @@ input[type="radio"],
   cursor: pointer;
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
@@ -204,6 +213,12 @@ input[type="radio"],
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   body {

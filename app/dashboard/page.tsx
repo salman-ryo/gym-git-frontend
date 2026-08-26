@@ -95,7 +95,7 @@ export default function DashboardPage() {
           />
 
           {/* Dashboard Main Content */}
-          <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+          <main className="flex-1 max-w-7xl w-full mx-auto px-3 py-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-8">
             {/* 365-Day Mock Testing Toolbar */}
             {enable_mock_data && (
               <MockTestingToolbar

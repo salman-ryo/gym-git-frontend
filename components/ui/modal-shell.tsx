@@ -94,13 +94,13 @@ export function ModalShell({
       aria-modal="true"
       onClick={handleBackdropClick}
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/85 backdrop-blur-xl animate-in fade-in duration-200',
+        'fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/85 backdrop-blur-xl animate-in fade-in duration-200',
         containerClassName
       )}
     >
       <div
         className={cn(
-          'relative w-full bg-[#080c10]/95 border border-[rgba(0,255,136,0.2)] rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden animate-in scale-in-95 duration-200 custom-scrollbar',
+          'relative w-full bg-[#080c10]/95 border border-[rgba(0,255,136,0.2)] rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_0_50px_rgba(0,0,0,0.9)] max-h-[92vh] flex flex-col animate-in scale-in-95 duration-200 overflow-hidden',
           MAX_WIDTH_MAP[maxWidth] || 'max-w-md',
           className
         )}
@@ -127,7 +127,7 @@ export function ModalShell({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute top-5 right-5 text-zinc-400 hover:text-red-400 p-2 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-red-500/40 backdrop-blur-sm transition-all cursor-pointer group z-20"
+            className="absolute top-3 sm:top-5 right-3 sm:right-5 text-zinc-400 hover:text-red-400 p-1.5 sm:p-2 rounded-xl bg-zinc-950/80 border border-zinc-800 hover:border-red-500/40 backdrop-blur-sm transition-all cursor-pointer group z-20"
           >
             <X className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />
           </button>
@@ -135,11 +135,11 @@ export function ModalShell({
 
         {/* Header (if title or icon provided) */}
         {(title || icon) && (
-          <div className="flex items-center gap-3.5 mb-6 pb-4 border-b border-zinc-800/80 relative z-10">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 mb-3.5 sm:mb-6 pb-3 sm:pb-4 border-b border-zinc-800/80 relative z-10 shrink-0">
             {icon && <div className="shrink-0">{icon}</div>}
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 pr-8 sm:pr-6">
               {typeof title === 'string' ? (
-                <h3 className="text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent truncate">
+                <h3 className="text-sm sm:text-base font-black tracking-wide bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent truncate">
                   {title}
                 </h3>
               ) : (
@@ -147,7 +147,7 @@ export function ModalShell({
               )}
               {subtitle && (
                 typeof subtitle === 'string' ? (
-                  <p className="text-xs text-zinc-400 font-medium mt-0.5">{subtitle}</p>
+                  <p className="text-[11px] sm:text-xs text-zinc-400 font-medium mt-0.5 truncate sm:whitespace-normal">{subtitle}</p>
                 ) : (
                   subtitle
                 )
@@ -158,14 +158,14 @@ export function ModalShell({
 
         {/* Standard Error Alert Banner */}
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+          <div className="mb-3 sm:mb-4 p-2.5 sm:p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200 shrink-0">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {/* Modal Body Content */}
-        <div className="relative z-10">{children}</div>
+        <div className="relative z-10 overflow-y-auto no-scrollbar sm:custom-scrollbar flex-1 -mr-1 pr-1">{children}</div>
       </div>
     </div>
   );

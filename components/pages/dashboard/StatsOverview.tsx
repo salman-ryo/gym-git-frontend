@@ -118,12 +118,11 @@ const StatCard = memo(function StatCard({
   subtext,
   imageSrc,
   imageAlt,
-  contentWidth = 'w-[70%]',
   theme,
 }: StatCardProps) {
   return (
     <div
-      className={`relative flex flex-col justify-center min-h-[135px] bg-zinc-950/80 border backdrop-blur-2xl rounded-2xl overflow-hidden group transition-all duration-300 ${theme.border} ${theme.shadow} ${theme.hoverShadow}`}
+      className={`relative flex flex-col justify-center min-h-[110px] sm:min-h-[135px] bg-zinc-950/80 border backdrop-blur-2xl rounded-2xl overflow-hidden group transition-all duration-300 ${theme.border} ${theme.shadow} ${theme.hoverShadow}`}
     >
       {/* Top Ambient Glow Line */}
       <div className={`absolute top-0 left-0 right-0 h-[2px] ${theme.accentBar}`} />
@@ -133,22 +132,22 @@ const StatCard = memo(function StatCard({
 
       {/* Futuristic Corner Diamonds */}
       <div
-        className={`absolute -top-1.5 -left-1.5 w-3 h-3 rotate-45 z-20 rounded-sm ${theme.diamondBg} ${theme.diamondShadow}`}
+        className={`absolute -top-1.5 -left-1.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rotate-45 z-20 rounded-sm ${theme.diamondBg} ${theme.diamondShadow}`}
       />
       <div
-        className={`absolute -bottom-1.5 -right-1.5 w-3 h-3 rotate-45 z-20 rounded-sm ${theme.diamondBg} ${theme.diamondShadow}`}
+        className={`absolute -bottom-1.5 -right-1.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rotate-45 z-20 rounded-sm ${theme.diamondBg} ${theme.diamondShadow}`}
       />
 
-      <div className={`relative z-10 p-5 ${contentWidth}`}>
-        <div className="text-[10.5px] font-black text-zinc-400 uppercase tracking-widest mb-1">
+      <div className="relative z-10 p-3 sm:p-5 w-full sm:w-[75%] min-w-0">
+        <div className="text-[9px] sm:text-[10.5px] font-black text-zinc-400 uppercase tracking-widest mb-0.5 sm:mb-1 truncate">
           {title}
         </div>
-        <div className="flex items-baseline gap-2 mt-1">
-          <span className="text-4xl font-black text-white tracking-tight">{value}</span>
-          <span className={`text-sm font-extrabold ${theme.textUnit}`}>{unit}</span>
+        <div className="flex items-baseline gap-1 sm:gap-2 mt-0.5 sm:mt-1 flex-wrap sm:flex-nowrap">
+          <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-none">{value}</span>
+          <span className={`text-[11px] sm:text-sm font-extrabold truncate ${theme.textUnit}`}>{unit}</span>
         </div>
         <div
-          className={`mt-2.5 flex items-center gap-1.5 text-[11px] font-semibold leading-tight ${theme.textSub}`}
+          className={`mt-1.5 sm:mt-2.5 flex items-center gap-1 sm:gap-1.5 text-[9px] sm:text-[11px] font-semibold leading-tight ${theme.textSub} truncate`}
         >
           {subtext}
         </div>
@@ -156,7 +155,7 @@ const StatCard = memo(function StatCard({
 
       {/* Icon / Image with Cyber Glow */}
       <div
-        className={`absolute bottom-0 right-3 w-[45%] h-full pointer-events-none flex items-center justify-end group-hover:scale-108 transition-transform duration-300 ${theme.imgShadow}`}
+        className={`absolute bottom-0 right-1 sm:right-3 w-[40%] sm:w-[45%] h-full pointer-events-none flex items-center justify-end opacity-20 sm:opacity-100 group-hover:scale-108 transition-all duration-300 ${theme.imgShadow}`}
       >
         <Image
           src={imageSrc}
@@ -164,7 +163,7 @@ const StatCard = memo(function StatCard({
           width={82}
           height={82}
           unoptimized
-          className="object-contain"
+          className="object-contain w-12 h-12 sm:w-20 sm:h-20"
           style={theme.imageFilter ? { filter: theme.imageFilter } : undefined}
         />
       </div>
@@ -186,7 +185,7 @@ function StatsOverview({ stats }: StatsOverviewProps) {
         value: stats.isFrozen ? (
           <span className="flex items-center gap-1">
             {stats.currentStreak}
-            <Snowflake className="w-5 h-5 text-neon-cyan shrink-0 animate-pulse" />
+            <Snowflake className="w-4 h-4 sm:w-5 sm:h-5 text-neon-cyan shrink-0 animate-pulse" />
           </span>
         ) : (
           stats.currentStreak
@@ -194,13 +193,13 @@ function StatsOverview({ stats }: StatsOverviewProps) {
         unit: 'Days',
         subtext: stats.isFrozen ? (
           <>
-            <Snowflake className="w-3.5 h-3.5 shrink-0 text-neon-cyan animate-pulse" />
-            <span className="text-neon-cyan font-bold">Ice Pause Active</span>
+            <Snowflake className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-neon-cyan animate-pulse" />
+            <span className="text-neon-cyan font-bold truncate">Ice Pause</span>
           </>
         ) : (
           <>
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-neon-green" />
-            <span>Rest days protected</span>
+            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-neon-green" />
+            <span className="truncate">Rest protected</span>
           </>
         ),
         imageSrc: '/images/icons/fire.svg',
@@ -213,8 +212,8 @@ function StatsOverview({ stats }: StatsOverviewProps) {
         unit: 'Days Record',
         subtext: (
           <>
-            <Trophy className="w-3.5 h-3.5 shrink-0 text-neon-cyan" />
-            <span>Best sequence record</span>
+            <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-neon-cyan" />
+            <span className="truncate">Best sequence</span>
           </>
         ),
         imageSrc: '/images/icons/trophy.svg',
@@ -224,18 +223,17 @@ function StatsOverview({ stats }: StatsOverviewProps) {
       {
         title: 'Plan Adherence',
         value: `${streak?.complianceRate || 92}%`,
-        unit: 'Compliance',
+        unit: 'Rate',
         subtext: (
           <>
-            <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-neon-purple" />
-            <span>
-              Wk: {streak?.currentWeekDone || 3}/{streak?.currentWeekTarget || 4} ({streak?.currentWeekStatus || 'On Track'})
+            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-neon-purple" />
+            <span className="truncate">
+              Wk: {streak?.currentWeekDone || 3}/{streak?.currentWeekTarget || 4}
             </span>
           </>
         ),
         imageSrc: '/images/icons/check.svg',
         imageAlt: 'Plan Adherence',
-        contentWidth: 'w-[72%]',
         theme: THEME_ADHERENCE,
       },
       {
@@ -244,9 +242,9 @@ function StatsOverview({ stats }: StatsOverviewProps) {
         unit: 'hrs',
         subtext: (
           <>
-            <Clock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-            <span>
-              {stats.totalDays} sessions (~{stats.averageHoursPerSession}h avg)
+            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-amber-400" />
+            <span className="truncate">
+              {stats.totalDays} sess (~{stats.averageHoursPerSession}h)
             </span>
           </>
         ),
@@ -261,29 +259,29 @@ function StatsOverview({ stats }: StatsOverviewProps) {
 
   return (
     <TooltipProvider delayDuration={50}>
-      <div className="w-full mt-6 mb-10 space-y-6">
+      <div className="w-full mt-4 sm:mt-6 mb-6 sm:mb-10 space-y-4 sm:space-y-6">
         {/* GRIND STATS Cyberpunk Header */}
         <div className="flex justify-center items-center relative">
           <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-neon-green/30 to-neon-cyan/60" />
-          <div className="px-7 py-2 mx-4 bg-zinc-950/80 border border-neon-green/30 backdrop-blur-xl rounded-full shadow-[0_0_20px_rgba(0,255,136,0.15)] flex items-center gap-3 relative z-10">
-            <div className="w-2 h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
-            <span className="text-xs font-black tracking-[0.25em] bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase drop-shadow-[0_0_10px_rgba(0,255,136,0.4)]">
+          <div className="px-3 sm:px-7 py-1.5 sm:py-2 mx-1.5 sm:mx-4 bg-zinc-950/80 border border-neon-green/30 backdrop-blur-xl rounded-full shadow-[0_0_20px_rgba(0,255,136,0.15)] flex items-center gap-1.5 sm:gap-3 relative z-10 shrink-0">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" />
+            <span className="text-[9.5px] sm:text-xs font-black tracking-[0.18em] sm:tracking-[0.25em] bg-gradient-to-r from-neon-green via-[#00e077] to-neon-cyan bg-clip-text text-transparent uppercase drop-shadow-[0_0_10px_rgba(0,255,136,0.4)]">
               Grind Stats
             </span>
-            <div className="w-2 h-2 rotate-45 bg-neon-cyan shadow-[0_0_8px_#22d3ee] animate-[badge-pulse_2s_ease-in-out_infinite]" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 bg-neon-cyan shadow-[0_0_8px_#22d3ee] animate-[badge-pulse_2s_ease-in-out_infinite]" />
           </div>
           <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent via-neon-green/30 to-neon-cyan/60" />
         </div>
 
         {/* Row 1: 4 Stat Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6">
           {statCardsData.map((card, index) => (
             <StatCard key={index} {...card} />
           ))}
         </div>
 
         {/* Row 2: Cycle Progress Card — full width */}
-        {user && <CycleProgressCard className="mt-10" stats={stats} user={user} />}
+        {user && <CycleProgressCard className="mt-6 sm:mt-10" stats={stats} user={user} />}
       </div>
     </TooltipProvider>
   );

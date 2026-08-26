@@ -97,12 +97,13 @@ const WeekDayTile = memo(function WeekDayTile({
         disabled={day.isFuture}
         onClick={handleClick}
         style={{ animationFillMode: 'both', animationDelay: `${index * 75}ms` }}
-        className={`group relative p-4 text-left flex flex-col justify-between h-40 transition-all duration-300 overflow-hidden 
-          border-y border-r border-l-4 rounded-tr-2xl rounded-bl-2xl rounded-tl-sm rounded-br-sm
+        className={`group relative p-2.5 sm:p-4 text-left flex flex-col justify-between min-h-[85px] sm:h-40 transition-all duration-300 overflow-hidden 
+          border-y border-r border-l-4 rounded-xl sm:rounded-tr-2xl sm:rounded-bl-2xl sm:rounded-tl-sm sm:rounded-br-sm
           animate-in slide-in-from-bottom-4 fade-in
           ${tileClass} 
           ${borderAccent}
           ${neonGlow}
+          ${index === 6 ? 'col-span-2 sm:col-span-1' : ''}
           ${isFilteredOut && !day.isFuture ? 'opacity-20 grayscale' : ''} 
         `}
       >
@@ -110,16 +111,16 @@ const WeekDayTile = memo(function WeekDayTile({
         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent group-hover:animate-[scanline_1.5s_ease-in-out_infinite] z-0" />
 
         <div className="relative z-10 w-full">
-          <div className="flex items-center justify-between mb-1 text-[10px] uppercase font-black tracking-[0.2em]">
+          <div className="flex items-center justify-between mb-0.5 sm:mb-1 text-[9px] sm:text-[10px] uppercase font-black tracking-wider sm:tracking-[0.2em]">
             <span className={`flex items-center gap-1 ${day.isToday ? 'text-white' : day.isFuture ? 'text-zinc-700' : 'text-zinc-400 group-hover:text-zinc-100 transition-colors'}`}>
-              <span className={isActiveWorkout ? `${theme.text} opacity-80` : isFreeze ? 'text-sky-400 opacity-80' : isRest ? 'text-slate-400 opacity-80' : 'text-zinc-600'}>//</span> {dayName}
+              <span className={isActiveWorkout ? `${theme.text} opacity-80` : isFreeze ? 'text-sky-400 opacity-80' : isRest ? 'text-slate-400 opacity-80' : 'text-zinc-600'}>{'//'}</span> {dayName}
             </span>
-            <span className={`font-mono ${day.isFuture ? 'text-zinc-800' : 'text-zinc-500 group-hover:text-white transition-colors'}`}>
+            <span className={`font-mono text-[9px] sm:text-[10px] ${day.isFuture ? 'text-zinc-800' : 'text-zinc-500 group-hover:text-white transition-colors'}`}>
               {day.dateStr.slice(5).replace('-', '.')}
             </span>
           </div>
 
-          <p className={`text-3xl mt-3 font-black tracking-tighter italic transition-all duration-300 group-hover:translate-x-1 ${
+          <p className={`text-xl sm:text-3xl mt-1 sm:mt-3 font-black tracking-tighter italic transition-all duration-300 group-hover:translate-x-1 ${
             isFreeze
               ? 'text-sky-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]'
               : isRest
@@ -131,7 +132,7 @@ const WeekDayTile = memo(function WeekDayTile({
             {day.hours > 0 ? (
               <>
                 {day.hours}
-                <span className="text-lg text-zinc-500 font-mono ml-0.5 not-italic">H</span>
+                <span className="text-sm sm:text-lg text-zinc-500 font-mono ml-0.5 not-italic">H</span>
               </>
             ) : (
               '0.0'
@@ -139,10 +140,10 @@ const WeekDayTile = memo(function WeekDayTile({
           </p>
         </div>
 
-        <div className="relative z-10 w-full flex items-end justify-between mt-4">
+        <div className="relative z-10 w-full flex items-end justify-between mt-2 sm:mt-4">
           {day.workoutType ? (
             <div>
-              <span className={`text-[10px] font-black px-2 py-1 inline-block uppercase tracking-widest border border-dashed rounded-br-lg rounded-tl-lg transition-colors ${
+              <span className={`text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2 py-0.5 sm:py-1 inline-block uppercase tracking-wider sm:tracking-widest border border-dashed rounded-br-lg rounded-tl-lg transition-colors ${
                 isFreeze
                   ? 'bg-sky-500/15 border-sky-400/40 text-sky-400'
                   : isRest
@@ -153,20 +154,20 @@ const WeekDayTile = memo(function WeekDayTile({
               </span>
             </div>
           ) : (
-            <div className="h-6" />
+            <div className="h-4 sm:h-6" />
           )}
 
           {/* Digital status indicator in bottom right */}
           <div className={`flex gap-1 ${isActiveWorkout ? theme.text : isFreeze ? 'text-sky-400' : isRest ? 'text-slate-400' : 'text-zinc-700'}`}>
-            <div className={`w-1 h-3 rounded-sm ${isActiveWorkout || isFreeze ? 'bg-current opacity-80' : 'bg-zinc-800'}`} />
-            <div className={`w-1 h-3 rounded-sm ${isActiveWorkout ? 'bg-current opacity-80' : 'bg-zinc-800'}`} />
-            <div className={`w-1 h-3 rounded-sm ${isActiveWorkout && day.hours >= 1.5 ? 'bg-current opacity-80' : 'bg-zinc-800'}`} />
+            <div className={`w-1 h-2.5 sm:h-3 rounded-sm ${isActiveWorkout || isFreeze ? 'bg-current opacity-80' : 'bg-zinc-800'}`} />
+            <div className={`w-1 h-2.5 sm:h-3 rounded-sm ${isActiveWorkout ? 'bg-current opacity-80' : 'bg-zinc-800'}`} />
+            <div className={`w-1 h-2.5 sm:h-3 rounded-sm ${isActiveWorkout && day.hours >= 1.5 ? 'bg-current opacity-80' : 'bg-zinc-800'}`} />
           </div>
         </div>
 
         {/* Large background decorative icon/badge */}
         {styleInfo.badgeContent && (
-          <span className="absolute -bottom-2 -right-2 text-6xl select-none pointer-events-none opacity-10 group-hover:opacity-20 group-hover:-translate-y-2 group-hover:-translate-x-2 transition-all duration-500 font-black">
+          <span className="absolute -bottom-2 -right-2 text-4xl sm:text-6xl select-none pointer-events-none opacity-10 group-hover:opacity-20 group-hover:-translate-y-2 group-hover:-translate-x-2 transition-all duration-500 font-black">
             {styleInfo.badgeContent}
           </span>
         )}
@@ -174,7 +175,7 @@ const WeekDayTile = memo(function WeekDayTile({
         {/* Blinking Neon Dot for Today */}
         {day.isToday && !styleInfo.badgeContent && (
           <div
-            className={`absolute top-3 right-3 w-2 h-2 rounded-none rotate-45 ${
+            className={`absolute top-2.5 sm:top-3 right-2.5 sm:right-3 w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-none rotate-45 ${
               isActiveWorkout ? theme.todayDot : 'bg-zinc-400 shadow-[0_0_10px_#ffffff]'
             }`}
             style={{ animation: 'pulse-neon 2s infinite' }}
@@ -190,8 +191,8 @@ const WeekDayTile = memo(function WeekDayTile({
         )}
 
         {/* Techy corner brackets overlay */}
-        <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-zinc-700/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-zinc-700/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute top-0 right-0 w-2 sm:w-3 h-2 sm:h-3 border-t-2 border-r-2 border-zinc-700/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute bottom-0 right-0 w-2 sm:w-3 h-2 sm:h-3 border-b-2 border-r-2 border-zinc-700/50 opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
     </CustomTooltip>
   );
@@ -224,7 +225,7 @@ function WeekView({
         }
       `}} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-7 gap-4 animate-in fade-in duration-500">
+      <div className="grid grid-cols-2 sm:grid-cols-7 gap-2.5 sm:gap-4 animate-in fade-in duration-500">
         {days.map((day, index) => (
           <WeekDayTile
             key={day.dateStr}

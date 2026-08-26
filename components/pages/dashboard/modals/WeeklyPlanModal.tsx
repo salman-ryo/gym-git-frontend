@@ -184,33 +184,33 @@ export default function WeeklyPlanModal({
         />
       }
     >
-      <div className="max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar">
+      <div className="max-h-[72vh] overflow-y-auto pr-1 custom-scrollbar">
         {/* Step Progress Tracker */}
-        <div className="grid grid-cols-2 gap-2 mb-6">
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mb-4 sm:mb-6">
           <button
             type="button"
             onClick={() => setStep(1)}
-            className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl border text-[11px] sm:text-xs font-black flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
               step === 1
                 ? 'bg-neon-green/10 border-neon-green/40 text-neon-green shadow-[0_0_12px_rgba(0,255,136,0.15)]'
                 : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>1. Choose Split &amp; Frequency</span>
+            <Layers className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">1. Choose Split</span>
           </button>
 
           <button
             type="button"
             onClick={() => setStep(2)}
-            className={`py-2 px-3 rounded-xl border text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl border text-[11px] sm:text-xs font-black flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer ${
               step === 2
                 ? 'bg-neon-cyan/10 border-neon-cyan/40 text-neon-cyan shadow-[0_0_12px_rgba(34,211,238,0.15)]'
                 : 'bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            <Calendar className="w-3.5 h-3.5" />
-            <span>2. Assign &amp; Customize Days</span>
+            <Calendar className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">2. Customize Days</span>
           </button>
         </div>
 

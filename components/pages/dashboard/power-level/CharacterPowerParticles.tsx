@@ -47,8 +47,10 @@ export default function CharacterPowerParticles({
   const prevTierJustChangedRef = useRef(tierJustChanged);
 
   // Keep refs up-to-date
-  isAnimatingRef.current = isAnimating;
-  scoreRef.current = score;
+  useEffect(() => {
+    isAnimatingRef.current = isAnimating;
+    scoreRef.current = score;
+  }, [isAnimating, score]);
 
   // Canvas bounds centered around character
   const width = size === 'sm' ? 100 : size === 'lg' ? 240 : 130;

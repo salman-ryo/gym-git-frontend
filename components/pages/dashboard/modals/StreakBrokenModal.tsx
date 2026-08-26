@@ -5,7 +5,6 @@ import { Flame, ShieldAlert, Gift, RefreshCw, AlertTriangle, Check, ShieldCheck,
 import { StreakBrokenEvent } from '@/lib/types';
 import { restoreStreak } from '@/lib/streak-service';
 import { formatFullDate } from '@/lib/date-utils';
-import ItemIcon from '@/components/inventory/ItemIcon';
 import ModalShell from '@/components/ui/modal-shell';
 
 export interface StreakBrokenModalProps {
