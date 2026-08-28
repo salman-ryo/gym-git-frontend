@@ -5,6 +5,7 @@ import { AuthProvider } from '@/lib/auth-context';
 import { InventoryProvider } from '@/lib/inventory-context';
 import { cn } from "@/lib/utils";
 import { LandingBackground } from '@/components/pages/landing';
+import Footer from '@/components/layout/Footer';
 import { JsonLd, organizationJsonLd, softwareAppJsonLd } from '@/components/seo/JsonLd';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
@@ -14,7 +15,11 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gymgit.com';
+const siteUrl =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  (process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://gym-git.com');
 
 export const viewport: Viewport = {
   themeColor: [
@@ -69,10 +74,12 @@ export const metadata: Metadata = {
     siteName: 'Gym-Git',
     images: [
       {
-        url: '/opengraph-image',
+        url: '/opengraph-image.png',
+        secureUrl: `${siteUrl}/opengraph-image.png`,
         width: 1200,
         height: 630,
-        alt: 'Gym-Git — GitHub-Style Gym Attendance Tracker',
+        type: 'image/png',
+        alt: 'Gym-Git — GitHub-Style Gym Attendance Tracker & Workout Planner',
       },
     ],
   },
@@ -81,18 +88,40 @@ export const metadata: Metadata = {
     title: 'Gym-Git — Track Your Fitness Like a Developer',
     description:
       'Commit to your fitness goals with GitHub-style contribution graphs and streak analytics.',
-    images: ['/twitter-image'],
+    images: [
+      {
+        url: '/twitter-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Gym-Git — Track Your Fitness Like a Developer',
+      },
+    ],
     creator: '@gymgit',
     site: '@gymgit',
   },
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
       { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     shortcut: '/favicon.ico',
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '192x192',
+        url: '/web-app-manifest-192x192.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '512x512',
+        url: '/web-app-manifest-512x512.png',
+      },
     ],
   },
   manifest: '/manifest.webmanifest',
@@ -134,7 +163,10 @@ export default function RootLayout({
         <LandingBackground />
 
         <AuthProvider>
-          <InventoryProvider>{children}</InventoryProvider>
+          <InventoryProvider>
+            {children}
+            <Footer />
+          </InventoryProvider>
         </AuthProvider>
       </body>
     </html>

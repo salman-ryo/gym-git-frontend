@@ -3,7 +3,6 @@
 import React, { useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import AuthGuard from '@/components/AuthGuard';
-import Footer from '@/components/layout/Footer';
 import Header from '@/components/pages/dashboard/Header';
 import StatsOverview from '@/components/pages/dashboard/StatsOverview';
 import FilterBar from '@/components/pages/dashboard/FilterBar';
@@ -245,8 +244,6 @@ export default function DashboardPage() {
               />
             ) : null}
           </main>
-
-          <Footer />
 
           {/* On-Demand Modals (Mounted only when active) */}
           {state.showDailyCheckIn && (

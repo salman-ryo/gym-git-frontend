@@ -7,7 +7,6 @@ import {
   TestimonialsSection,
   CTASection,
 } from '@/components/pages/landing';
-import Footer from '@/components/layout/Footer';
 import { JsonLd, faqPageJsonLd } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
@@ -24,9 +23,10 @@ export const metadata: Metadata = {
     url: '/',
     images: [
       {
-        url: '/opengraph-image',
+        url: '/opengraph-image.png',
         width: 1200,
         height: 630,
+        type: 'image/png',
         alt: 'Gym-Git — Track Your Fitness Like a Developer',
       },
     ],
@@ -47,10 +47,6 @@ export default function HomePage() {
         <TestimonialsSection />
         <CTASection />
       </main>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <Footer />
-      </div>
     </div>
   );
 }

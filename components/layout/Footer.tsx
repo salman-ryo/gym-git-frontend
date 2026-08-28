@@ -1,5 +1,9 @@
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { socialLinks, footerLinks } from '@/lib/links';
 
 /* Brand SVG Icons */
@@ -20,8 +24,15 @@ function LinkedinIcon({ className = 'w-4 h-4' }: { className?: string }) {
 }
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide footer on auth and login screens
+  if (pathname === '/login' || pathname?.startsWith('/login') || pathname?.startsWith('/auth')) {
+    return null;
+  }
+
   return (
-    <footer className="relative bg-glass-bg border-t border-glass-border py-8 backdrop-blur-md">
+    <footer className="relative z-20 bg-glass-bg border-t border-glass-border py-8 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
 
         {/* Left Side: Brand & description */}

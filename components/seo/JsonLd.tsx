@@ -18,8 +18,8 @@ export const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Gym-Git',
-  url: 'https://gymgit.com',
-  logo: 'https://gymgit.com/web-app-manifest-512x512.png',
+  url: 'https://gym-git.com',
+  logo: 'https://gym-git.com/web-app-manifest-512x512.png',
   description:
     'Gym-Git is a developer-focused fitness tracker that transforms workout logs into GitHub-style contribution graphs and streak analytics.',
   sameAs: [
@@ -35,7 +35,7 @@ export const softwareAppJsonLd = {
   operatingSystem: 'Web, iOS, Android',
   applicationCategory: 'HealthApplication',
   applicationSubCategory: 'Fitness Tracking',
-  url: 'https://gymgit.com',
+  url: 'https://gym-git.com',
   description:
     'GitHub-style workout tracker. Visualize consistency with contribution graphs, build streaks, level up your power rating, and plan workouts.',
   offers: {
@@ -102,7 +102,7 @@ export const aboutPageJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
   name: 'About Gym-Git | GitHub-Style Fitness Tracker & Developer Conditioning Protocol',
-  url: 'https://gymgit.com/about',
+  url: 'https://gym-git.com/about',
   description:
     'Gym-Git bridges software engineering discipline with physical conditioning. Track workouts as code commits, visualize consistency with GitHub-style contribution heatmaps, level up through 11 anime power tiers, and utilize fault-tolerant streak protection.',
   mainEntity: {

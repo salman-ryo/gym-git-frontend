@@ -726,6 +726,92 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* ── 5. Anime Power Level Roster Codex ── */}
+        <section className="w-full bg-[#080c10]/85 border border-[rgba(34,211,238,0.18)] backdrop-blur-2xl rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_50px_-15px_rgba(34,211,238,0.12)] relative overflow-hidden" aria-labelledby="anime-roster-heading">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-neon-cyan via-neon-purple to-transparent opacity-80" aria-hidden="true" />
+
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-neon-cyan tracking-wider uppercase mb-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>SCIENTIFIC RPG CODEX</span>
+              </div>
+              <h2 id="anime-roster-heading" className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                The 11 Anime Hero Progression Tiers
+              </h2>
+              <p className="text-zinc-400 text-xs sm:text-sm max-w-xl">
+                As your 40-day rolling consistency, workout duration, and split variety elevate your Power Score, you unlock higher hero tiers inspired by legendary anime characters.
+              </p>
+            </div>
+            <div className="px-4 py-2 rounded-xl bg-[#060a0e] border border-neon-cyan/20 text-xs font-mono text-neon-cyan shrink-0">
+              11 Tier Ranks [0 &rarr; 100 PTS]
+            </div>
+          </div>
+
+          {/* Active Spotlight Card */}
+          <div className="p-5 sm:p-7 rounded-2xl bg-gradient-to-r from-[#05080c]/95 via-[#0a1017]/90 to-[#05080c]/95 border border-zinc-800 mb-6 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-neon-cyan/20 blur-xl rounded-full" aria-hidden="true" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedCharacter.image}
+                alt={selectedCharacter.name}
+                className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] relative z-10"
+              />
+            </div>
+
+            <div className="flex-1 text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 mb-2">
+                <h3 className="text-xl sm:text-2xl font-black text-white">{selectedCharacter.name} Tier</h3>
+                <span className="inline-block self-center sm:self-auto px-3 py-0.5 rounded-full text-xs font-extrabold bg-neon-green/10 text-neon-green border border-neon-green/30">
+                  Required Power Score: {selectedCharacter.minPower}+ PTS
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed italic max-w-2xl mb-3">
+                &ldquo;{selectedCharacter.description}&rdquo;
+              </p>
+              <div className="text-[11px] font-mono text-zinc-400">
+                Status: <span className="text-neon-cyan font-bold">{selectedCharacter.minPower === 0 ? 'Novice Rank' : selectedCharacter.minPower >= 85 ? 'God-Tier Discipline' : 'Advanced Warrior'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Character Selector Horizontal Grid */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2.5" role="tablist" aria-label="Anime Hero Tiers">
+            {animePowerLevels.map((hero) => {
+              const isSelected = selectedCharacter.id === hero.id;
+              return (
+                <button
+                  key={hero.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => setSelectedCharacter(hero)}
+                  className={`flex flex-col items-center p-2.5 rounded-xl border transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? 'bg-neon-cyan/15 border-neon-cyan shadow-[0_0_15px_rgba(34,211,238,0.35)] scale-105'
+                      : 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/40'
+                  }`}
+                >
+                  <div className="w-10 h-10 relative mb-1.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={hero.image}
+                      alt={hero.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <span className="text-[10.5px] font-bold text-white truncate max-w-full">
+                    {hero.name}
+                  </span>
+                  <span className="text-[9px] font-mono text-zinc-400">
+                    {hero.minPower}pt
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* ── 6. Technical Stack & Infrastructure Specification ── */}
         <section className="space-y-6" aria-labelledby="tech-stack-heading">
@@ -896,11 +982,6 @@ export default function AboutPage() {
         </section>
 
       </main>
-
-      {/* ── Page Footer Note ── */}
-      <footer className="w-full max-w-5xl text-center text-xs text-zinc-600 mt-12 mb-4 relative z-10" role="contentinfo">
-        Gym-Git &copy; {new Date().getFullYear()} &bull; GitHub-Style Workout Tracking &bull; Built with Next.js 16, Tailwind CSS v4, and Go/Gin
-      </footer>
     </div>
   );
 }

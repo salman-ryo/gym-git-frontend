@@ -30,9 +30,10 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/opengraph-image',
+        url: '/opengraph-image.png',
         width: 1200,
         height: 630,
+        type: 'image/png',
         alt: 'About Gym-Git — GitHub-Style Fitness Tracker',
       },
     ],
@@ -42,7 +43,14 @@ export const metadata: Metadata = {
     title: 'About Gym-Git — GitHub-Style Workout Tracker',
     description:
       'Where software engineering meets physical conditioning. Commit to your gainz on a GitHub-style heatmap.',
-    images: ['/opengraph-image'],
+    images: [
+      {
+        url: '/twitter-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'About Gym-Git — GitHub-Style Workout Tracker',
+      },
+    ],
   },
 };
 

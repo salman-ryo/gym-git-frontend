@@ -6,24 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { socialLinks } from '@/lib/links';
-
-/* ─────────────────────────────────────────────
-   Types
-   ───────────────────────────────────────────── */
-interface NavLink {
-  label: string;
-  href: string;
-}
-
-const NAV_LINKS: NavLink[] = [
-  { label: 'Features', href: '/#features' },
-  { label: 'How it Works', href: '/#how-it-works' },
-  { label: 'About', href: '/about' },
-  { label: 'Pricing', href: '/#pricing' },
-  { label: 'Changelog', href: '/#changelog' },
-  { label: 'Blog', href: '/#blog' },
-];
+import { socialLinks, navLinks, headerNavLinks } from '@/lib/links';
 
 /* ─────────────────────────────────────────────
    Sub-components
@@ -62,15 +45,15 @@ function DesktopNavLinks() {
   return (
     <nav className="hidden lg:flex items-center justify-center flex-1" aria-label="Main navigation">
       <ul className="flex items-center gap-1 list-none m-0 p-0" role="list">
-        {NAV_LINKS.map((link) => (
+        {headerNavLinks.map((link) => (
           <li key={link.href}>
-            <a
+            <Link
               href={link.href}
               className="relative flex items-center px-4 py-2 text-[#a1a1aa] text-[13.5px] font-medium tracking-wide no-underline rounded-lg hover:text-[#fafafa] hover:bg-neon-green-subtle transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-neon-green focus-visible:outline-offset-2 group"
             >
               <span className="relative z-10">{link.label}</span>
               <span className="absolute bottom-1 left-1/2 w-0 h-[1.5px] bg-gradient-to-r from-neon-green to-neon-cyan shadow-[0_0_8px_var(--neon-green-glow)] rounded-[1px] -translate-x-1/2 group-hover:w-[60%] transition-all duration-300 ease-out" aria-hidden="true" />
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -82,7 +65,7 @@ function DesktopNavLinks() {
 function GitHubStarLink() {
   return (
     <a
-      href="https://github.com/gymgit"
+      href={socialLinks.github}
       target="_blank"
       rel="noopener noreferrer"
       className="hidden md:flex items-center gap-1.5 px-3.5 py-2 text-[#a1a1aa] text-[13px] font-medium no-underline border border-[rgba(63,63,70,0.6)] rounded-lg bg-[rgba(24,24,27,0.5)] hover:text-[#fafafa] hover:border-[rgba(161,161,170,0.3)] hover:bg-[rgba(39,39,42,0.6)] hover:shadow-sm transition-all duration-200 outline-none focus-visible:outline-2 focus-visible:outline-neon-green focus-visible:outline-offset-2"
@@ -108,7 +91,7 @@ function LaunchAppButton() {
         }
       );
     } else {
-      window.location.href = "/login";
+      window.location.href = navLinks.login;
     }
   };
 
@@ -217,7 +200,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
         <nav aria-label="Mobile navigation">
           <ul className="list-none m-0 p-0 flex flex-col gap-1 relative z-10" role="list">
-            {NAV_LINKS.map((link, i) => (
+            {headerNavLinks.map((link, i) => (
               <li
                 key={link.href}
                 className={cn(
@@ -226,7 +209,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 )}
                 style={{ transitionDelay: isOpen ? `${80 + i * 50}ms` : '0ms' }}
               >
-                <a
+                <Link
                   href={link.href}
                   className="flex items-center gap-3 p-4 text-[#a1a1aa] text-base font-medium no-underline border border-transparent rounded-[10px] hover:text-[#fafafa] hover:bg-neon-green-subtle hover:border-[rgba(0,255,136,0.1)] focus-visible:outline-2 focus-visible:outline-neon-green focus-visible:outline-offset-2 transition-all group"
                   onClick={onClose}
@@ -234,7 +217,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                   <span className="w-[3px] h-[18px] rounded-[2px] bg-gradient-to-b from-neon-green to-neon-cyan opacity-0 group-hover:opacity-100 transition-opacity duration-200" aria-hidden="true" />
                   {link.label}
                   <ChevronRight className="w-4 h-4 ml-auto opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

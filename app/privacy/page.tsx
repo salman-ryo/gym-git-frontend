@@ -2,7 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ShieldCheck, Lock, EyeOff, Database, Bell, Mail } from 'lucide-react';
-import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -130,8 +129,6 @@ export default function PrivacyPolicyPage() {
           </section>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

@@ -13,6 +13,7 @@
 - [x] **Task 2.2:** Harmonizing Login page (`app/login/page.tsx`) with Landing Page theme tokens, animated cyberpunk background, cyber glassmorphic card, and neon accents.
 - [x] **Task 2.3:** Transitioning root home page (`app/page.tsx`) to Landing Page, migrating full authenticated dashboard to `app/dashboard/page.tsx`, and updating middleware & auth flows.
 - [x] **Task 2.4:** Created dedicated Cyberpunk About Page (`app/about/page.tsx` & `app/about/layout.tsx`) inspired by the Login Page theme, animated background, ambient light orbs, watermark graphics, terminal CLI widget, anime power tiers showcase, architectural pillars, tech stack, and navigation integration.
+- [x] **Task 2.5:** Fixed SEO, Google Search Console favicon recognition, domain standardization to `https://gym-git.com`, lightweight SVG favicon replacement (< 1 KB), and pre-rendered 1200x630 static OpenGraph / Twitter cards for social sharing.
 
 ---
 
@@ -38,4 +39,9 @@
 | `2026-08-26T19:21:00Z` | `Centralized Links` | Centralized social URLs (`github`, `twitter`, `discord`, `youtube`), footer links (`privacy`, `terms`, `credits`), and navigation links in `lib/links.ts` and connected `Footer.tsx` | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
 | `2026-08-26T19:25:00Z` | `Footer Socials Scope` | Narrowed footer socials to GitHub and LinkedIn only across `lib/links.ts`, `Footer.tsx`, and `JsonLd.tsx` with dedicated SVG icon | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
 | `2026-08-28T14:15:00Z` | `02-landing-about-page` | Created Cyberpunk-themed About page (`app/about/page.tsx` & `layout.tsx`) matching Login Page styling; updated `lib/links.ts`, `Footer.tsx`, and `LandingNavbar.tsx` | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
+| `2026-08-28T14:34:00Z` | `02-layout-footer-refactor` | Centralized `Footer` in `app/layout.tsx` with dynamic client-path hiding on `/login` and `/auth` routes; eliminated redundant local Footer tags across all individual pages | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
+| `2026-08-28T15:30:00Z` | `02-seo-favicon-opengraph` | Standardized domain to `https://gym-git.com` across all layouts, schemas, sitemap, robots, and llms.txt; optimized SVG favicon (< 1 KB) and copied multi-res ICO to `app/favicon.ico`; pre-rendered static 1200x630 OG and Twitter banners; added `/about` to sitemap.xml | `npm run build` & `npm run lint` passed with 0 errors and 0 warnings |
+| `2026-08-28T16:24:00Z` | `02-landing-navbar-links` | Replaced placeholder anchor links with actual application pages (`/about`, `/privacy`, `/terms`, `/credits`) using Next.js `Link` component in `LandingNavbar.tsx` | `npm run build` & `npm run lint` passed with 0 errors and 0 warnings |
+| `2026-08-28T16:26:00Z` | `02-landing-central-links` | Exported typed `headerNavLinks` from `lib/links.ts` and connected `LandingNavbar.tsx` to single source of truth | `npm run build` & `npm run lint` passed with 0 errors and 0 warnings |
+
 

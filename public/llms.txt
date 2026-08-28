@@ -5,11 +5,12 @@
 Gym-Git helps developers, lifters, and athletes stay consistent in the gym by turning workouts into GitHub-style commit heatmaps, streak analytics, and RPG power progression.
 
 ## Core URLs
-- [Homepage](https://gymgit.com/): Main overview of features, motivation engine, and interactive preview.
-- [Sign In / Sign Up](https://gymgit.com/login): Account registration and single sign-on (Email, Google, GitHub).
-- [Credits & Attributions](https://gymgit.com/credits): Open-source icons, vectors, and third-party licenses.
-- [Privacy Policy](https://gymgit.com/privacy): Data protection practices, telemetry handling, and zero data-selling policy.
-- [Terms of Service](https://gymgit.com/terms): Usage agreement, acceptable use, and physical health disclaimers.
+- [Homepage](https://gym-git.com/): Main overview of features, motivation engine, and interactive preview.
+- [About Gym-Git](https://gym-git.com/about): Deep-dive into developer conditioning protocol, anime power tiers, and architecture.
+- [Sign In / Sign Up](https://gym-git.com/login): Account registration and single sign-on (Email, Google, GitHub).
+- [Credits & Attributions](https://gym-git.com/credits): Open-source icons, vectors, and third-party licenses.
+- [Privacy Policy](https://gym-git.com/privacy): Data protection practices, telemetry handling, and zero data-selling policy.
+- [Terms of Service](https://gym-git.com/terms): Usage agreement, acceptable use, and physical health disclaimers.
 
 ## Key Features & Architecture
 - **GitHub-Style Contribution Heatmap**: Visualizes workout attendance as green contribution cells across a 52-week matrix.
@@ -18,5 +19,5 @@ Gym-Git helps developers, lifters, and athletes stay consistent in the gym by tu
 - **Developer-Grade Technology Stack**: Next.js App Router, Go/Gin backend API, Supabase Authentication & PostgreSQL.
 
 ## Optional & Related Endpoints
-- [Sitemap](https://gymgit.com/sitemap.xml): Search engine index of all public routes.
-- [Robots Configuration](https://gymgit.com/robots.txt): Search crawler rules and indexing directives.
+- [Sitemap](https://gym-git.com/sitemap.xml): Search engine index of all public routes.
+- [Robots Configuration](https://gym-git.com/robots.txt): Search crawler rules and indexing directives.

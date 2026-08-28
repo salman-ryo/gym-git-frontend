@@ -2,7 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { FileText, ShieldAlert, CheckCircle, Scale, Mail } from 'lucide-react';
-import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -112,8 +111,6 @@ export default function TermsOfServicePage() {
           </section>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

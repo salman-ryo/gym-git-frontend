@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-static';
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gymgit.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gym-git.com';
 
   const content = `# Gym-Git
 
@@ -13,6 +13,7 @@ Gym-Git helps developers, lifters, and athletes stay consistent in the gym by tu
 
 ## Core URLs
 - [Homepage](${baseUrl}/): Main overview of features, motivation engine, and interactive preview.
+- [About Gym-Git](${baseUrl}/about): Deep-dive into developer conditioning protocol, anime power tiers, and architecture.
 - [Sign In / Sign Up](${baseUrl}/login): Account registration and single sign-on (Email, Google, GitHub).
 - [Credits & Attributions](${baseUrl}/credits): Open-source icons, vectors, and third-party licenses.
 - [Privacy Policy](${baseUrl}/privacy): Data protection practices, telemetry handling, and zero data-selling policy.
