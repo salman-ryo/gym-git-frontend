@@ -12,6 +12,7 @@
 - [x] **Task 2.1:** Refactoring landing sections (Navbar, Hero, Why Gym-Git, Mobile Features, Testimonials, CTA, Footer, Background) with unified glassmorphism and Tailwind utilities ([02-landing-components-refactor.md](file:///.agent/features/landing-and-css-refactor/02-landing-components-refactor.md))
 - [x] **Task 2.2:** Harmonizing Login page (`app/login/page.tsx`) with Landing Page theme tokens, animated cyberpunk background, cyber glassmorphic card, and neon accents.
 - [x] **Task 2.3:** Transitioning root home page (`app/page.tsx`) to Landing Page, migrating full authenticated dashboard to `app/dashboard/page.tsx`, and updating middleware & auth flows.
+- [x] **Task 2.4:** Created dedicated Cyberpunk About Page (`app/about/page.tsx` & `app/about/layout.tsx`) inspired by the Login Page theme, animated background, ambient light orbs, watermark graphics, terminal CLI widget, anime power tiers showcase, architectural pillars, tech stack, and navigation integration.
 
 ---
 
@@ -36,4 +37,5 @@
 | `2026-08-17T14:52:00Z` | `Refactor Phase 4` | Replaced HeroSection typewriter with `useTypewriter`, integrated `useAnimatedCounter` & `useInView` in WhyGymGitSection, cleaned up unescaped entities in TestimonialsSection, cleaned unused imports across landing components, removed inline style tags from RewardRoadmap, and typed error handling in LoginPage. | TypeScript typecheck (`npx tsc --noEmit`) and Next.js production build (`npm run build`) succeeded with 0 errors. |
 | `2026-08-26T19:21:00Z` | `Centralized Links` | Centralized social URLs (`github`, `twitter`, `discord`, `youtube`), footer links (`privacy`, `terms`, `credits`), and navigation links in `lib/links.ts` and connected `Footer.tsx` | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
 | `2026-08-26T19:25:00Z` | `Footer Socials Scope` | Narrowed footer socials to GitHub and LinkedIn only across `lib/links.ts`, `Footer.tsx`, and `JsonLd.tsx` with dedicated SVG icon | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
+| `2026-08-28T14:15:00Z` | `02-landing-about-page` | Created Cyberpunk-themed About page (`app/about/page.tsx` & `layout.tsx`) matching Login Page styling; updated `lib/links.ts`, `Footer.tsx`, and `LandingNavbar.tsx` | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
 

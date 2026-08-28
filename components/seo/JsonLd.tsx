@@ -97,3 +97,32 @@ export const faqPageJsonLd = {
     },
   ],
 };
+
+export const aboutPageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Gym-Git | GitHub-Style Fitness Tracker & Developer Conditioning Protocol',
+  url: 'https://gymgit.com/about',
+  description:
+    'Gym-Git bridges software engineering discipline with physical conditioning. Track workouts as code commits, visualize consistency with GitHub-style contribution heatmaps, level up through 11 anime power tiers, and utilize fault-tolerant streak protection.',
+  mainEntity: {
+    '@type': 'SoftwareApplication',
+    name: 'Gym-Git',
+    applicationCategory: 'HealthApplication',
+    operatingSystem: 'Web, iOS, Android',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    featureList: [
+      'GitHub-style commit heatmaps for workout consistency',
+      'Scientific 0-100 Gym Power Score algorithm',
+      '11 Anime Hero progression tiers (Mumen Rider to Goku)',
+      'Fault-tolerant streak engine with Rest Tokens and Sickness Freeze Vault',
+      'RPG Master Item inventory and milestone rewards',
+      '7-Day Plan Cycles with automated split matching',
+      'Privacy-first architecture with HttpOnly SSR sessions',
+    ],
+  },
+};

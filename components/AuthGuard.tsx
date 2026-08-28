@@ -16,7 +16,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
 
   if (loading) {
-    return <CyberpunkLoader fullScreen={true} text="Authenticating Secure Link..." />;
+    return <CyberpunkLoader fullScreen={true} text="Authenticating" />;
   }
 
   if (!user) {

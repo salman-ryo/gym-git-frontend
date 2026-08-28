@@ -4,6 +4,7 @@ export const socialLinks = {
 } as const;
 
 export const footerLinks = {
+  about: '/about',
   privacy: '/privacy',
   terms: '/terms',
   credits: '/credits',
@@ -13,6 +14,7 @@ export const navLinks = {
   home: '/',
   dashboard: '/dashboard',
   login: '/login',
+  about: '/about',
   privacy: '/privacy',
   terms: '/terms',
   credits: '/credits',

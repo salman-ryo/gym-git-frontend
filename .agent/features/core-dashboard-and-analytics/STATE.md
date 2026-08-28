@@ -65,6 +65,7 @@
 | `2026-08-26T18:19:00Z` | `Power Levels Mobile Autoscroll` | Added mobile autoscroll to current week (`WeeklyProgress.tsx`) and current month (`MonthlyProgress.tsx`) with container centering and viewport checks (<768px) matching `YearView.tsx` logic | `npx tsc --noEmit` and `npm run lint` both passed with 0 errors and 0 warnings |
 | `2026-08-26T18:55:00Z` | `Eliminate Rerender Loop` | Stabilized `InventoryProvider` callbacks via `userRef`, removed unstable `inventory` object references from `useDashboardState`'s `useEffect`/`useCallback` dependency arrays, and resolved React Hook naming collisions (`executeUseItem`) | `npx tsc --noEmit`, `npm run lint` (0 errors, 0 warnings), and `npm run build` all verified cleanly |
 | `2026-08-26T19:10:00Z` | `Fix NaN Children Warnings` | Sanitized counter and progress animations against `NaN` inputs in `power-chart-utils.ts` (`useTieredBarAnimation`, `AnimatedScoreCounter`), `useAnimatedCounter.ts`, `CycleProgressCard.tsx`, `StatsOverview.tsx`, and `gym-service.ts` | `npx tsc --noEmit` and `npm run lint` both verified with 0 errors and 0 warnings |
+| `2026-08-26T20:18:00Z` | `Mobile Section Spacing` | Enhanced dashboard inter-section breathing room on smaller screens (`space-y-7 sm:space-y-8`, `py-6 sm:p-6 lg:p-8`), streamlined outer margins on `FilterBar`, `StatsOverview`, and skeletons | `npx tsc --noEmit` and `npm run lint` passed with 0 errors and 0 warnings |
 
 
 

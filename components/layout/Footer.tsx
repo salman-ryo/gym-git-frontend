@@ -68,6 +68,13 @@ export default function Footer() {
             </span>
             <div className="flex items-center flex-wrap justify-center md:justify-end gap-2 text-[10px] text-zinc-500">
               <Link
+                href={footerLinks.about}
+                className="hover:text-zinc-300 transition-colors underline underline-offset-2"
+              >
+                About
+              </Link>
+              <span>•</span>
+              <Link
                 href={footerLinks.privacy}
                 className="hover:text-zinc-300 transition-colors underline underline-offset-2"
               >

@@ -17,11 +17,12 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { label: 'Features', href: '#features' },
-  { label: 'How it Works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Changelog', href: '#changelog' },
-  { label: 'Blog', href: '#blog' },
+  { label: 'Features', href: '/#features' },
+  { label: 'How it Works', href: '/#how-it-works' },
+  { label: 'About', href: '/about' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Changelog', href: '/#changelog' },
+  { label: 'Blog', href: '/#blog' },
 ];
 
 /* ─────────────────────────────────────────────
