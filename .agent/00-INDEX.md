@@ -22,6 +22,7 @@
 | **2. Landing Page & CSS Refactoring** | [.agent/features/landing-and-css-refactor/](file:///.agent/features/landing-and-css-refactor/) | Modern neon cyber-fitness landing page, Tailwind v4 theme consolidation, component refactoring into `app/globals.css`. [View STATE.md](file:///.agent/features/landing-and-css-refactor/STATE.md) |
 | **3. Core Dashboard & Analytics** | [.agent/features/core-dashboard-and-analytics/](file:///.agent/features/core-dashboard-and-analytics/) | Multi-view contribution graph (Year/Month/Week), scientific power scoring, daily check-in modal, weekly plan selector. [View STATE.md](file:///.agent/features/core-dashboard-and-analytics/STATE.md) |
 | **4. Gamification, Cycles & Rewards Engine** | [.agent/features/gamification-and-rewards/](file:///.agent/features/gamification-and-rewards/) | 7-Day Plan Cycles, Rest Tokens, Sickness Freeze Vault ("Ice Pause"), Master Item Inventory, Dynamic Streak Reward Roadmap, Streak Broken Recovery Modal. [View STATE.md](file:///.agent/features/gamification-and-rewards/STATE.md) |
+| **5. Admin Panel & Backoffice Command Center** | [.agent/features/admin-panel/](file:///.agent/features/admin-panel/) | Complete admin command center: RBAC guards, analytics telemetry, master item catalog, roadmap editor, preset split authoring, user directory & 360 view, immutable audit logs. [View STATE.md](file:///.agent/features/admin-panel/STATE.md) |
 
 ---
 

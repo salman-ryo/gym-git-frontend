@@ -9,8 +9,8 @@ interface AuthContextType {
   user: User | null;
   streak: UserStreak | null;
   loading: boolean;
-  login: (email: string, pass: string, plan?: WeeklyPlan) => Promise<void>;
-  signup: (email: string, pass: string, name?: string, plan?: WeeklyPlan) => Promise<void>;
+  login: (email: string, pass: string, plan?: WeeklyPlan) => Promise<User | null>;
+  signup: (email: string, pass: string, name?: string, plan?: WeeklyPlan) => Promise<User | null>;
   loginWithGoogle: (plan?: WeeklyPlan) => Promise<void>;
   logout: () => Promise<void>;
   updateUserPlan: (plan: WeeklyPlan) => Promise<void>;
@@ -69,10 +69,12 @@ function mapBackendUser(data: RawAuthMeResponse): User {
   }
 
   return {
+    id: u.id || (data as Record<string, unknown>).id as string | undefined,
     email: u.email || '',
     name: u.name || (u.email ? u.email.split('@')[0] : 'Gymbro'),
     avatarUrl: u.avatar_url || u.avatarUrl,
     provider: u.provider || 'email',
+    role: u.role || data.role || (data as Record<string, unknown>).role as string | undefined || 'user',
     weeklyPlan: p
       ? {
           id: p.id,
@@ -187,7 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadUser();
   }, []);
 
-  const handleLogin = async (email: string, pass: string, plan?: WeeklyPlan) => {
+  const handleLogin = async (email: string, pass: string, plan?: WeeklyPlan): Promise<User | null> => {
     setLoading(true);
     try {
       const supabase = createBrowserClient();
@@ -201,8 +203,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.session?.access_token) {
-        await bootstrapBackend(plan, data.session.access_token, true);
+        return await bootstrapBackend(plan, data.session.access_token, true);
       }
+      return null;
     } finally {
       setLoading(false);
     }
@@ -213,7 +216,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     pass: string,
     name?: string,
     plan?: WeeklyPlan
-  ) => {
+  ): Promise<User | null> => {
     setLoading(true);
     try {
       const supabase = createBrowserClient();
@@ -232,10 +235,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.session?.access_token) {
-        await bootstrapBackend(plan, data.session.access_token, true);
+        return await bootstrapBackend(plan, data.session.access_token, true);
       } else if (data.user) {
         throw new Error("Verification email sent! Please check your inbox and verify your email to log in.");
       }
+      return null;
     } finally {
       setLoading(false);
     }

@@ -35,11 +35,12 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Protected routes: /dashboard, /logs, /settings
+  // Protected routes: /dashboard, /logs, /settings, /admin
   const isProtectedRoute =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/logs') ||
-    pathname.startsWith('/settings');
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/admin');
 
   // Auth routes: /login, /signup
   const isAuthRoute =

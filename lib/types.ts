@@ -35,10 +35,12 @@ export interface CheckinSnoozeStatus {
 }
 
 export interface User {
+  id?: string;
   email: string;
   name: string;
   avatarUrl?: string;
   provider: 'email' | 'google';
+  role?: 'user' | 'admin' | 'superadmin' | string;
   weeklyPlan?: WeeklyPlan;
   queuedWeeklyPlanId?: string | null;
   streak?: UserStreak;
@@ -238,20 +240,24 @@ export interface RawStatsResponse {
 
 export interface RawAuthMeResponse {
   user?: {
+    id?: string;
     email?: string;
     name?: string;
     avatar_url?: string;
     avatarUrl?: string;
     provider?: 'email' | 'google';
+    role?: 'user' | 'admin' | 'superadmin' | string;
     weeklyPlan?: WeeklyPlan;
     weekly_plan_id?: string;
     queued_weekly_plan_id?: string | null;
     queuedWeeklyPlanId?: string | null;
     timezone?: string;
   };
+  role?: string;
   plan?: WeeklyPlan;
   streak?: RawStreakResponse;
   checkin_snooze?: CheckinSnoozeStatus;
+  id?: string;
   email?: string;
   name?: string;
   avatar_url?: string;

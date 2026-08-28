@@ -34,7 +34,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push('/dashboard');
+      if (user.role === 'superadmin' || user.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     }
   }, [user, router]);
 
@@ -53,11 +57,20 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       if (mode === 'signup') {
-        await signup(email, password, name);
+        const signedUpUser = await signup(email, password, name);
+        if (signedUpUser?.role === 'superadmin' || signedUpUser?.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
-        await login(email, password);
+        const loggedInUser = await login(email, password);
+        if (loggedInUser?.role === 'superadmin' || loggedInUser?.role === 'admin') {
+          router.push('/admin');
+        } else {
+          router.push('/dashboard');
+        }
       }
-      router.push('/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : `${mode === 'signup' ? 'Sign up' : 'Login'} failed. Please try again.`);
     } finally {
