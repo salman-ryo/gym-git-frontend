@@ -16,6 +16,8 @@ export interface AdminAuthVerifyResponse {
   user_id: string;
   email: string;
   name: string;
+  avatar_url?: string;
+  avatarUrl?: string;
   role: 'admin' | 'superadmin';
   status: UserAccountStatus;
   permissions: string[];
@@ -202,6 +204,9 @@ export interface AdminUserListItem {
   auth_user_id: string;
   email: string;
   name?: string;
+  avatar_url?: string;
+  avatarUrl?: string;
+  avatar?: string;
   role: AdminRole;
   status: UserAccountStatus;
   weekly_plan_id?: string;
@@ -276,11 +281,13 @@ export interface AdminUserDetail {
     auth_user_id: string;
     email: string;
     name?: string;
+    avatar_url?: string;
+    avatarUrl?: string;
+    avatar?: string;
     role: AdminRole;
     status: UserAccountStatus;
     weekly_plan_id?: string;
     timezone: string;
-    avatar_url?: string;
     created_at: string;
     updated_at: string;
   };

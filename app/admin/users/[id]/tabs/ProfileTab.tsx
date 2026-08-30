@@ -17,6 +17,7 @@ import { adminService } from '@/lib/admin-service';
 import { AdminUserDetail, UserAccountStatus, AdminRole } from '@/lib/admin-types';
 import { useAdmin } from '@/lib/admin-context';
 import AdminConfirmModal from '@/components/admin/ui/AdminConfirmModal';
+import AdminUserAvatar from '@/components/admin/ui/AdminUserAvatar';
 
 interface ProfileTabProps {
   userDetail: AdminUserDetail;
@@ -27,6 +28,13 @@ export function ProfileTab({ userDetail, onRefresh }: ProfileTabProps) {
   const router = useRouter();
   const { isSuperAdmin } = useAdmin();
   const { user } = userDetail;
+
+  const userAvatar =
+    user.avatar_url ||
+    user.avatarUrl ||
+    user.avatar ||
+    ((user as Record<string, unknown>).picture as string) ||
+    ((user as Record<string, unknown>).image_url as string);
 
   // Profile Form States
   const [name, setName] = useState(user.name || '');
@@ -145,6 +153,25 @@ export function ProfileTab({ userDetail, onRefresh }: ProfileTabProps) {
               {profileError}
             </div>
           )}
+
+          {/* Profile Overview Card */}
+          <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center gap-4">
+            <AdminUserAvatar
+              src={userAvatar}
+              name={user.name}
+              email={user.email}
+              size="lg"
+              shape="rounded"
+              className="shadow-[0_0_15px_rgba(0,255,136,0.2)] shrink-0"
+            />
+            <div className="overflow-hidden min-w-0">
+              <p className="text-sm font-bold text-white truncate">{user.name || 'Unnamed Athlete'}</p>
+              <p className="text-xs text-zinc-400 font-mono truncate">{user.email}</p>
+              <p className="text-[10px] text-zinc-500 mt-0.5 font-mono">
+                ID: {user.id} • Auth Provider: Supabase
+              </p>
+            </div>
+          </div>
 
           <form onSubmit={handleUpdateProfile} className="space-y-4 text-xs">
             {/* Email (Readonly) */}

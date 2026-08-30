@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAdmin } from '@/lib/admin-context';
 import AdminStatusBadge from './ui/AdminStatusBadge';
+import AdminUserAvatar from './ui/AdminUserAvatar';
 
 const NAV_ITEMS = [
   {
@@ -153,19 +154,19 @@ export function AdminSidebar() {
                   title={isCollapsed ? item.label : undefined}
                   onClick={isMobile ? closeMobileSidebar : undefined}
                   className={`flex items-center ${
-                    isCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-3 py-2.5'
-                  } rounded-xl text-xs font-semibold transition-all duration-200 group relative ${
+                    isCollapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5'
+                  } rounded-xl text-xs font-semibold border transition-colors duration-150 group relative ${
                     isActive
-                      ? 'bg-zinc-900 border border-neon-cyan/40 text-white shadow-[0_0_15px_rgba(34,211,238,0.15)]'
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 hover:border hover:border-zinc-800'
+                      ? 'bg-zinc-900 border-neon-cyan/40 text-white shadow-[0_0_15px_rgba(34,211,238,0.15)]'
+                      : 'border-transparent text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/70 hover:border-zinc-800/80'
                   }`}
                 >
                   {isActive && (
                     <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-neon-cyan shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
                   )}
                   <Icon
-                    className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${
-                      isActive ? 'text-neon-cyan' : 'text-zinc-500 group-hover:text-zinc-300'
+                    className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
+                      isActive ? 'text-neon-cyan' : 'text-zinc-400 group-hover:text-neon-cyan'
                     }`}
                   />
                   {!isCollapsed && <span>{item.label}</span>}
@@ -183,9 +184,9 @@ export function AdminSidebar() {
             onClick={isMobile ? closeMobileSidebar : undefined}
             className={`flex items-center ${
               isCollapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-2'
-            } rounded-xl text-xs font-semibold text-zinc-400 hover:text-neon-green hover:bg-neon-green/10 border border-transparent hover:border-neon-green/30 transition-all group`}
+            } rounded-xl text-xs font-semibold text-zinc-400 hover:text-neon-green hover:bg-neon-green/10 border border-transparent hover:border-neon-green/30 transition-colors duration-150 group`}
           >
-            <ExternalLink className="w-4 h-4 shrink-0 text-zinc-500 group-hover:text-neon-green" />
+            <ExternalLink className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-neon-green transition-colors duration-150" />
             {!isCollapsed && (
               <div className="flex items-center justify-between w-full">
                 <span>Athlete App</span>
@@ -196,10 +197,24 @@ export function AdminSidebar() {
 
           {/* Current Admin Identity Card */}
           {adminUser && !isCollapsed && (
-            <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between">
-              <div className="overflow-hidden mr-2">
-                <p className="text-xs font-bold text-white truncate">{adminUser.name || 'Admin'}</p>
-                <p className="text-[10px] text-zinc-500 truncate font-mono">{adminUser.email}</p>
+            <div className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 overflow-hidden min-w-0">
+                <AdminUserAvatar
+                  src={
+                    adminUser.avatar_url ||
+                    adminUser.avatarUrl ||
+                    ((adminUser as unknown as Record<string, unknown>).avatar as string | undefined) ||
+                    ((adminUser as unknown as Record<string, unknown>).picture as string | undefined)
+                  }
+                  name={adminUser.name}
+                  email={adminUser.email}
+                  size="xs"
+                  shape="circle"
+                />
+                <div className="overflow-hidden min-w-0">
+                  <p className="text-xs font-bold text-white truncate">{adminUser.name || 'Admin'}</p>
+                  <p className="text-[10px] text-zinc-500 truncate font-mono">{adminUser.email}</p>
+                </div>
               </div>
               <AdminStatusBadge role={adminUser.role} variant="role" size="sm" />
             </div>

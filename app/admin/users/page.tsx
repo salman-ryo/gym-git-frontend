@@ -21,6 +21,7 @@ import {
 import AdminDataTable, { AdminColumn } from '@/components/admin/ui/AdminDataTable';
 import AdminStatusBadge from '@/components/admin/ui/AdminStatusBadge';
 import AdminPagination from '@/components/admin/ui/AdminPagination';
+import AdminUserAvatar from '@/components/admin/ui/AdminUserAvatar';
 import CyberpunkLoader from '@/components/CyberpunkLoader';
 
 export default function AdminUsersPage() {
@@ -67,7 +68,7 @@ export default function AdminUsersPage() {
       });
       setUsers(data);
     } catch (err) {
-      console.error('[AdminUsers] Failed to load users list:', err);
+      console.error('[AdminUsers] Failed to fetch users:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -115,17 +116,32 @@ export default function AdminUsersPage() {
       key: 'athlete',
       header: 'Athlete',
       width: '260px',
-      render: (item) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neon-green to-neon-cyan text-zinc-950 font-black text-xs flex items-center justify-center shrink-0">
-            {item.name ? item.name.charAt(0).toUpperCase() : item.email.charAt(0).toUpperCase()}
+      render: (item) => {
+        const itemRecord = item as unknown as Record<string, unknown>;
+        const avatarUrl =
+          item.avatar_url ||
+          item.avatarUrl ||
+          item.avatar ||
+          (itemRecord.picture as string | undefined) ||
+          (itemRecord.image_url as string | undefined);
+
+        return (
+          <div className="flex items-center gap-3">
+            <AdminUserAvatar
+              src={avatarUrl}
+              name={item.name}
+              email={item.email}
+              size="sm"
+              shape="circle"
+              className="shadow-[0_0_10px_rgba(0,255,136,0.15)]"
+            />
+            <div className="overflow-hidden">
+              <p className="font-bold text-white tracking-tight truncate">{item.name || 'Unnamed Athlete'}</p>
+              <p className="font-mono text-[10px] text-zinc-400 truncate">{item.email}</p>
+            </div>
           </div>
-          <div className="overflow-hidden">
-            <p className="font-bold text-white tracking-tight truncate">{item.name || 'Unnamed Athlete'}</p>
-            <p className="font-mono text-[10px] text-zinc-400 truncate">{item.email}</p>
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: 'role',

@@ -17,6 +17,7 @@ import {
 import { adminService } from '@/lib/admin-service';
 import { AdminUserDetail } from '@/lib/admin-types';
 import AdminStatusBadge from '@/components/admin/ui/AdminStatusBadge';
+import AdminUserAvatar from '@/components/admin/ui/AdminUserAvatar';
 import CyberpunkLoader from '@/components/CyberpunkLoader';
 
 import { ProfileTab } from './tabs/ProfileTab';
@@ -104,6 +105,12 @@ export default function AdminUser360Page({
   }
 
   const { user } = userDetail;
+  const userAvatar =
+    user.avatar_url ||
+    user.avatarUrl ||
+    user.avatar ||
+    ((user as Record<string, unknown>).picture as string) ||
+    ((user as Record<string, unknown>).image_url as string);
 
   const TABS = [
     { key: 'profile' as UserTab, label: 'Profile & Account', icon: UserIcon },
@@ -139,9 +146,14 @@ export default function AdminUser360Page({
       <div className="rounded-2xl bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 p-6 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-neon-green to-neon-cyan flex items-center justify-center text-zinc-950 font-black text-2xl shadow-[0_0_20px_rgba(0,255,136,0.3)] shrink-0">
-              {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-            </div>
+            <AdminUserAvatar
+              src={userAvatar}
+              name={user.name}
+              email={user.email}
+              size="xl"
+              shape="rounded"
+              className="shadow-[0_0_25px_rgba(0,255,136,0.25)] border-zinc-700/60 shrink-0"
+            />
 
             <div>
               <div className="flex flex-wrap items-center gap-2.5">
