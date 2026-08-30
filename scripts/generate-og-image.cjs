@@ -1,13 +1,9 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 const React = require('react');
 const { ImageResponse } = require('next/og');
 
 async function generateOgImage() {
-  const logoPath = path.join(process.cwd(), 'public', 'web-app-manifest-512x512.png');
-  const logoBase64 = 'data:image/png;base64,' + fs.readFileSync(logoPath).toString('base64');
-
   const rows = [
     [0, 1, 2, 3, 2, 4, 3, 2, 4, 3, 1, 4, 2, 3, 4, 2],
     [1, 2, 0, 4, 3, 2, 4, 1, 3, 4, 2, 3, 4, 1, 3, 4],
@@ -41,7 +37,7 @@ async function generateOgImage() {
         color: '#ffffff',
       },
     },
-    // Top bar: Exact Header Logo & Wordmark
+    // Top bar: Badge & Brand
     React.createElement(
       'div',
       {
@@ -57,42 +53,50 @@ async function generateOgImage() {
           style: {
             display: 'flex',
             alignItems: 'center',
-            gap: '14px',
+            gap: '16px',
           },
         },
-        React.createElement('img', {
-          src: logoBase64,
-          width: 52,
-          height: 52,
-          style: {
-            borderRadius: '12px',
-            boxShadow: '0 0 25px rgba(0, 255, 136, 0.5)',
-          },
-        }),
         React.createElement(
           'div',
           {
             style: {
-              fontSize: '32px',
-              fontWeight: 900,
-              letterSpacing: '0.06em',
+              width: '52px',
+              height: '52px',
+              borderRadius: '14px',
+              backgroundColor: '#00ff88',
               display: 'flex',
-              gap: '8px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 25px rgba(0, 255, 136, 0.6)',
             },
           },
-          React.createElement('span', { style: { color: '#e4e4e7', display: 'flex' } }, 'GYM'),
           React.createElement(
-            'span',
+            'div',
             {
               style: {
+                fontSize: '32px',
+                fontWeight: 900,
+                color: '#030108',
                 display: 'flex',
-                background: 'linear-gradient(135deg, #00ff88, #00e0ff)',
-                backgroundClip: 'text',
-                color: 'transparent',
               },
             },
-            'GIT'
+            'G'
           )
+        ),
+        React.createElement(
+          'div',
+          {
+            style: {
+              fontSize: '36px',
+              fontWeight: 900,
+              letterSpacing: '-0.02em',
+              background: 'linear-gradient(90deg, #00ff88, #00e0ff)',
+              backgroundClip: 'text',
+              color: 'transparent',
+              display: 'flex',
+            },
+          },
+          'Gym-Git'
         )
       ),
       React.createElement(
@@ -101,31 +105,21 @@ async function generateOgImage() {
           style: {
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '8px 18px',
+            padding: '10px 22px',
             borderRadius: '999px',
-            border: '1px solid rgba(0, 255, 136, 0.35)',
-            backgroundColor: 'rgba(0, 255, 136, 0.08)',
+            border: '1px solid rgba(0, 255, 136, 0.4)',
+            backgroundColor: 'rgba(0, 255, 136, 0.1)',
             color: '#00ff88',
-            fontSize: '13px',
+            fontSize: '14px',
             fontWeight: 800,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
           },
         },
-        React.createElement('div', {
-          style: {
-            width: '7px',
-            height: '7px',
-            borderRadius: '999px',
-            backgroundColor: '#00ff88',
-            boxShadow: '0 0 8px #00ff88',
-          },
-        }),
         'TRACK YOUR GRIND'
       )
     ),
-    // Center: Title & Subtitle matching Landing Page Hero
+    // Center: Title & Subtitle
     React.createElement(
       'div',
       {
@@ -284,22 +278,17 @@ async function generateOgImage() {
 
   const publicOgPath = path.join(process.cwd(), 'public', 'opengraph-image.png');
   const publicTwitterPath = path.join(process.cwd(), 'public', 'twitter-image.png');
-  const appOgPath = path.join(process.cwd(), 'app', 'opengraph-image.png');
-  const appTwitterPath = path.join(process.cwd(), 'app', 'twitter-image.png');
 
   fs.writeFileSync(publicOgPath, buffer);
   fs.writeFileSync(publicTwitterPath, buffer);
-  fs.writeFileSync(appOgPath, buffer);
-  fs.writeFileSync(appTwitterPath, buffer);
 
-  console.log('Successfully generated with authentic navbar logo and GYM GIT wordmark:');
+  console.log('Successfully generated:');
   console.log('- public/opengraph-image.png (' + buffer.length + ' bytes)');
   console.log('- public/twitter-image.png (' + buffer.length + ' bytes)');
-  console.log('- app/opengraph-image.png (' + buffer.length + ' bytes)');
-  console.log('- app/twitter-image.png (' + buffer.length + ' bytes)');
 }
 
 generateOgImage().catch((err) => {
   console.error('Error generating OG image:', err);
   process.exit(1);
 });
+

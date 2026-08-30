@@ -26,8 +26,14 @@ function LinkedinIcon({ className = 'w-4 h-4' }: { className?: string }) {
 export default function Footer() {
   const pathname = usePathname();
 
-  // Hide footer on auth and login screens
-  if (pathname === '/login' || pathname?.startsWith('/login') || pathname?.startsWith('/auth')) {
+  // Hide footer on auth, login, and admin screens
+  if (
+    pathname === '/login' ||
+    pathname?.startsWith('/login') ||
+    pathname?.startsWith('/auth') ||
+    pathname === '/admin' ||
+    pathname?.startsWith('/admin')
+  ) {
     return null;
   }
 

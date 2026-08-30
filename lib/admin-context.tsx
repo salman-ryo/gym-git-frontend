@@ -10,6 +10,12 @@ interface AdminContextType {
   isSuperAdmin: boolean;
   permissions: string[];
   refreshAdminSession: () => Promise<AdminAuthVerifyResponse | null>;
+  sidebarCollapsed: boolean;
+  toggleSidebarCollapsed: () => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  isMobileSidebarOpen: boolean;
+  toggleMobileSidebar: () => void;
+  closeMobileSidebar: () => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -17,6 +23,42 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [adminUser, setAdminUser] = useState<AdminAuthVerifyResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [sidebarCollapsed, setSidebarCollapsedState] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return localStorage.getItem('gymgit_admin_sidebar_collapsed') === 'true';
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
+
+  const setSidebarCollapsed = useCallback((collapsed: boolean) => {
+    setSidebarCollapsedState(collapsed);
+    try {
+      localStorage.setItem('gymgit_admin_sidebar_collapsed', String(collapsed));
+    } catch {}
+  }, []);
+
+  const toggleSidebarCollapsed = useCallback(() => {
+    setSidebarCollapsedState((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('gymgit_admin_sidebar_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  const toggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen((prev) => !prev);
+  }, []);
+
+  const closeMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(false);
+  }, []);
 
   const refreshAdminSession = useCallback(async (): Promise<AdminAuthVerifyResponse | null> => {
     try {
@@ -75,6 +117,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         isSuperAdmin,
         permissions,
         refreshAdminSession,
+        sidebarCollapsed,
+        toggleSidebarCollapsed,
+        setSidebarCollapsed,
+        isMobileSidebarOpen,
+        toggleMobileSidebar,
+        closeMobileSidebar,
       }}
     >
       {children}
