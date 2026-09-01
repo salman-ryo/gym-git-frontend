@@ -548,13 +548,23 @@ interface BootstrapRequest {
 - **Response `data`:** `{ user: User, plan: WeeklyPlan | null }`
 
 #### `GET /api/v1/auth/me`
-Fetch caller profile, active weekly plan, and streak state.
+Fetch lightweight authenticated caller profile (fast authentication verification).
 - **Response `data`:**
 ```typescript
 interface AuthMeResponse {
   user: User;
-  plan: WeeklyPlan | null;
-  streak: UserStreakResponse;
+}
+```
+
+#### `GET /api/v1/auth/state`
+Fetch decoupled dashboard gamification state (active split plan, queued plan change, streak state, checkin snooze).
+- **Response `data`:**
+```typescript
+interface DashboardStateResponse {
+  plan?: WeeklyPlan;
+  queued_weekly_plan_id?: string;
+  streak?: UserStreakResponse;
+  checkin_snooze?: CheckinSnoozeStatus;
 }
 ```
 

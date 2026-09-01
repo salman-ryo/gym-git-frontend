@@ -9,6 +9,7 @@ import { useInView, AnimatedScoreCounter } from './power-level/power-chart-utils
 interface CycleProgressCardProps {
   stats: Stats;
   user: User;
+  queuedWeeklyPlanId?: string | null;
   className?: string;
 }
 
@@ -22,7 +23,7 @@ function formatDate(dateStr: string): string {
   return `${monthNames[monthIdx]} ${day}`;
 }
 
-function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
+function CycleProgressCard({ stats, user, queuedWeeklyPlanId, className }: CycleProgressCardProps) {
   const { ref: containerRef, inView } = useInView(0.15);
   const cycle = stats.cycleInfo;
 
@@ -234,7 +235,7 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
       </div>
 
       {/* Queued Weekly Plan Banner */}
-      {user.queuedWeeklyPlanId && (
+      {queuedWeeklyPlanId && (
         <div className="mt-2 sm:mt-3 bg-neon-purple/10 border border-neon-purple/20 p-2.5 sm:p-3 rounded-xl flex items-start sm:items-center gap-2.5 sm:gap-3 relative overflow-hidden">
           <div className="p-1.5 bg-neon-purple/20 rounded-lg shrink-0 relative z-10">
             <AlertTriangle className="w-4 h-4 text-neon-purple" />
@@ -244,7 +245,7 @@ function CycleProgressCard({ stats, user, className }: CycleProgressCardProps) {
               Update:
             </span>
             <span className="text-[11px] text-zinc-300 font-medium tracking-wide break-words min-w-0">
-              Your new plan: [ <span className="text-white font-bold">{user.queuedWeeklyPlanId}</span> ] will start from next week.
+              Your new plan: [ <span className="text-white font-bold">{queuedWeeklyPlanId}</span> ] will start from next week.
             </span>
           </div>
         </div>

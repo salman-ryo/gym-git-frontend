@@ -9,6 +9,8 @@ import {
   fetchDashboardStats,
   fetchGymLogs,
   saveGymLog,
+  fetchDashboardStateAPI,
+  updateUserPlanAPI,
 } from '@/lib/gym-service';
 import {
   generate365MockLogs,
@@ -36,7 +38,10 @@ import {
 } from '@/lib/checkin-snooze';
 
 export function useDashboardState() {
-  const { user, updateUserPlan } = useAuth();
+  const { user } = useAuth();
+  const [dashboardState, setDashboardState] = useState<import('@/lib/types').DashboardState | null>(null);
+  const [isDashboardStateLoading, setIsDashboardStateLoading] = useState<boolean>(true);
+
   const {
     inventoryItems,
     activeEffects,
@@ -54,10 +59,10 @@ export function useDashboardState() {
   } = useInventory();
 
   // Stable user ref for stable fetch callbacks
-  const userPlanRef = useRef(user?.weeklyPlan);
+  const userPlanRef = useRef(dashboardState?.plan);
   useEffect(() => {
-    userPlanRef.current = user?.weeklyPlan;
-  }, [user?.weeklyPlan]);
+    userPlanRef.current = dashboardState?.plan;
+  }, [dashboardState?.plan]);
 
   // 1. Stats Query State
   const [stats, setStats] = useState<Stats | null>(null);
@@ -140,6 +145,17 @@ export function useDashboardState() {
 
   // --- Independent Fetch Controllers (Stable) ---
 
+  const fetchDashboardStateOnly = useCallback(async () => {
+    setIsDashboardStateLoading(true);
+    try {
+      const state = await fetchDashboardStateAPI();
+      setDashboardState(state);
+      return state;
+    } finally {
+      setIsDashboardStateLoading(false);
+    }
+  }, []);
+
   const fetchStatsOnly = useCallback(async (targetPlan?: WeeklyPlan) => {
     setIsStatsLoading(true);
     setStatsError(null);
@@ -195,12 +211,13 @@ export function useDashboardState() {
   // Combined Refresh (dispatches all in parallel via Promise.allSettled)
   const refreshData = useCallback(async () => {
     await Promise.allSettled([
+      fetchDashboardStateOnly(),
       fetchStatsOnly(),
       fetchLogsOnly(),
       fetchInventory(),
       fetchRoadmapOnly(),
     ]);
-  }, [fetchStatsOnly, fetchLogsOnly, fetchInventory, fetchRoadmapOnly]);
+  }, [fetchDashboardStateOnly, fetchStatsOnly, fetchLogsOnly, fetchInventory, fetchRoadmapOnly]);
 
   const handleUseInventoryItem = useCallback(async (itemId: string, payload?: Record<string, unknown>) => {
     try {
@@ -286,9 +303,8 @@ export function useDashboardState() {
     }, delayMs);
   }, []);
 
-  const needsPlanSelection = !!(user && !user.weeklyPlan);
+  const needsPlanSelection = !!(user && !isDashboardStateLoading && !dashboardState?.plan);
   const userEmail = user?.email;
-  const userPlanId = user?.weeklyPlan?.id;
   const isUserAuthenticated = !!user;
 
   // Concurrent Initial Mounting (fires only on initial mount or auth change)
@@ -306,26 +322,31 @@ export function useDashboardState() {
         setTodayDateStr(todayStr);
       }
 
-      if (needsPlanSelection) {
-        if (isMounted) {
-          setShowPlanModal(true);
-          setShowDailyCheckIn(false);
-        }
+      if (!isUserAuthenticated) return;
+
+      // Dispatch all independent initial queries concurrently in parallel
+      const statePromise = fetchDashboardStateOnly();
+      const statsPromise = fetchStatsOnly();
+      const logsPromise = fetchLogsOnly();
+      const inventoryPromise = fetchInventory();
+
+      const state = await statePromise;
+      if (!isMounted) return;
+
+      if (!state?.plan) {
+        setShowPlanModal(true);
+        setShowDailyCheckIn(false);
         return;
       }
 
-      if (!isUserAuthenticated) return;
+      // Trigger roadmap immediately upon plan resolution
+      fetchRoadmapOnly(state.plan.id);
 
-      // Fire all initial queries once in parallel
-      fetchStatsOnly();
-      fetchInventory();
-      fetchRoadmapOnly(userPlanId);
-
-      const currentLogs = await fetchLogsOnly();
+      const currentLogs = await logsPromise;
       if (!isMounted) return;
 
       const hasTodayLog = currentLogs.some((l) => l.date === todayStr);
-      const snoozeStatus = user?.checkinSnooze;
+      const snoozeStatus = state.checkinSnooze;
       const isSnoozed = !!(
         snoozeStatus?.is_snoozed &&
         snoozeStatus.date === todayStr &&
@@ -340,6 +361,9 @@ export function useDashboardState() {
           scheduleSnoozeReminder(remainingMs, todayStr);
         }
       }
+
+      // Ensure stats and inventory promises complete
+      await Promise.allSettled([statsPromise, inventoryPromise]);
     }
 
     initDashboard();
@@ -349,13 +373,9 @@ export function useDashboardState() {
     };
   }, [
     userEmail,
-    userPlanId,
     isUserAuthenticated,
-    needsPlanSelection,
-    user?.checkinSnooze?.is_snoozed,
-    user?.checkinSnooze?.date,
-    user?.checkinSnooze?.remaining_seconds,
     activateMockData,
+    fetchDashboardStateOnly,
     fetchStatsOnly,
     fetchLogsOnly,
     fetchInventory,
@@ -451,10 +471,11 @@ export function useDashboardState() {
   }, [fetchLogsOnly, fetchStatsOnly]);
 
   const handleSavePlan = useCallback(async (plan: WeeklyPlan) => {
-    await updateUserPlan(plan);
+    await updateUserPlanAPI(plan);
+    setDashboardState(prev => prev ? { ...prev, plan } : { plan });
     setShowPlanModal(false);
     await Promise.all([fetchStatsOnly(plan), fetchRoadmapOnly(plan.id)]);
-  }, [updateUserPlan, fetchStatsOnly, fetchRoadmapOnly]);
+  }, [fetchStatsOnly, fetchRoadmapOnly]);
 
   // Construct Section Query States
   const statsQuery: SectionQueryState<Stats | null> = useMemo(() => ({
@@ -501,6 +522,8 @@ export function useDashboardState() {
 
   return useMemo(() => ({
     user,
+    dashboardState,
+    isDashboardStateLoading,
     // Direct states
     stats,
     setStats,
@@ -562,6 +585,8 @@ export function useDashboardState() {
     handleSavePlan,
   }), [
     user,
+    dashboardState,
+    isDashboardStateLoading,
     stats,
     logs,
     inventoryItems,

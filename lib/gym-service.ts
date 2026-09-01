@@ -85,85 +85,109 @@ export async function saveGymLog(
   return mapGymLog(rawLog);
 }
 
+export async function fetchDashboardStateAPI(): Promise<import('./types').DashboardState | null> {
+  try {
+    const data = await api.get<any>('/auth/state');
+    if (!data) return null;
+
+    let streakObj: import('./types').UserStreak | undefined;
+    if (data.streak) {
+      const s = data.streak;
+      streakObj = {
+        currentStreak: s.current_streak ?? s.currentStreak ?? 0,
+        longestStreak: s.longest_streak ?? s.longestStreak ?? 0,
+        complianceRate: s.compliance_rate ?? s.complianceRate ?? 0,
+        cycleInfo: s.cycle_info ? {
+          cycle_start_date: s.cycle_info.cycle_start_date,
+          cycle_end_date: s.cycle_info.cycle_end_date,
+          workouts_completed_in_cycle: s.cycle_info.workouts_completed_in_cycle,
+          workouts_target_in_cycle: s.cycle_info.workouts_target_in_cycle,
+          rest_tokens_total: s.cycle_info.rest_tokens_total,
+          rest_tokens_used: s.cycle_info.rest_tokens_used,
+          rest_tokens_remaining: s.cycle_info.rest_tokens_remaining,
+          days_remaining_in_cycle: s.cycle_info.days_remaining_in_cycle,
+        } : undefined,
+        accuracyScore: s.accuracy_score ?? s.accuracyScore ?? 0,
+        isFrozen: s.is_frozen ?? s.isFrozen ?? false,
+        streakBrokenEvent: s.streak_broken_event ? {
+          previous_streak: s.streak_broken_event.previous_streak,
+          last_streak_date: s.streak_broken_event.last_streak_date,
+          broken_on: s.streak_broken_event.broken_on,
+          missed_days_count: s.streak_broken_event.missed_days_count,
+          required_shields: s.streak_broken_event.required_shields,
+          restore_shield_available: s.streak_broken_event.restore_shield_available,
+          restore_shields_count: s.streak_broken_event.restore_shields_count,
+          missed_dates: s.streak_broken_event.missed_dates,
+          can_restore_until: s.streak_broken_event.can_restore_until,
+        } : null,
+        streakWarningEvent: s.streak_warning_event ? {
+          is_at_risk: s.streak_warning_event.is_at_risk,
+          hours_remaining: s.streak_warning_event.hours_remaining,
+          rest_tokens_left: s.streak_warning_event.rest_tokens_left,
+          message: s.streak_warning_event.message,
+        } : null,
+      };
+    }
+
+    const p = data.plan;
+
+    return {
+      plan: p ? {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        categories: p.categories || [],
+      } : undefined,
+      streak: streakObj,
+      checkinSnooze: data.checkin_snooze ? {
+        date: data.checkin_snooze.date,
+        snoozed_at: data.checkin_snooze.snoozed_at,
+        is_snoozed: data.checkin_snooze.is_snoozed,
+        remaining_seconds: data.checkin_snooze.remaining_seconds,
+      } : undefined,
+    };
+  } catch (err) {
+    console.error('Failed to fetch dashboard state', err);
+    return null;
+  }
+}
+
+export async function updateUserPlanAPI(plan: import('./types').WeeklyPlan): Promise<void> {
+  const payload: Record<string, unknown> = { plan_id: plan.id };
+  if (plan.id === 'custom-plan') {
+    payload.name = plan.name;
+    payload.description = plan.description;
+    payload.categories = plan.categories;
+  }
+  await api.put('/auth/plan', payload);
+}
+
 export async function deleteGymLog(date: string): Promise<void> {
   await api.delete(`/logs/${date}`);
 }
 
 export async function fetchDashboardStats(userPlan?: WeeklyPlan): Promise<Stats> {
   void userPlan;
-  const [rawStats, rawStreak, logs] = await Promise.all([
+  const [rawStats, rawStreak] = await Promise.all([
     api.get<RawStatsResponse>('/stats').catch(() => null),
     api.get<RawStreakResponse>('/streak').catch(() => null),
-    fetchGymLogs().catch(() => []),
   ]);
-
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonthIdx = today.getMonth();
-
-  const dynamicMonthlyData: MonthlyStat[] = [];
-
-  for (let i = 11; i >= 0; i--) {
-    const targetDate = new Date(currentYear, currentMonthIdx - i, 1);
-    const mYear = targetDate.getFullYear();
-    const mIdx = targetDate.getMonth();
-    const mName = monthNames[mIdx];
-
-    const monthLogs = logs.filter((l) => {
-      const parts = l.date.split('-');
-      return parseInt(parts[0], 10) === mYear && parseInt(parts[1], 10) === (mIdx + 1);
-    });
-
-    const activeDays = monthLogs.length;
-    const hours = monthLogs.reduce((acc, l) => acc + l.hours, 0);
-
-    dynamicMonthlyData.push({
-      month: mName,
-      monthIndex: mIdx,
-      year: mYear,
-      count: activeDays,
-      totalHours: Math.round(hours * 10) / 10,
-    });
-  }
-
-  const totalLogsCount = logs.length;
-  const totalHoursCount = logs.reduce((acc, l) => acc + l.hours, 0);
-
-  // Compute 7-day rolling attendance
-  const past7Days = Array.from({ length: 7 }, (_, idx) => {
-    const d = new Date();
-    d.setDate(d.getDate() - idx);
-    return d.toISOString().split('T')[0];
-  });
-
-  let compliantDaysInCycle = 0;
-  past7Days.forEach((dateStr) => {
-    const logForDay = logs.find((l) => l.date === dateStr);
-    if (logForDay) {
-      compliantDaysInCycle++;
-    }
-  });
-
-  const rawSplitAccuracy = Math.round((compliantDaysInCycle / 7) * 100);
 
   const streakEvent = rawStreak?.streak_broken_event || rawStats?.streak_broken_event;
   const warningEvent = rawStreak?.streak_warning_event || rawStats?.streak_warning_event;
 
-  const rawAvg = rawStats?.averageHoursPerSession ?? rawStats?.avg_session_duration;
-  const computedAvg = typeof rawAvg === 'number' && !isNaN(rawAvg)
-    ? rawAvg
-    : (totalLogsCount > 0 ? Number((totalHoursCount / totalLogsCount).toFixed(1)) : 0);
+  const rawAvg = rawStats?.avg_session_duration ?? rawStats?.averageHoursPerSession;
+  const computedAvg = typeof rawAvg === 'number' && !isNaN(rawAvg) ? rawAvg : 0;
 
   return {
     currentStreak: Number(rawStreak?.current_streak ?? rawStreak?.currentStreak ?? rawStats?.current_streak ?? rawStats?.currentStreak) || 0,
     longestStreak: Number(rawStreak?.longest_streak ?? rawStreak?.longestStreak ?? rawStats?.longest_streak ?? rawStats?.longestStreak) || 0,
-    totalDays: Number(rawStats?.totalDays ?? rawStats?.total_sessions ?? totalLogsCount) || 0,
-    totalHours: Number(rawStats?.totalHours ?? rawStats?.total_hours ?? (Math.round(totalHoursCount * 10) / 10)) || 0,
+    totalDays: Number(rawStats?.total_sessions ?? rawStats?.totalDays) || 0,
+    totalHours: Number(rawStats?.total_hours ?? rawStats?.totalHours) || 0,
     averageHoursPerSession: isNaN(computedAvg) ? 0 : computedAvg,
-    monthlyData: dynamicMonthlyData,
+    monthlyData: [],
     cycleInfo: rawStreak?.cycle_info || rawStats?.cycle_info,
-    accuracyScore: rawStreak?.accuracy_score ?? rawStreak?.accuracyScore ?? rawStats?.accuracy_score ?? rawStats?.accuracyScore ?? rawSplitAccuracy,
+    accuracyScore: rawStreak?.accuracy_score ?? rawStreak?.accuracyScore ?? rawStats?.accuracy_score ?? rawStats?.accuracyScore ?? 0,
     isFrozen: rawStreak?.is_frozen ?? rawStreak?.isFrozen ?? rawStats?.is_frozen ?? rawStats?.isFrozen ?? false,
     streakBrokenEvent: streakEvent ? {
       previous_streak: streakEvent.previous_streak,

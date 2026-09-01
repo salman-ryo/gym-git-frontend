@@ -41,7 +41,10 @@ export interface User {
   avatarUrl?: string;
   provider: 'email' | 'google';
   role?: 'user' | 'admin' | 'superadmin' | string;
-  weeklyPlan?: WeeklyPlan;
+}
+
+export interface DashboardState {
+  plan?: WeeklyPlan;
   queuedWeeklyPlanId?: string | null;
   streak?: UserStreak;
   checkinSnooze?: CheckinSnoozeStatus;
@@ -247,26 +250,15 @@ export interface RawAuthMeResponse {
     avatarUrl?: string;
     provider?: 'email' | 'google';
     role?: 'user' | 'admin' | 'superadmin' | string;
-    weeklyPlan?: WeeklyPlan;
-    weekly_plan_id?: string;
-    queued_weekly_plan_id?: string | null;
-    queuedWeeklyPlanId?: string | null;
     timezone?: string;
   };
   role?: string;
-  plan?: WeeklyPlan;
-  streak?: RawStreakResponse;
-  checkin_snooze?: CheckinSnoozeStatus;
   id?: string;
   email?: string;
   name?: string;
   avatar_url?: string;
   avatarUrl?: string;
   provider?: 'email' | 'google';
-  weeklyPlan?: WeeklyPlan;
-  weekly_plan_id?: string;
-  queued_weekly_plan_id?: string | null;
-  queuedWeeklyPlanId?: string | null;
 }
 
 export interface FilterOptions {

@@ -95,6 +95,9 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(timer);
   }, [hasActiveEffects]);
 
+  // In-flight fetch deduplication to prevent duplicate concurrent network calls
+  const inFlightFetchRef = useRef<Promise<void> | null>(null);
+
   // Stable Fetch Inventory from Backend
   const fetchInventory = useCallback(async () => {
     if (!userRef.current) {
@@ -102,59 +105,42 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
       setActiveEffects([]);
       return;
     }
+
+    if (inFlightFetchRef.current) {
+      return inFlightFetchRef.current;
+    }
+
     setIsLoading(true);
     setError(null);
-    try {
-      const data = await fetchUserInventory();
-      setInventoryItems(data.inventory || []);
-      setActiveEffects(data.active_effects || []);
-    } catch (err: unknown) {
-      console.warn('[InventoryContext] Failed to fetch inventory:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load inventory');
-    } finally {
-      setIsLoading(false);
-    }
+
+    const promise = (async () => {
+      try {
+        const data = await fetchUserInventory();
+        setInventoryItems(data.inventory || []);
+        setActiveEffects(data.active_effects || []);
+      } catch (err: unknown) {
+        console.warn('[InventoryContext] Failed to fetch inventory:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load inventory');
+      } finally {
+        setIsLoading(false);
+        inFlightFetchRef.current = null;
+      }
+    })();
+
+    inFlightFetchRef.current = promise;
+    return promise;
   }, []);
 
   // Sync inventory whenever user identity changes
   const userEmail = user?.email;
   useEffect(() => {
-    let isMounted = true;
-
-    async function load() {
-      if (userEmail) {
-        setIsLoading(true);
-        setError(null);
-        try {
-          const data = await fetchUserInventory();
-          if (isMounted) {
-            setInventoryItems(data.inventory || []);
-            setActiveEffects(data.active_effects || []);
-          }
-        } catch (err: unknown) {
-          if (isMounted) {
-            console.warn('[InventoryContext] Failed to fetch inventory:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load inventory');
-          }
-        } finally {
-          if (isMounted) {
-            setIsLoading(false);
-          }
-        }
-      } else {
-        if (isMounted) {
-          setInventoryItems([]);
-          setActiveEffects([]);
-        }
-      }
+    if (userEmail) {
+      fetchInventory();
+    } else {
+      setInventoryItems([]);
+      setActiveEffects([]);
     }
-
-    load();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [userEmail]);
+  }, [userEmail, fetchInventory]);
 
   // Consume / Use an item
   const useItem = useCallback(async (itemId: string, payload?: Record<string, unknown>) => {

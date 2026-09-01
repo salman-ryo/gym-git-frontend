@@ -178,14 +178,14 @@ export default function DashboardClient() {
                 onRetry={state.statsQuery.refetch}
               />
             ) : state.statsQuery.data ? (
-              <StatsOverview stats={state.statsQuery.data} />
+              <StatsOverview stats={state.statsQuery.data} queuedWeeklyPlanId={state.dashboardState?.queuedWeeklyPlanId} />
             ) : null}
 
             {/* Section 2: Dynamic Workout Filter Controls */}
             <FilterBar
               activeFilter={state.activeFilter}
               onFilterChange={state.setActiveFilter}
-              weeklyPlan={state.user?.weeklyPlan}
+              weeklyPlan={state.dashboardState?.plan}
               onOpenPlanModal={handleOpenPlanModal}
             />
 
@@ -203,7 +203,7 @@ export default function DashboardClient() {
                 logs={state.logsQuery.data}
                 activeFilter={state.activeFilter}
                 onTileClick={state.handleTileClick}
-                weeklyPlan={state.user?.weeklyPlan}
+                weeklyPlan={state.dashboardState?.plan}
               />
             )}
 
@@ -236,7 +236,7 @@ export default function DashboardClient() {
               <RewardRoadmap
                 milestones={state.roadmapQuery.data}
                 longestStreak={state.statsQuery.data?.longestStreak ?? 0}
-                planId={state.user?.weeklyPlan?.id}
+                planId={state.dashboardState?.plan?.id}
                 onClaimSuccess={async (details) => {
                   state.setCelebrationDetails(details);
                   await state.refreshData();
@@ -253,7 +253,7 @@ export default function DashboardClient() {
               onCheckInYes={state.handleDailyCheckInYes}
               onCheckInNo={state.handleDailyCheckInNo}
               onCheckInLater={state.handleDailyCheckInLater}
-              availableWorkoutTypes={state.user?.weeklyPlan?.categories}
+              availableWorkoutTypes={state.dashboardState?.plan?.categories}
             />
           )}
 
@@ -265,13 +265,13 @@ export default function DashboardClient() {
               onClose={() => state.setEditTileDate(null)}
               onSave={state.handleSaveEdit}
               onDelete={state.handleDeleteEdit}
-              availableWorkoutTypes={state.user?.weeklyPlan?.categories}
+              availableWorkoutTypes={state.dashboardState?.plan?.categories}
             />
           )}
 
           {(state.showPlanModal || state.needsPlanSelection) && (
             <WeeklyPlanModal
-              currentPlan={state.user?.weeklyPlan}
+              currentPlan={state.dashboardState?.plan}
               isOpen={state.showPlanModal || state.needsPlanSelection}
               onClose={() => state.setShowPlanModal(false)}
               onSavePlan={state.handleSavePlan}

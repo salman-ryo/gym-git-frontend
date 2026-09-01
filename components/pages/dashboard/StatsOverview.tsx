@@ -10,6 +10,7 @@ import CycleProgressCard from './CycleProgressCard';
 
 interface StatsOverviewProps {
   stats: Stats | null;
+  queuedWeeklyPlanId?: string | null;
 }
 
 type StatTheme = {
@@ -171,7 +172,7 @@ const StatCard = memo(function StatCard({
   );
 });
 
-function StatsOverview({ stats }: StatsOverviewProps) {
+function StatsOverview({ stats, queuedWeeklyPlanId }: StatsOverviewProps) {
   const { user } = useAuth();
 
   const streak = stats?.scientificStreak;
@@ -288,7 +289,7 @@ function StatsOverview({ stats }: StatsOverviewProps) {
         </div>
 
         {/* Row 2: Cycle Progress Card — full width */}
-        {user && <CycleProgressCard className="mt-5 sm:mt-8" stats={stats} user={user} />}
+        {user && <CycleProgressCard className="mt-5 sm:mt-8" stats={stats} user={user} queuedWeeklyPlanId={queuedWeeklyPlanId} />}
       </div>
     </TooltipProvider>
   );
