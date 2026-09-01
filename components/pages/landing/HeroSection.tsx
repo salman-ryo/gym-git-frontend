@@ -15,7 +15,7 @@ import DummyDataBadge from './DummyDataBadge';
 /** Floating badge above the headline */
 function HeroBadge() {
   return (
-    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-zinc-950/80 backdrop-blur-md md:w-fit" aria-label="Track Your Grind">
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-zinc-950/80 backdrop-blur-md w-fit" aria-label="Track Your Grind">
       <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
       <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">Track Your Grind</span>
     </div>
