@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useTypewriter } from '@/hooks/useTypewriter';
+import DummyDataBadge from './DummyDataBadge';
 
 /* ─────────────────────────────────────────────
    Sub-components
@@ -110,8 +111,11 @@ function SocialProof() {
           </div>
         ))}
       </div>
-      <p className="text-[13px] text-[#52525b] m-0">
-        Join <strong className="text-[#a1a1aa] font-bold">2,457+</strong> lifters building consistency
+      <p className="text-[13px] text-[#52525b] m-0 flex items-center gap-1.5 flex-wrap">
+        <span>
+          Join <strong className="text-[#a1a1aa] font-bold">2,457+</strong> lifters building consistency
+        </span>
+        <DummyDataBadge side="top" />
       </p>
     </div>
   );

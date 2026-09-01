@@ -5,6 +5,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 import { useInView } from '@/hooks/useInView';
+import DummyDataBadge from './DummyDataBadge';
 
 /* ─────────────────────────────────────────────
    Data
@@ -178,11 +179,14 @@ function WhyStatCard({ icon, iconColor, value, suffix, label }: StatCounter) {
       <span className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-[2px] bg-[var(--stat-color,#00ff88)] shadow-[0_0_8px_var(--stat-color,#00ff88)] opacity-0 group-hover:opacity-70 transition-opacity duration-300" aria-hidden="true" />
 
       {icon}
-      <div className="flex flex-col gap-0.5">
-        <span className="text-[clamp(1.3rem,2.5vw,1.7rem)] font-extrabold text-[#fafafa] leading-tight tracking-tight [font-variant-numeric:tabular-nums]">
-          {count.toLocaleString()}
-          <span className="text-neon-green font-bold">{suffix}</span>
-        </span>
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[clamp(1.3rem,2.5vw,1.7rem)] font-extrabold text-[#fafafa] leading-tight tracking-tight [font-variant-numeric:tabular-nums]">
+            {count.toLocaleString()}
+            <span className="text-neon-green font-bold">{suffix}</span>
+          </span>
+          <DummyDataBadge side="top" />
+        </div>
         <span className="text-[12px] font-medium text-[#52525b] tracking-wide">{label}</span>
       </div>
     </div>

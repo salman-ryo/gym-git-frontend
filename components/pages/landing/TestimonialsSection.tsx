@@ -3,6 +3,7 @@
 import './TestimonialsSection.css';
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import DummyDataBadge from './DummyDataBadge';
 
 /* ─────────────────────────────────────────────
    Data
@@ -56,6 +57,7 @@ function SectionBadge() {
     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-green/15 bg-neon-green/4 backdrop-blur-md">
       <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_8px_#00ff88] animate-[badge-pulse_2s_ease-in-out_infinite]" aria-hidden="true" />
       <span className="text-[11px] font-bold tracking-wider text-neon-green uppercase">WHAT LIFTERS SAY</span>
+      <DummyDataBadge side="top" message="These are placeholder community reviews while the app is new." />
     </div>
   );
 }
