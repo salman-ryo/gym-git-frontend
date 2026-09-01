@@ -151,6 +151,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    let subscriptionRef: { unsubscribe: () => void } | null = null;
+
     async function loadUser() {
       try {
         const supabase = createBrowserClient();
@@ -168,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (event: string, currentSession: { access_token?: string } | null) => {
-          if (event === 'SIGNED_IN' && currentSession?.access_token) {
+          if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && currentSession?.access_token) {
             await bootstrapBackend(undefined, currentSession.access_token);
           } else if (event === 'SIGNED_OUT') {
             setUser(null);
@@ -176,9 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         });
 
-        return () => {
-          subscription.unsubscribe();
-        };
+        subscriptionRef = subscription;
       } catch (err) {
         console.error('Failed to initialize Supabase session', err);
       } finally {
@@ -187,6 +187,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     loadUser();
+
+    return () => {
+      if (subscriptionRef) {
+        subscriptionRef.unsubscribe();
+      }
+    };
   }, []);
 
   const handleLogin = async (email: string, pass: string, plan?: WeeklyPlan): Promise<User | null> => {

@@ -20,7 +20,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return null;
+    return <CyberpunkLoader fullScreen={true} text="Redirecting to Login..." />;
   }
 
   return <>{children}</>;

@@ -42,9 +42,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/settings') ||
     pathname.startsWith('/admin');
 
-  // Auth routes: /login, /signup
+  // Auth routes: /login, /signup, or the landing page (/)
   const isAuthRoute =
-    pathname.startsWith('/login') || pathname.startsWith('/signup');
+    pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/';
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();

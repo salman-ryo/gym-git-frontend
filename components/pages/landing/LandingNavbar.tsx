@@ -78,26 +78,9 @@ function GitHubStarLink() {
 }
 
 function LaunchAppButton() {
-  const handleClick = () => {
-    const isMobile =
-      /Android|iPhone|iPad|iPod/i.test(
-        navigator.userAgent
-      );
-
-    if (isMobile) {
-      import("@/lib/appLauncher").then(
-        ({ openMobileApp }) => {
-          openMobileApp();
-        }
-      );
-    } else {
-      window.location.href = navLinks.login;
-    }
-  };
-
   return (
-    <button
-      onClick={handleClick}
+    <Link
+      href={navLinks.login}
       className="relative inline-flex items-center justify-center gap-1.5 px-5 py-2 text-[13.5px] font-semibold text-[#080c10] rounded-lg bg-gradient-to-r from-neon-green to-teal-500 overflow-hidden hover:scale-[1.02] hover:shadow-[0_0_20px_var(--neon-green-glow),0_4px_16px_-4px_rgba(0,255,136,0.3)] active:scale-100 transition-all duration-200 border-none outline-none cursor-pointer group"
     >
       <span className="relative z-10 whitespace-nowrap">
@@ -110,7 +93,7 @@ function LaunchAppButton() {
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[120%] group-hover:animate-[shimmer-effect_0.8s_ease_forwards]"
         aria-hidden="true"
       />
-    </button>
+    </Link>
   );
 }
 
